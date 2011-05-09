@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EMF ProtoBuf Integration
+Bundle-SymbolicName: org.eclipselab.emf.ecore.protobuf
+Bundle-Version: 0.1.0.qualifier
+Require-Bundle: org.eclipse.emf.ecore;bundle-version="2.7.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: com.google.protobuf

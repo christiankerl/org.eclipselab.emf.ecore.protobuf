@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Export-Package: com.google.protobuf
+Bundle-ClassPath: jars/protobuf-java-2.4.0a.jar
+Bundle-Version: 2.4.0.qualifier
+Bundle-Name: Google Protocol Buffer API
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.google.protobuf;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+
