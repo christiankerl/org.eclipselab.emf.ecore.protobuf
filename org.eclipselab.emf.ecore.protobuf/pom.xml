@@ -11,4 +11,39 @@
 	<artifactId>org.eclipselab.emf.ecore.protobuf</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<name>EMF ProtoBuf Integration</name>
+
+	<properties>
+		<protobuf.executable>protoc</protobuf.executable>
+		<!-- TODO: replace ./src/ with some variable ${project.build.sourceDirectory} is still pointing to ./src/main/java/ -->
+		<protobuf.include_dir>./src/</protobuf.include_dir>
+		<protobuf.output_dir>./src/</protobuf.output_dir>
+		<protobuf.input>./src/ecore.proto</protobuf.input>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<exec executable="${protobuf.executable}">
+									<arg value="--proto_path=${protobuf.include_dir}" />
+									<arg value="--java_out=${protobuf.output_dir}" />
+									<arg value="${protobuf.input}" />
+								</exec>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
