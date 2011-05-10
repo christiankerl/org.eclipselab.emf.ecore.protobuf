@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipselab.emf.ecore.protobuf.tests/src"
+    modelPluginID="org.eclipselab.emf.ecore.protobuf.tests" modelName="Library" importerID="org.eclipse.emf.importer.ecore"
+    bundleManifest="false" complianceLevel="6.0" copyrightFields="false" classNamePattern="">
+  <foreignModel>library.ecore</foreignModel>
+  <genPackages prefix="Library" basePackage="org.eclipselab.emf.ecore.protobuf.tests"
+      resource="Basic" disposableProviderFactory="true" contentTypeIdentifier="" ecorePackage="library.ecore#/">
+    <genClasses ecoreClass="library.ecore#//Library">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute library.ecore#//Library/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference library.ecore#//Library/authors"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference library.ecore#//Library/books"/>
+    </genClasses>
+    <genClasses ecoreClass="library.ecore#//Book">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute library.ecore#//Book/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference library.ecore#//Book/author"/>
+    </genClasses>
+    <genClasses ecoreClass="library.ecore#//Author">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute library.ecore#//Author/name"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
