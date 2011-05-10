@@ -1,0 +1,24 @@
+import "descriptor.proto";
+
+option java_package = "org.eclipselab.emf.ecore.protobuf";
+option java_outer_classname = "EcoreProtos";
+
+message EPackageProto {
+	required string uri = 1;
+	repeated EClassProto eClass = 2;
+}
+
+message EClassProto {
+	required int32 id = 1;
+	required .google.protobuf.DescriptorProto definition = 2;
+}
+
+message EResourceProto {
+	repeated EPackageProto ePackage = 1;
+	repeated EObjectProto eObject = 2;
+}
+
+message EObjectProto {
+	required int32 eClassId = 1;
+	required bytes data = 2;
+}
