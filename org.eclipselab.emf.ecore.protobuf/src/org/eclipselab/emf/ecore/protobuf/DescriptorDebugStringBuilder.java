@@ -14,27 +14,30 @@ import com.google.protobuf.Descriptors.FileDescriptor;
  * @author Christian Kerl
  */
 public class DescriptorDebugStringBuilder {
-
+	
+	private StringBuilder content;
+	private int depth;
+	
 	public String build(FileDescriptor pbFile) {
-		StringBuilder content = new StringBuilder();
+		content = new StringBuilder();
+		depth = 0;
 		
 		// TODO dependencies
 		
 		if(!pbFile.getPackage().isEmpty()) {
-			content.append(String.format("package %s;\n\n", pbFile.getPackage()));
+			append("package %s;", pbFile.getPackage()).nl().nl();
 		}
 		
 		// TODO options
 		
 		for(EnumDescriptor pbEnum : pbFile.getEnumTypes()) {
-			build(pbEnum, 0, content);
-			content.append("\n");
+			build(pbEnum).nl();
 		}
 		
 		for(Descriptor pbMessage : pbFile.getMessageTypes()) {
-			content.append(String.format("message %s", pbMessage.getName()));
-			build(pbMessage, 0, content);
-			content.append("\n");
+			append("message %s", pbMessage.getName())
+				.build(pbMessage)
+			.nl();
 		}
 		
 		// TODO services
@@ -43,35 +46,37 @@ public class DescriptorDebugStringBuilder {
 		return content.toString();
 	}
 
-	private void build(Descriptor pbMessage, int depth, StringBuilder content) {
-		String prefix = prefix(depth);
-		++depth;
-		
-		content.append(" {\n");
+	private DescriptorDebugStringBuilder build(Descriptor pbMessage) {
+		append(" {").nl();
 		
 		// TODO options
 		
+		depth++;
+		
 		for(Descriptor pbNestedMessage : pbMessage.getNestedTypes()) {
-			content.append(String.format("%s message %s", prefix, pbNestedMessage.getName()));
-			build(pbNestedMessage, depth, content);
+			prefix().append("message %s", pbNestedMessage.getName())
+				.build(pbNestedMessage);
 		}
 
 		for(EnumDescriptor pbEnum : pbMessage.getEnumTypes()) {
-			build(pbEnum, depth, content);
+			build(pbEnum);
 		}
 		
 		for(FieldDescriptor pbField : pbMessage.getFields()) {
-			build(pbField, depth, content);
+			build(pbField);
 		}
 		
 		// TODO extension ranges
 		// TODO extensions
 
-		content.append(String.format("%s}\n", prefix));
+		depth--;
+		
+		prefix().append("}").nl();
+		
+		return this;
 	}
 
-	private void build(FieldDescriptor pbField, int depth, StringBuilder content) {
-		String prefix = prefix(depth);
+	private void build(FieldDescriptor pbField) {
 		String fieldType;
 		
 		switch(pbField.getType()) {
@@ -92,42 +97,58 @@ public class DescriptorDebugStringBuilder {
 		if(pbField.isRequired()) label = "required";
 		if(pbField.isOptional()) label = "optional";
 		
-		content.append(String.format("%s%s %s %s = %s;", prefix, label, fieldType, pbField.getName(), pbField.getNumber()));
+		prefix().append("%s %s %s = %s;", label, fieldType, pbField.getName(), pbField.getNumber());
 		
 		// TODO default value
 		// TODO options
 		
-		content.append("\n");
+		nl();
 	}
 
-	private void build(EnumDescriptor pbEnum, int depth, StringBuilder content) {		
-		String prefix = prefix(depth);
-		++depth;
+	private DescriptorDebugStringBuilder build(EnumDescriptor pbEnum) {
+		prefix().append("enum %s {", pbEnum.getName()).nl();
 		
-		content.append(String.format("%senum %s {\n", prefix, pbEnum.getName()));		
+		depth++;
+		
 		for(EnumValueDescriptor pbEnumValue : pbEnum.getValues()) {
-			build(pbEnumValue, depth, content);
-		}		
-		content.append(String.format("%s}\n", prefix));
+			build(pbEnumValue);
+		}
+		
+		depth--;
+		
+		prefix().append("}").nl();
+		
+		return this;
 	}
 	
-	private void build(EnumValueDescriptor pbEnumValue, int depth, StringBuilder content) {
-		String prefix = prefix(depth);
-		content.append(String.format("%s%s = %s", prefix, pbEnumValue.getName(), pbEnumValue.getNumber()));
+	private void build(EnumValueDescriptor pbEnumValue) {
+		prefix().append("%s = %s", pbEnumValue.getName(), pbEnumValue.getNumber());
 		
 		// TODO options
 		
-		content.append(String.format(";\n"));
-	}
-
-	private String prefix(int depth) {
-		depth *= 2;
-		
-		char[] result = new char[depth];
-		
-		Arrays.fill(result, ' ');
-		
-		return new String(result);
+		append(";").nl();
 	}
 	
+	private DescriptorDebugStringBuilder append(String str) {
+		content.append(str);
+		
+		return this;
+	}
+	
+	private DescriptorDebugStringBuilder append(String format, Object... args) {
+		return append(String.format(format, args));
+	}
+	
+	private DescriptorDebugStringBuilder nl() {
+		return append("\n");
+	}
+	
+	private DescriptorDebugStringBuilder prefix() {
+		char[] result = new char[depth * 2];
+		Arrays.fill(result, ' ');
+		
+		content.append(result);
+		
+		return this;
+	}
 }
