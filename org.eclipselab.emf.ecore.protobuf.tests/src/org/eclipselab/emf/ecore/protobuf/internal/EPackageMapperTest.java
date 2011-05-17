@@ -34,7 +34,7 @@ public class EPackageMapperTest {
 	}
 	
 	@Test
-	public void testAbstractClassHierarchieMapping() throws Exception {
+	public void testClassHierarchyMapping() throws Exception {
 		EPackage pkg = EPackageBuilder.create("example")
 			.withClass("BaseA")
 				.beingAbstract()
