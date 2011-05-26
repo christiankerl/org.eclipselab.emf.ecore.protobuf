@@ -1,9 +1,9 @@
 package org.eclipselab.emf.ecore.protobuf.internal;
 
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipselab.emf.ecore.protobuf.DescriptorDebugStringBuilder;
 import org.eclipselab.emf.ecore.protobuf.tests.EPackageBuilder;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
+import org.eclipselab.emf.ecore.protobuf.util.DescriptorDebugStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
