@@ -8,6 +8,7 @@ package org.eclipselab.emf.ecore.protobuf.tests.library.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -18,6 +19,7 @@ import org.eclipselab.emf.ecore.protobuf.tests.library.Book;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Library;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryFactory;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
+import org.eclipselab.emf.ecore.protobuf.tests.library.Rating;
 
 /**
  * <!-- begin-user-doc -->
@@ -46,6 +48,13 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage {
 	 * @generated
 	 */
 	private EClass authorEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum ratingEEnum = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -176,6 +185,15 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getBook_Rating() {
+		return (EAttribute)bookEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getAuthor() {
 		return authorEClass;
 	}
@@ -187,6 +205,15 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage {
 	 */
 	public EAttribute getAuthor_Name() {
 		return (EAttribute)authorEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getRating() {
+		return ratingEEnum;
 	}
 
 	/**
@@ -225,9 +252,13 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage {
 		bookEClass = createEClass(BOOK);
 		createEAttribute(bookEClass, BOOK__NAME);
 		createEReference(bookEClass, BOOK__AUTHOR);
+		createEAttribute(bookEClass, BOOK__RATING);
 
 		authorEClass = createEClass(AUTHOR);
 		createEAttribute(authorEClass, AUTHOR__NAME);
+
+		// Create enums
+		ratingEEnum = createEEnum(RATING);
 	}
 
 	/**
@@ -268,9 +299,17 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage {
 		initEClass(bookEClass, Book.class, "Book", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getBook_Name(), ecorePackage.getEString(), "name", null, 0, 1, Book.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getBook_Author(), this.getAuthor(), null, "author", null, 0, 1, Book.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBook_Rating(), this.getRating(), "rating", null, 0, 1, Book.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(authorEClass, Author.class, "Author", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getAuthor_Name(), ecorePackage.getEString(), "name", null, 0, 1, Author.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		// Initialize enums and add enum literals
+		initEEnum(ratingEEnum, Rating.class, "Rating");
+		addEEnumLiteral(ratingEEnum, Rating.NO_RATING);
+		addEEnumLiteral(ratingEEnum, Rating.GOOD);
+		addEEnumLiteral(ratingEEnum, Rating.MEDIUM);
+		addEEnumLiteral(ratingEEnum, Rating.BAD);
 
 		// Create resource
 		createResource(eNS_URI);

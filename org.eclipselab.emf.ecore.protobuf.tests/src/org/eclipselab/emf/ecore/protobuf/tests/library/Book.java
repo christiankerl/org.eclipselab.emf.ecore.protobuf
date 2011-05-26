@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.eclipselab.emf.ecore.protobuf.tests.library.Book#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipselab.emf.ecore.protobuf.tests.library.Book#getAuthor <em>Author</em>}</li>
+ *   <li>{@link org.eclipselab.emf.ecore.protobuf.tests.library.Book#getRating <em>Rating</em>}</li>
  * </ul>
  * </p>
  *
@@ -77,5 +78,34 @@ public interface Book extends EObject {
 	 * @generated
 	 */
 	void setAuthor(Author value);
+
+	/**
+	 * Returns the value of the '<em><b>Rating</b></em>' attribute.
+	 * The literals are from the enumeration {@link org.eclipselab.emf.ecore.protobuf.tests.library.Rating}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Rating</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Rating</em>' attribute.
+	 * @see org.eclipselab.emf.ecore.protobuf.tests.library.Rating
+	 * @see #setRating(Rating)
+	 * @see org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage#getBook_Rating()
+	 * @model
+	 * @generated
+	 */
+	Rating getRating();
+
+	/**
+	 * Sets the value of the '{@link org.eclipselab.emf.ecore.protobuf.tests.library.Book#getRating <em>Rating</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Rating</em>' attribute.
+	 * @see org.eclipselab.emf.ecore.protobuf.tests.library.Rating
+	 * @see #getRating()
+	 * @generated
+	 */
+	void setRating(Rating value);
 
 } // Book

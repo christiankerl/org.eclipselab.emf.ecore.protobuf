@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Author;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Book;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
+import org.eclipselab.emf.ecore.protobuf.tests.library.Rating;
 
 /**
  * <!-- begin-user-doc -->
@@ -27,6 +28,7 @@ import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
  * <ul>
  *   <li>{@link org.eclipselab.emf.ecore.protobuf.tests.library.impl.BookImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipselab.emf.ecore.protobuf.tests.library.impl.BookImpl#getAuthor <em>Author</em>}</li>
+ *   <li>{@link org.eclipselab.emf.ecore.protobuf.tests.library.impl.BookImpl#getRating <em>Rating</em>}</li>
  * </ul>
  * </p>
  *
@@ -62,6 +64,26 @@ public class BookImpl extends EObjectImpl implements Book {
 	 * @ordered
 	 */
 	protected Author author;
+
+	/**
+	 * The default value of the '{@link #getRating() <em>Rating</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getRating()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final Rating RATING_EDEFAULT = Rating.NO_RATING;
+
+	/**
+	 * The cached value of the '{@link #getRating() <em>Rating</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getRating()
+	 * @generated
+	 * @ordered
+	 */
+	protected Rating rating = RATING_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -146,6 +168,27 @@ public class BookImpl extends EObjectImpl implements Book {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public Rating getRating() {
+		return rating;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setRating(Rating newRating) {
+		Rating oldRating = rating;
+		rating = newRating == null ? RATING_EDEFAULT : newRating;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, LibraryPackage.BOOK__RATING, oldRating, rating));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -154,6 +197,8 @@ public class BookImpl extends EObjectImpl implements Book {
 			case LibraryPackage.BOOK__AUTHOR:
 				if (resolve) return getAuthor();
 				return basicGetAuthor();
+			case LibraryPackage.BOOK__RATING:
+				return getRating();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -171,6 +216,9 @@ public class BookImpl extends EObjectImpl implements Book {
 				return;
 			case LibraryPackage.BOOK__AUTHOR:
 				setAuthor((Author)newValue);
+				return;
+			case LibraryPackage.BOOK__RATING:
+				setRating((Rating)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -190,6 +238,9 @@ public class BookImpl extends EObjectImpl implements Book {
 			case LibraryPackage.BOOK__AUTHOR:
 				setAuthor((Author)null);
 				return;
+			case LibraryPackage.BOOK__RATING:
+				setRating(RATING_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -206,6 +257,8 @@ public class BookImpl extends EObjectImpl implements Book {
 				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 			case LibraryPackage.BOOK__AUTHOR:
 				return author != null;
+			case LibraryPackage.BOOK__RATING:
+				return rating != RATING_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -222,6 +275,8 @@ public class BookImpl extends EObjectImpl implements Book {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
 		result.append(name);
+		result.append(", rating: ");
+		result.append(rating);
 		result.append(')');
 		return result.toString();
 	}

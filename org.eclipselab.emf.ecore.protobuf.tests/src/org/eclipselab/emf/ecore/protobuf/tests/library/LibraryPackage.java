@@ -8,6 +8,7 @@ package org.eclipselab.emf.ecore.protobuf.tests.library;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -134,13 +135,22 @@ public interface LibraryPackage extends EPackage {
 	int BOOK__AUTHOR = 1;
 
 	/**
+	 * The feature id for the '<em><b>Rating</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BOOK__RATING = 2;
+
+	/**
 	 * The number of structural features of the '<em>Book</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int BOOK_FEATURE_COUNT = 2;
+	int BOOK_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.eclipselab.emf.ecore.protobuf.tests.library.impl.AuthorImpl <em>Author</em>}' class.
@@ -169,6 +179,17 @@ public interface LibraryPackage extends EPackage {
 	 * @ordered
 	 */
 	int AUTHOR_FEATURE_COUNT = 1;
+
+
+	/**
+	 * The meta object id for the '{@link org.eclipselab.emf.ecore.protobuf.tests.library.Rating <em>Rating</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipselab.emf.ecore.protobuf.tests.library.Rating
+	 * @see org.eclipselab.emf.ecore.protobuf.tests.library.impl.LibraryPackageImpl#getRating()
+	 * @generated
+	 */
+	int RATING = 3;
 
 
 	/**
@@ -247,6 +268,17 @@ public interface LibraryPackage extends EPackage {
 	EReference getBook_Author();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipselab.emf.ecore.protobuf.tests.library.Book#getRating <em>Rating</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Rating</em>'.
+	 * @see org.eclipselab.emf.ecore.protobuf.tests.library.Book#getRating()
+	 * @see #getBook()
+	 * @generated
+	 */
+	EAttribute getBook_Rating();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipselab.emf.ecore.protobuf.tests.library.Author <em>Author</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -266,6 +298,16 @@ public interface LibraryPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getAuthor_Name();
+
+	/**
+	 * Returns the meta object for enum '{@link org.eclipselab.emf.ecore.protobuf.tests.library.Rating <em>Rating</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Rating</em>'.
+	 * @see org.eclipselab.emf.ecore.protobuf.tests.library.Rating
+	 * @generated
+	 */
+	EEnum getRating();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -350,6 +392,14 @@ public interface LibraryPackage extends EPackage {
 		EReference BOOK__AUTHOR = eINSTANCE.getBook_Author();
 
 		/**
+		 * The meta object literal for the '<em><b>Rating</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BOOK__RATING = eINSTANCE.getBook_Rating();
+
+		/**
 		 * The meta object literal for the '{@link org.eclipselab.emf.ecore.protobuf.tests.library.impl.AuthorImpl <em>Author</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -366,6 +416,16 @@ public interface LibraryPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute AUTHOR__NAME = eINSTANCE.getAuthor_Name();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipselab.emf.ecore.protobuf.tests.library.Rating <em>Rating</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipselab.emf.ecore.protobuf.tests.library.Rating
+		 * @see org.eclipselab.emf.ecore.protobuf.tests.library.impl.LibraryPackageImpl#getRating()
+		 * @generated
+		 */
+		EEnum RATING = eINSTANCE.getRating();
 
 	}
 

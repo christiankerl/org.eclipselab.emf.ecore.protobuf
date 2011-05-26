@@ -13,8 +13,15 @@
   <eClassifiers xsi:type="ecore:EClass" name="Book">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="author" eType="#//Author"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rating" eType="#//Rating"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Author">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Rating">
+    <eLiterals name="NO_RATING"/>
+    <eLiterals name="GOOD" value="1"/>
+    <eLiterals name="MEDIUM" value="2"/>
+    <eLiterals name="BAD" value="3"/>
   </eClassifiers>
 </ecore:EPackage>
