@@ -23,6 +23,8 @@ import com.google.protobuf.DescriptorProtos;
  * @author Christian Kerl
  */
 public class EPackageMapper {
+	public static final String INTERNAL_ID_FIELD = "__internal_id";
+	
 	private static final String REF_CLASS_SUFFIX = "Ref";
 	private static final String REF_CLASS_TYPE_ENUM = "SubType";
 	private static final String REF_CLASS_TYPE_FIELD = "sub_type";
@@ -85,6 +87,12 @@ public class EPackageMapper {
 				.setName(REF_CLASS_TYPE_FIELD)
 				.setNumber(1);
 			
+			pbRefClass.addFieldBuilder()
+				.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL)
+				.setType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32)
+				.setName(INTERNAL_ID_FIELD)
+				.setNumber(2);
+			
 			if(!eClass.isAbstract()) {
 				addClassToRefClass(pbRefClass, eClass);
 				
@@ -128,6 +136,12 @@ public class EPackageMapper {
 		
 		int fieldNumber = 1;
 		
+		pbClass.addFieldBuilder()
+			.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED)
+			.setType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32)
+			.setName(INTERNAL_ID_FIELD)
+			.setNumber(fieldNumber++);
+		
 		for(EAttribute attribute : eClass.getEAllAttributes()) {
 			if(shouldIgnoreFeature(attribute)) {
 				continue;
@@ -140,7 +154,7 @@ public class EPackageMapper {
 				.setNumber(fieldNumber++);
 		}
 		
-		for(EReference reference : eClass.getEAllContainments()) {
+		for(EReference reference : eClass.getEAllReferences()) {
 			if(shouldIgnoreFeature(reference)) {
 				continue;
 			}
