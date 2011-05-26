@@ -29,7 +29,11 @@ public class EPackageMapper {
 	private static final String REF_CLASS_TYPE_ENUM = "SubType";
 	private static final String REF_CLASS_TYPE_FIELD = "sub_type";
 
-	private EDataTypeMapper eDataTypeMapper = new EcoreEDataTypeMapper();
+	private EDataTypeMapper eDataTypeMapper = CompositeEDataTypeMapper.create(
+			new EcoreEDataTypeMapper(), 
+			new EEnumEDataTypeMapper(), 
+			new DefaultEDataTypeMapper()
+	);
 	
 	private DescriptorProtos.FileDescriptorProto.Builder pbPackage;
 	
@@ -147,11 +151,19 @@ public class EPackageMapper {
 				continue;
 			}
 			
-			pbClass.addFieldBuilder()
+			if(!eDataTypeMapper.supports(attribute.getEAttributeType())) {
+				// log warning
+				continue;
+			}
+			
+			DescriptorProtos.FieldDescriptorProto.Builder pbField = pbClass.addFieldBuilder()
 				.setLabel(getFieldLabel(attribute))
-				.setType(eDataTypeMapper.map(attribute.getEAttributeType()))
 				.setName(attribute.getName())
 				.setNumber(fieldNumber++);
+			
+			eDataTypeMapper
+				.map(attribute.getEAttributeType())
+				.apply(pbField);
 		}
 		
 		for(EReference reference : eClass.getEAllReferences()) {

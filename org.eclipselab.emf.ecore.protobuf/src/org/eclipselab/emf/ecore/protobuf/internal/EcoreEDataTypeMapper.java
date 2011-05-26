@@ -3,6 +3,7 @@ package org.eclipselab.emf.ecore.protobuf.internal;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipselab.emf.ecore.protobuf.EDataTypeMapper;
+import org.eclipselab.emf.ecore.protobuf.TypeMappingResult;
 
 import com.google.protobuf.DescriptorProtos;
 
@@ -23,11 +24,11 @@ public class EcoreEDataTypeMapper implements EDataTypeMapper {
 	/* (non-Javadoc)
 	 * @see org.eclipselab.emf.ecore.protobuf.EDataTypeMapper#map(org.eclipse.emf.ecore.EDataType)
 	 */
-	public DescriptorProtos.FieldDescriptorProto.Type map(EDataType type) {
+	public TypeMappingResult map(EDataType type) {
 		switch(type.getClassifierID()) {
 		case EcorePackage.EBOOLEAN:
 		case EcorePackage.EBOOLEAN_OBJECT:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_BOOL;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_BOOL);
 		case EcorePackage.ECHAR:
 		case EcorePackage.ECHARACTER_OBJECT:
 		case EcorePackage.EBYTE:
@@ -36,22 +37,22 @@ public class EcoreEDataTypeMapper implements EDataTypeMapper {
 		case EcorePackage.ESHORT_OBJECT:
 		case EcorePackage.EINT:
 		case EcorePackage.EINTEGER_OBJECT:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT32;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT32);
 		case EcorePackage.ELONG:
 		case EcorePackage.ELONG_OBJECT:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT64;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_SINT64);
 		case EcorePackage.EFLOAT:
 		case EcorePackage.EFLOAT_OBJECT:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_FLOAT;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_FLOAT);
 		case EcorePackage.EDOUBLE:
 		case EcorePackage.EDOUBLE_OBJECT:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE);
 		case EcorePackage.EBYTE_ARRAY:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_BYTES;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_BYTES);
 		case EcorePackage.ESTRING:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING);
 		case EcorePackage.EDATE:
-			return DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT64;
+			return TypeMappingResult.forDataType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT64);
 		default:
 			throw new IllegalArgumentException();
 		}

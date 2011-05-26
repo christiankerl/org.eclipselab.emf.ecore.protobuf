@@ -28,5 +28,5 @@ public interface EDataTypeMapper {
 	 * 
 	 * @return
 	 */
-	DescriptorProtos.FieldDescriptorProto.Type map(EDataType type);
+	TypeMappingResult map(EDataType type);
 }
