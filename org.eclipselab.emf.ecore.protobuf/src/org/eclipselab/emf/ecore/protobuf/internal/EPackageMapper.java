@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipselab.emf.ecore.protobuf.EDataTypeMapper;
+import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
 
 import com.google.protobuf.DescriptorProtos;
 
@@ -23,12 +24,6 @@ import com.google.protobuf.DescriptorProtos;
  * @author Christian Kerl
  */
 public class EPackageMapper {
-	public static final String INTERNAL_ID_FIELD = "__internal_id";
-	
-	private static final String REF_CLASS_SUFFIX = "Ref";
-	private static final String REF_CLASS_TYPE_ENUM = "SubType";
-	private static final String REF_CLASS_TYPE_FIELD = "sub_type";
-
 	private EDataTypeMapper eDataTypeMapper = CompositeEDataTypeMapper.create(
 			new EcoreEDataTypeMapper(), 
 			new EEnumEDataTypeMapper(), 
@@ -39,6 +34,12 @@ public class EPackageMapper {
 	
 	private Map<EClass, DescriptorProtos.DescriptorProto.Builder> refClasses = new HashMap<EClass, DescriptorProtos.DescriptorProto.Builder>();
 	private Set<String> usedRefClasses = new HashSet<String>();
+
+	private NamingStrategy naming;
+	
+	public EPackageMapper(NamingStrategy naming) {
+		this.naming = naming;
+	}
 	
 	public DescriptorProtos.FileDescriptorProto map(EPackage ePackage) {
 		refClasses.clear();
@@ -71,7 +72,7 @@ public class EPackageMapper {
 	}
 
 	private String getRefClassName(EClass eClass) {
-		String name = eClass.getName() + REF_CLASS_SUFFIX;
+		String name = naming.getRefMessage(eClass);
 		
 		usedRefClasses.add(name);
 		
@@ -81,20 +82,20 @@ public class EPackageMapper {
 	private DescriptorProtos.DescriptorProto.Builder getRefClass(EClass eClass) {
 		if(!refClasses.containsKey(eClass)) {
 			DescriptorProtos.DescriptorProto.Builder pbRefClass = pbPackage.addMessageTypeBuilder();
-			pbRefClass.setName(eClass.getName() + REF_CLASS_SUFFIX);
+			pbRefClass.setName(naming.getRefMessage(eClass));
 			pbRefClass.addEnumTypeBuilder()
-				.setName(REF_CLASS_TYPE_ENUM);
+				.setName(naming.getSubTypeEnum());
 			
 			pbRefClass.addFieldBuilder()
 				.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED)
-				.setTypeName(REF_CLASS_TYPE_ENUM)
-				.setName(REF_CLASS_TYPE_FIELD)
+				.setTypeName(naming.getSubTypeEnum())
+				.setName(naming.getSubTypeField())
 				.setNumber(1);
 			
 			pbRefClass.addFieldBuilder()
 				.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL)
 				.setType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32)
-				.setName(INTERNAL_ID_FIELD)
+				.setName(naming.getInternalIdField())
 				.setNumber(2);
 			
 			if(!eClass.isAbstract()) {
@@ -115,13 +116,13 @@ public class EPackageMapper {
 		DescriptorProtos.EnumDescriptorProto.Builder pbRefTypeEnum = pbRefClass.getEnumTypeBuilder(0);
 		
 		pbRefTypeEnum.addValueBuilder()
-			.setName(eClass.getName())
+			.setName(naming.getMessage(eClass))
 			.setNumber(pbRefTypeEnum.getValueCount());
 		
 		pbRefClass.addFieldBuilder()
 			.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL)
-			.setTypeName(eClass.getName())
-			.setName(eClass.getName().toLowerCase())
+			.setTypeName(naming.getMessage(eClass))
+			.setName(naming.getRefMessageField(eClass))
 			.setNumber(pbRefClass.getFieldCount());
 	}
 	
@@ -129,21 +130,21 @@ public class EPackageMapper {
 		for(int idx = pbPackage.getMessageTypeCount() - 1; idx >= 0; idx--) {
 			DescriptorProtos.DescriptorProtoOrBuilder pbClass = pbPackage.getMessageTypeOrBuilder(idx);
 			
-			if(pbClass.getName().endsWith(REF_CLASS_SUFFIX) && !usedRefClasses.contains(pbClass.getName())) {
+			if(naming.isRefMessage(pbClass.getName()) && !usedRefClasses.contains(pbClass.getName())) {
 				pbPackage.removeMessageType(idx);
 			}
 		}
 	}
 	
 	private void mapClass(EClass eClass, DescriptorProtos.DescriptorProto.Builder pbClass) {
-		pbClass.setName(eClass.getName());
+		pbClass.setName(naming.getMessage(eClass));
 		
 		int fieldNumber = 1;
 		
 		pbClass.addFieldBuilder()
 			.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED)
 			.setType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32)
-			.setName(INTERNAL_ID_FIELD)
+			.setName(naming.getInternalIdField())
 			.setNumber(fieldNumber++);
 		
 		for(EAttribute attribute : eClass.getEAllAttributes()) {
@@ -180,7 +181,7 @@ public class EPackageMapper {
 	}
 
 	private void mapEnum(EEnum eEnum, DescriptorProtos.EnumDescriptorProto.Builder pbEnum) {
-		pbEnum.setName(eEnum.getName());
+		pbEnum.setName(naming.getEnum(eEnum));
 		
 		for(EEnumLiteral literal : eEnum.getELiterals()) {
 			pbEnum.addValueBuilder()

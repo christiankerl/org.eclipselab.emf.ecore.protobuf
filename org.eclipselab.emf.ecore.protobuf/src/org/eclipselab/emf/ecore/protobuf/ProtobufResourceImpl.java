@@ -16,6 +16,8 @@ import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicFromProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.internal.EPackageMapper;
+import org.eclipselab.emf.ecore.protobuf.mapper.DefaultNamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
 
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
@@ -28,7 +30,10 @@ import com.google.protobuf.DynamicMessage;
 public class ProtobufResourceImpl extends ResourceImpl {	
 	private static final Descriptors.FileDescriptor[] NO_DEPENDENCIES = new Descriptors.FileDescriptor[0];
 	
-	private EPackageMapper ePackageMapper = new EPackageMapper();
+	private final NamingStrategy naming = new DefaultNamingStrategy();
+	private final ConverterRegistry registry = new ConverterRegistry();
+	
+	private EPackageMapper ePackageMapper = new EPackageMapper(naming);
 	
 	public ProtobufResourceImpl() {
 		super();
@@ -44,7 +49,7 @@ public class ProtobufResourceImpl extends ResourceImpl {
 		
 		Map<EPackage, Descriptors.FileDescriptor> ePackages = new HashMap<EPackage, Descriptors.FileDescriptor>();
 				
-		DynamicToProtoBufMessageConverter toProtoBuf = new DynamicToProtoBufMessageConverter(new EObjectPool(), new ConverterRegistry());
+		DynamicToProtoBufMessageConverter toProtoBuf = new DynamicToProtoBufMessageConverter(new EObjectPool(), registry, naming);
 		
 		for(EObject eObject : getContents()) {
 			EClass eClass = eObject.eClass();
@@ -79,7 +84,7 @@ public class ProtobufResourceImpl extends ResourceImpl {
 	protected void doLoad(InputStream inputStream, Map<?, ?> options) throws IOException {
 		EcoreProtos.EResourceProto resource = EcoreProtos.EResourceProto.parseFrom(inputStream);
 		
-		DynamicFromProtoBufMessageConverter converter = new DynamicFromProtoBufMessageConverter(new EObjectPool(), new ConverterRegistry());
+		DynamicFromProtoBufMessageConverter converter = new DynamicFromProtoBufMessageConverter(new EObjectPool(), registry, naming);
 		
 		for(EcoreProtos.EObjectProto pbObject : resource.getEobjectList()) {
 			EcoreProtos.EPackageProto pbEpackage = resource.getEpackage(pbObject.getEpackageIndex());

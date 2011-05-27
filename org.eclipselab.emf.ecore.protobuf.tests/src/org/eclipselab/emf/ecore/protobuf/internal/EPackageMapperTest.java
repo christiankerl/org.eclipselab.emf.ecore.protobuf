@@ -1,6 +1,7 @@
 package org.eclipselab.emf.ecore.protobuf.internal;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipselab.emf.ecore.protobuf.mapper.DefaultNamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.tests.EPackageBuilder;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
 import org.eclipselab.emf.ecore.protobuf.util.DescriptorDebugStringBuilder;
@@ -23,7 +24,7 @@ public class EPackageMapperTest {
 	
 	@Before
 	public void setup() {
-		mapper = new EPackageMapper();
+		mapper = new EPackageMapper(new DefaultNamingStrategy());
 	}
 	
 	@Test

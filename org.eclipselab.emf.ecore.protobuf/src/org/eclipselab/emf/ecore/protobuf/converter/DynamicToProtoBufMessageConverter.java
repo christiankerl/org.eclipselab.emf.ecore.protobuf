@@ -10,11 +10,11 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipselab.emf.ecore.protobuf.EObjectPool;
-import org.eclipselab.emf.ecore.protobuf.internal.EPackageMapper;
+import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
 
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
 
 /**
@@ -47,7 +47,7 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
 		}
 		
 		private void createInternalIdField() {
-			set(field(EPackageMapper.INTERNAL_ID_FIELD), pool.getId(source));
+			set(field(naming.getInternalIdField()), pool.getId(source));
 		}
 
 		private void createAttributeFields() {
@@ -113,15 +113,15 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
 			DynamicMessage.Builder refTarget = DynamicMessage.newBuilder(refTargetType);
 			
 			refTarget.setField(
-					refTargetType.findFieldByName("sub_type"), 
-					refTargetType.getEnumTypes().get(0).findValueByName(refSourceType.getName())
+					refTargetType.findFieldByName(naming.getSubTypeField()), 
+					refTargetType.getEnumTypes().get(0).findValueByName(naming.getMessage(refSourceType))
 			);
 			
 			if(containment) {
-				FieldDescriptor refTargetField = refTargetType.findFieldByName(refSourceType.getName().toLowerCase());
+				FieldDescriptor refTargetField = refTargetType.findFieldByName(naming.getRefMessageField(refSourceType));
 				refTarget.setField(refTargetField, convert(refSource, refTargetField.getMessageType()));
 			} else {
-				refTarget.setField(refTargetType.findFieldByName(EPackageMapper.INTERNAL_ID_FIELD), pool.getId(refSource));
+				refTarget.setField(refTargetType.findFieldByName(naming.getInternalIdField()), pool.getId(refSource));
 			}
 			
 			return refTarget.build();
@@ -138,11 +138,13 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
 	
 	private final EObjectPool pool;
 	private final ConverterRegistry registry;
+	private final NamingStrategy naming;
 	
-	public DynamicToProtoBufMessageConverter(EObjectPool pool, ConverterRegistry registry) {
+	public DynamicToProtoBufMessageConverter(EObjectPool pool, ConverterRegistry registry, NamingStrategy naming) {
 		super();
 		this.pool = pool;
 		this.registry = registry;
+		this.naming = naming;
 	}
 
 	/* (non-Javadoc)

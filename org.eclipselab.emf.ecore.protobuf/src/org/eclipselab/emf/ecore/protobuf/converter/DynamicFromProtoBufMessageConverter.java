@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipselab.emf.ecore.protobuf.EObjectPool;
-import org.eclipselab.emf.ecore.protobuf.internal.EPackageMapper;
+import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
 
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -42,7 +42,7 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
 			
 			Map.Entry<FieldDescriptor, Object> firstFieldAndValue = it.next();
 			
-			if(!firstFieldAndValue.getKey().getName().equals(EPackageMapper.INTERNAL_ID_FIELD)) {
+			if(!firstFieldAndValue.getKey().getName().equals(naming.getInternalIdField())) {
 				throw new IllegalArgumentException();
 			}
 			
@@ -97,17 +97,17 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
 		}
 		
 		private EObject resolveReference(Descriptor refSourceType, DynamicMessage refSource) {
-			String refTargetTypeName = ((Descriptors.EnumValueDescriptor) refSource.getField(refSourceType.findFieldByName("sub_type"))).getName();
+			String refTargetTypeName = ((Descriptors.EnumValueDescriptor) refSource.getField(refSourceType.findFieldByName(naming.getSubTypeField()))).getName();
 			
 			EClass refTargetType = (EClass) target.eClass().getEPackage().getEClassifier(refTargetTypeName);
 			EObject refTarget;
 			
-			FieldDescriptor idField = refSourceType.findFieldByName(EPackageMapper.INTERNAL_ID_FIELD);
+			FieldDescriptor idField = refSourceType.findFieldByName(naming.getInternalIdField());
 			
 			if(refSource.hasField(idField)) {
 				refTarget = pool.getObject(refTargetType, (Integer) refSource.getField(idField));
 			} else {
-				refTarget = convert((DynamicMessage) refSource.getField(refSourceType.findFieldByName(refTargetTypeName.toLowerCase())), refTargetType);
+				refTarget = convert((DynamicMessage) refSource.getField(refSourceType.findFieldByName(naming.getRefMessageField(refTargetType))), refTargetType);
 			}
 			
 			return refTarget;
@@ -120,11 +120,13 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
 
 	private final EObjectPool pool;
 	private final ConverterRegistry registry;
+	private final NamingStrategy naming;
 	
-	public DynamicFromProtoBufMessageConverter(EObjectPool pool, ConverterRegistry registry) {
+	public DynamicFromProtoBufMessageConverter(EObjectPool pool, ConverterRegistry registry, NamingStrategy naming) {
 		super();
 		this.pool = pool;
 		this.registry = registry;
+		this.naming = naming;
 	}
 
 	/* (non-Javadoc)
