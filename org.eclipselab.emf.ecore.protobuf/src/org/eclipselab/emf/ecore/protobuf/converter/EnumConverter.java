@@ -1,3 +1,17 @@
+/**
+ * <copyright>
+ *
+ * Copyright (c) 2011 Christian Kerl
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: 
+ *   Christian Kerl - Initial API and implementation
+ *
+ * </copyright>
+ */
 package org.eclipselab.emf.ecore.protobuf.converter;
 
 import org.eclipse.emf.common.util.Enumerator;
@@ -9,6 +23,7 @@ import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.Type;
 
+
 /**
  * EnumConverter provides {@link Converter.FromProtoBufScalarConverter} and
  * {@link Converter.ToProtoBufScalarConverter} implementations for arbitrary
@@ -16,37 +31,46 @@ import com.google.protobuf.Descriptors.FieldDescriptor.Type;
  * 
  * @author Christian Kerl
  */
-public class EnumConverter {
-	
-	public static class FromProtoBuf extends Converter.FromProtoBufScalarConverter {
-		@Override
-		public boolean supports(FieldDescriptor sourceType, EDataType targetType) {
-			return sourceType.getType() == Type.ENUM && targetType instanceof EEnum;
-		}
-	
-		@Override
-		public Object convert(FieldDescriptor sourceType, Object source, EDataType targetType) {
-			return doConvert((EnumValueDescriptor) source, (EEnum) targetType);
-		}
-	
-		private Object doConvert(EnumValueDescriptor source, EEnum targetType) {
-			return targetType.getEEnumLiteral(source.getName()).getInstance();
-		}
-	}
-	
-	public static class ToProtoBuf extends Converter.ToProtoBufScalarConverter {
-		@Override
-		public boolean supports(EDataType sourceType, FieldDescriptor targetType) {
-			return sourceType instanceof EEnum && targetType.getType() == Type.ENUM;
-		}
+public class EnumConverter
+{
 
-		@Override
-		public Object convert(EDataType sourceType, Object source, FieldDescriptor targetType) {
-			return doConvert((Enumerator) source, targetType.getEnumType());
-		}
-		
-		private Object doConvert(Enumerator source, EnumDescriptor targetType) {
-			return targetType.findValueByName(source.getName());
-		}
-	}
+  public static class FromProtoBuf extends Converter.FromProtoBufScalarConverter
+  {
+    @Override
+    public boolean supports(FieldDescriptor sourceType, EDataType targetType)
+    {
+      return sourceType.getType() == Type.ENUM && targetType instanceof EEnum;
+    }
+
+    @Override
+    public Object convert(FieldDescriptor sourceType, Object source, EDataType targetType)
+    {
+      return doConvert((EnumValueDescriptor)source, (EEnum)targetType);
+    }
+
+    private Object doConvert(EnumValueDescriptor source, EEnum targetType)
+    {
+      return targetType.getEEnumLiteral(source.getName()).getInstance();
+    }
+  }
+
+  public static class ToProtoBuf extends Converter.ToProtoBufScalarConverter
+  {
+    @Override
+    public boolean supports(EDataType sourceType, FieldDescriptor targetType)
+    {
+      return sourceType instanceof EEnum && targetType.getType() == Type.ENUM;
+    }
+
+    @Override
+    public Object convert(EDataType sourceType, Object source, FieldDescriptor targetType)
+    {
+      return doConvert((Enumerator)source, targetType.getEnumType());
+    }
+
+    private Object doConvert(Enumerator source, EnumDescriptor targetType)
+    {
+      return targetType.findValueByName(source.getName());
+    }
+  }
 }
