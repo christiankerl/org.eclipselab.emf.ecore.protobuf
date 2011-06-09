@@ -26,7 +26,6 @@ import org.eclipse.emf.ecore.EEnum;
  */
 public interface NamingStrategy
 {
-
   String getInternalIdField();
 
   String getSubTypeField();
@@ -39,7 +38,13 @@ public interface NamingStrategy
 
   boolean isRefMessage(String name);
 
+  String getRefMessage();
+  
   String getRefMessage(EClass eClass);
 
+  String getQualifiedMessage(EClass eClass);
+  String getQualifiedRefMessage(EClass eClass);
+  
   String getRefMessageField(EClass eClass);
+  String getRefMessageExtensionField(EClass eSuperClass, EClass eClass);
 }

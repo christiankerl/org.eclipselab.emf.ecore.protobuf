@@ -16,6 +16,7 @@ package org.eclipselab.emf.ecore.protobuf.mapper;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipselab.emf.ecore.protobuf.util.EcoreUtil2;
 
 
 /**
@@ -59,7 +60,7 @@ public class DefaultNamingStrategy implements NamingStrategy
   @Override
   public String getRefMessage(EClass eClass)
   {
-    return getMessage(eClass) + "Ref";
+    return getMessage(eClass) + ".Ref";
   }
 
   @Override
@@ -74,5 +75,35 @@ public class DefaultNamingStrategy implements NamingStrategy
   public boolean isRefMessage(String name)
   {
     return name.endsWith("Ref");
+  }
+
+  @Override
+  public String getRefMessage()
+  {
+    return "Ref";
+  }
+
+  @Override
+  public String getQualifiedMessage(EClass eClass)
+  {
+    String pbPackage = EcoreUtil2.getRootPackage(eClass).getName();
+    String pbMessage = getMessage(eClass);
+  
+  return String.format(".%s.%s", pbPackage, pbMessage);
+  }
+
+  @Override
+  public String getQualifiedRefMessage(EClass eClass)
+  {
+    String pbPackage = EcoreUtil2.getRootPackage(eClass).getName();
+    String pbMessage = getRefMessage(eClass);
+    
+    return String.format(".%s.%s", pbPackage, pbMessage);
+  }
+
+  @Override
+  public String getRefMessageExtensionField(EClass eSuperClass, EClass eClass)
+  {
+    return String.format("%s_%s", getRefMessageField(eSuperClass), getRefMessageField(eClass));
   }
 }
