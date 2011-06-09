@@ -28,10 +28,6 @@ public interface NamingStrategy
 {
   String getInternalIdField();
 
-  String getSubTypeField();
-
-  String getSubTypeEnum();
-
   String getMessage(EClass eClass);
 
   String getEnum(EEnum eEnum);

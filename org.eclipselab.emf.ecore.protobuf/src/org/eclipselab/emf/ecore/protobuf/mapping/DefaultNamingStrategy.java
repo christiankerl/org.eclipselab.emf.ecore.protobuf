@@ -34,18 +34,6 @@ public class DefaultNamingStrategy implements NamingStrategy
   }
 
   @Override
-  public String getSubTypeField()
-  {
-    return "subtype";
-  }
-
-  @Override
-  public String getSubTypeEnum()
-  {
-    return "SubType";
-  }
-
-  @Override
   public String getMessage(EClass eClass)
   {
     return eClass.getName();
