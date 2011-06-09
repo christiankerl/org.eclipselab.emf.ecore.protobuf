@@ -14,6 +14,8 @@
  */
 package org.eclipselab.emf.ecore.protobuf;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -21,6 +23,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Author;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Book;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Library;
@@ -79,11 +82,8 @@ public class ProtobufResourceImplTest
     resource.load(dataInput, null);
     System.out.println((System.nanoTime() - start) / 10.0e5);
 
-    lib = (Library)resource.getContents().get(0);
+    Library loadedLib = (Library) resource.getContents().get(0);
 
-    System.out.println(lib);
-    System.out.println(lib.getAuthors());
-    System.out.println(lib.getBooks());
-    System.out.println(lib.getBooks().get(0).getAuthor());
+    assertTrue(EcoreUtil.equals(lib, loadedLib));
   }
 }
