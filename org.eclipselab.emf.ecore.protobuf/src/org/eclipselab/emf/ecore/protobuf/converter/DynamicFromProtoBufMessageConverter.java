@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipselab.emf.ecore.protobuf.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.util.ProtobufUtil;
 
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -132,7 +133,7 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
 
     private EObject resolveReference(Descriptor refSourceType, DynamicMessage refSource, boolean containment)
     {
-      DynamicMessage fieldValue = (DynamicMessage)getFirstFieldValue(refSource);
+      DynamicMessage fieldValue = (DynamicMessage)ProtobufUtil.getFirstFieldValue(refSource);
       String refTargetTypeName = fieldValue.getDescriptorForType().getName();
 
       EClass refTargetType = (EClass)target.eClass().getEPackage().getEClassifier(refTargetTypeName);
@@ -144,7 +145,7 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
       }
       else
       {
-        refTarget = pool.getObject(refTargetType, (Integer)getFirstFieldValue(fieldValue));
+        refTarget = pool.getObject(refTargetType, (Integer)ProtobufUtil.getFirstFieldValue(fieldValue));
       }
 
       return refTarget;
@@ -184,15 +185,5 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
   public EObject convert(Descriptor sourceType, DynamicMessage source, EClass targetType)
   {
     return new ObjectConversion(source, targetType).run();
-  }
-  
-  private static Object getFirstFieldValue(DynamicMessage source)
-  {
-    if(source.getAllFields().isEmpty())
-    {
-      throw new IllegalArgumentException("The DynamicMessage is empty!");
-    }
-    
-    return source.getAllFields().entrySet().iterator().next().getValue();
   }
 }

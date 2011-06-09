@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipselab.emf.ecore.protobuf.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.util.ProtobufUtil;
 
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -40,18 +41,6 @@ import com.google.protobuf.DynamicMessage;
  */
 public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessageConverter<EObject, DynamicMessage>
 {
-  private static Descriptors.Descriptor lookup(Descriptors.FileDescriptor context, String fqn)
-  {
-    String[] elements = fqn.split("\\.");
-    
-    if(!context.getPackage().equals(elements[1]))
-    {
-      throw new IllegalArgumentException("Dependency lookup not yet supported!");
-    }
-    
-    return context.findMessageTypeByName(elements[2]);
-  }
-  
   private final class ObjectConversion
   {
     private final EClass sourceType;
@@ -172,7 +161,7 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
     {      
       DynamicMessage.Builder refTarget = DynamicMessage.newBuilder(refTargetType);
       // lookup message defining extension for 'refTargetType'
-      Descriptors.Descriptor refTargetExtension = lookup(refTargetType.getFile(), naming.getQualifiedMessage(refSourceType));
+      Descriptors.Descriptor refTargetExtension = ProtobufUtil.getMessageTypeByName(refTargetType, naming.getQualifiedMessage(refSourceType));
       // lookup extension field
       FieldDescriptor refTargetField = refTargetExtension.findFieldByName(naming.getRefMessageExtensionField(refType, refSourceType));
       
