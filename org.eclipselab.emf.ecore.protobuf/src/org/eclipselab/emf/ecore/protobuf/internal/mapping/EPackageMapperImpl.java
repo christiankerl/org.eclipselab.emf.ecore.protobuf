@@ -16,8 +16,8 @@ package org.eclipselab.emf.ecore.protobuf.internal.mapping;
 
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipselab.emf.ecore.protobuf.mapper.EPackageMapper;
-import org.eclipselab.emf.ecore.protobuf.mapper.MapperRegistry;
+import org.eclipselab.emf.ecore.protobuf.mapping.EPackageMapper;
+import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;

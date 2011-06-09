@@ -17,8 +17,8 @@ package org.eclipselab.emf.ecore.protobuf.internal.mapping;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
-import org.eclipselab.emf.ecore.protobuf.mapper.BasicEClassifierMapperImpl;
-import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapping.BasicEClassifierMapperImpl;
+import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 
 import com.google.protobuf.DescriptorProtos.EnumDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;

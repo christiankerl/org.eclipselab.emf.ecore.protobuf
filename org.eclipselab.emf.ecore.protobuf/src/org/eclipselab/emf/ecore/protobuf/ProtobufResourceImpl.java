@@ -29,9 +29,9 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicFromProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicToProtoBufMessageConverter;
-import org.eclipselab.emf.ecore.protobuf.mapper.DefaultNamingStrategy;
-import org.eclipselab.emf.ecore.protobuf.mapper.MapperRegistry;
-import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapping.DefaultNamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
+import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;

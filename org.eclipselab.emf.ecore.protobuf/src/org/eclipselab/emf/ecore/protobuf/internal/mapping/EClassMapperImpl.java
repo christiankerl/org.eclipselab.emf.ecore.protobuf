@@ -19,9 +19,9 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipselab.emf.ecore.protobuf.mapper.BasicEClassifierMapperImpl;
-import org.eclipselab.emf.ecore.protobuf.mapper.MapperRegistry;
-import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapping.BasicEClassifierMapperImpl;
+import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
+import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 
 import com.google.protobuf.DescriptorProtos.DescriptorProto;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;

@@ -16,7 +16,7 @@ package org.eclipselab.emf.ecore.protobuf.internal.mapping;
 
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
-import org.eclipselab.emf.ecore.protobuf.mapper.BasicEClassifierMapperImpl;
+import org.eclipselab.emf.ecore.protobuf.mapping.BasicEClassifierMapperImpl;
 
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;

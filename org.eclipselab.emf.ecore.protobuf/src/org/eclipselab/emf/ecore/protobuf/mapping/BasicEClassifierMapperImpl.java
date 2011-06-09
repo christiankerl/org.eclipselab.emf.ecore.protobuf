@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.mapper;
+package org.eclipselab.emf.ecore.protobuf.mapping;
 
 import org.eclipse.emf.ecore.EClassifier;
 

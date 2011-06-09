@@ -12,9 +12,9 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.mapper;
+package org.eclipselab.emf.ecore.protobuf.mapping;
 
-public interface ReferenceMapper<SourceType, ContextType> extends MapperRegistry.Element<SourceType> 
+public interface Mapper<SourceType, ContextType> extends MapperRegistry.Element<SourceType> 
 {    
-  void mapReference(SourceType source, ContextType context);
+  void map(SourceType source, ContextType context);
 }

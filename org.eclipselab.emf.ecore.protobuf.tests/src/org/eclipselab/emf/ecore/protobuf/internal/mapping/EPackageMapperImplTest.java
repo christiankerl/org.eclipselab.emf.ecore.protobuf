@@ -15,8 +15,8 @@
 package org.eclipselab.emf.ecore.protobuf.internal.mapping;
 
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipselab.emf.ecore.protobuf.mapper.DefaultNamingStrategy;
-import org.eclipselab.emf.ecore.protobuf.mapper.MapperRegistry;
+import org.eclipselab.emf.ecore.protobuf.mapping.DefaultNamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 import org.eclipselab.emf.ecore.protobuf.tests.EPackageBuilder;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
 import org.eclipselab.emf.ecore.protobuf.util.DescriptorDebugStringBuilder;

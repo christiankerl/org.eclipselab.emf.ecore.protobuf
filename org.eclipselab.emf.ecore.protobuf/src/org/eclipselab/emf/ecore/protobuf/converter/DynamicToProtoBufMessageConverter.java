@@ -24,7 +24,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipselab.emf.ecore.protobuf.EObjectPool;
-import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.util.ProtobufUtil;
 
 import com.google.protobuf.Descriptors;
