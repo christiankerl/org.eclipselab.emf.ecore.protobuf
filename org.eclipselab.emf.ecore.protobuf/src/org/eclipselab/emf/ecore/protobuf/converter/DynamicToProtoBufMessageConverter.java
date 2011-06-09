@@ -40,6 +40,18 @@ import com.google.protobuf.DynamicMessage;
  */
 public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessageConverter<EObject, DynamicMessage>
 {
+  private static Descriptors.Descriptor lookup(Descriptors.FileDescriptor context, String fqn)
+  {
+    String[] elements = fqn.split("\\.");
+    
+    if(!context.getPackage().equals(elements[1]))
+    {
+      throw new IllegalArgumentException("Dependency lookup not yet supported!");
+    }
+    
+    return context.findMessageTypeByName(elements[2]);
+  }
+  
   private final class ObjectConversion
   {
     private final EClass sourceType;
@@ -127,7 +139,7 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
 
           for (EObject refValue : refValues)
           {
-            fieldValues.add(createReference(refValue.eClass(), refValue, field.getMessageType(), ref.isContainment()));
+            fieldValues.add(createReference(ref.getEReferenceType(), refValue.eClass(), refValue, field.getMessageType(), ref.isContainment()));
           }
 
           fieldValue = fieldValues;
@@ -136,35 +148,49 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
         {
           EObject refValue = (EObject)refRawValue;
 
-          fieldValue = createReference(refValue.eClass(), refValue, field.getMessageType(), ref.isContainment());
+          fieldValue = createReference(ref.getEReferenceType(), refValue.eClass(), refValue, field.getMessageType(), ref.isContainment());
         }
 
         set(field, fieldValue);
       }
     }
 
+    /**
+     * @param refType The type of the {@link EReference} ({@link EReference#getEReferenceType()})
+     * @param refSourceType The type of the actual object stored in the reference
+     * @param refSource The actual object stored in the reference
+     * @param refTargetType The *.Ref ProtoBuf message type
+     * @param containment Whether the {@link EReference} is a containment ({@link EReference#isContainment()})
+     * @return
+     */
     private DynamicMessage createReference(
+      EClass refType,
       EClass refSourceType,
       EObject refSource,
       Descriptors.Descriptor refTargetType,
       boolean containment)
-    {
+    {      
       DynamicMessage.Builder refTarget = DynamicMessage.newBuilder(refTargetType);
-
-      refTarget.setField(
-        refTargetType.findFieldByName(naming.getSubTypeField()),
-        refTargetType.getEnumTypes().get(0).findValueByName(naming.getMessage(refSourceType)));
-
+      // lookup message defining extension for 'refTargetType'
+      Descriptors.Descriptor refTargetExtension = lookup(refTargetType.getFile(), naming.getQualifiedMessage(refSourceType));
+      // lookup extension field
+      FieldDescriptor refTargetField = refTargetExtension.findFieldByName(naming.getRefMessageExtensionField(refType, refSourceType));
+      
+      DynamicMessage refTargetFieldValue;
+      
       if (containment)
       {
-        FieldDescriptor refTargetField = refTargetType.findFieldByName(naming.getRefMessageField(refSourceType));
-        refTarget.setField(refTargetField, convert(refSource, refTargetField.getMessageType()));
+        refTargetFieldValue = convert(refSource, refTargetField.getMessageType());
       }
       else
       {
-        refTarget.setField(refTargetType.findFieldByName(naming.getInternalIdField()), pool.getId(refSource));
+        refTargetFieldValue = DynamicMessage.newBuilder(refTargetExtension)
+          .setField(refTargetExtension.findFieldByName(naming.getInternalIdField()), pool.getId(refSource))
+          .build();
       }
-
+      
+      refTarget.setField(refTargetField, refTargetFieldValue);
+      
       return refTarget.build();
     }
 

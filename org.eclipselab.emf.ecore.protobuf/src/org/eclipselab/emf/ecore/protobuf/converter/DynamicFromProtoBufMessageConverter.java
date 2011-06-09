@@ -75,11 +75,11 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
 
         if (feature instanceof EAttribute)
         {
-          createAttribute((EAttribute)feature, fieldAndValue.getKey(), fieldAndValue.getValue());
+          toAttributeValue((EAttribute)feature, fieldAndValue.getKey(), fieldAndValue.getValue());
         }
         else
         {
-          createReference((EReference)feature, fieldAndValue.getKey(), fieldAndValue.getValue());
+          toReferenceValue((EReference)feature, fieldAndValue.getKey(), fieldAndValue.getValue());
         }
       }
 
@@ -87,7 +87,7 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
     }
 
     @SuppressWarnings("unchecked")
-    private void createAttribute(EAttribute attr, FieldDescriptor field, Object fieldRawValue)
+    private void toAttributeValue(EAttribute attr, FieldDescriptor field, Object fieldRawValue)
     {
       EDataType attrType = attr.getEAttributeType();
 
@@ -110,7 +110,7 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
     }
 
     @SuppressWarnings("unchecked")
-    private void createReference(EReference ref, FieldDescriptor field, Object fieldRawValue)
+    private void toReferenceValue(EReference ref, FieldDescriptor field, Object fieldRawValue)
     {
       if (ref.isMany())
       {
@@ -119,35 +119,32 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
 
         for (DynamicMessage fieldValue : fieldValues)
         {
-          refValues.add(resolveReference(fieldValue.getDescriptorForType(), fieldValue));
+          refValues.add(resolveReference(fieldValue.getDescriptorForType(), fieldValue, ref.isContainment()));
         }
       }
       else
       {
         DynamicMessage fieldValue = (DynamicMessage)fieldRawValue;
 
-        target.eSet(ref, resolveReference(fieldValue.getDescriptorForType(), fieldValue));
+        target.eSet(ref, resolveReference(fieldValue.getDescriptorForType(), fieldValue, ref.isContainment()));
       }
     }
 
-    private EObject resolveReference(Descriptor refSourceType, DynamicMessage refSource)
+    private EObject resolveReference(Descriptor refSourceType, DynamicMessage refSource, boolean containment)
     {
-      String refTargetTypeName = ((Descriptors.EnumValueDescriptor)refSource.getField(refSourceType.findFieldByName(naming.getSubTypeField()))).getName();
+      DynamicMessage fieldValue = (DynamicMessage)getFirstFieldValue(refSource);
+      String refTargetTypeName = fieldValue.getDescriptorForType().getName();
 
       EClass refTargetType = (EClass)target.eClass().getEPackage().getEClassifier(refTargetTypeName);
       EObject refTarget;
-
-      FieldDescriptor idField = refSourceType.findFieldByName(naming.getInternalIdField());
-
-      if (refSource.hasField(idField))
+      
+      if (containment)
       {
-        refTarget = pool.getObject(refTargetType, (Integer)refSource.getField(idField));
+        refTarget = convert(fieldValue, refTargetType);
       }
       else
       {
-        refTarget = convert(
-          (DynamicMessage)refSource.getField(refSourceType.findFieldByName(naming.getRefMessageField(refTargetType))),
-          refTargetType);
+        refTarget = pool.getObject(refTargetType, (Integer)getFirstFieldValue(fieldValue));
       }
 
       return refTarget;
@@ -187,5 +184,15 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
   public EObject convert(Descriptor sourceType, DynamicMessage source, EClass targetType)
   {
     return new ObjectConversion(source, targetType).run();
+  }
+  
+  private static Object getFirstFieldValue(DynamicMessage source)
+  {
+    if(source.getAllFields().isEmpty())
+    {
+      throw new IllegalArgumentException("The DynamicMessage is empty!");
+    }
+    
+    return source.getAllFields().entrySet().iterator().next().getValue();
   }
 }

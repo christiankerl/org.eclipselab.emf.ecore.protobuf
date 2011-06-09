@@ -29,14 +29,16 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicFromProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicToProtoBufMessageConverter;
-import org.eclipselab.emf.ecore.protobuf.internal.EPackageMapper;
 import org.eclipselab.emf.ecore.protobuf.mapper.DefaultNamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapper.MapperRegistry;
 import org.eclipselab.emf.ecore.protobuf.mapper.NamingStrategy;
 
 import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.ExtensionRegistry;
 
 
 /**
@@ -49,9 +51,8 @@ public class ProtobufResourceImpl extends ResourceImpl
   private static final Descriptors.FileDescriptor[] NO_DEPENDENCIES = new Descriptors.FileDescriptor [0];
 
   private final NamingStrategy naming = new DefaultNamingStrategy();
-  private final ConverterRegistry registry = new ConverterRegistry();
-
-  private EPackageMapper ePackageMapper = new EPackageMapper(naming);
+  private final ConverterRegistry converters = new ConverterRegistry();
+  private final MapperRegistry mappers = new MapperRegistry(naming);
 
   public ProtobufResourceImpl()
   {
@@ -70,15 +71,18 @@ public class ProtobufResourceImpl extends ResourceImpl
 
     Map<EPackage, Descriptors.FileDescriptor> ePackages = new HashMap<EPackage, Descriptors.FileDescriptor>();
 
-    DynamicToProtoBufMessageConverter toProtoBuf = new DynamicToProtoBufMessageConverter(new EObjectPool(), registry, naming);
+    DynamicToProtoBufMessageConverter toProtoBuf = new DynamicToProtoBufMessageConverter(new EObjectPool(), converters, naming);
 
     for (EObject eObject : getContents())
     {
       EClass eClass = eObject.eClass();
+      EPackage ePackage = eClass.getEPackage();
 
-      if (!ePackages.containsKey(eClass.getEPackage()))
+      if (!ePackages.containsKey(ePackage))
       {
-        DescriptorProtos.FileDescriptorProto pbPackage = ePackageMapper.map(eClass.getEPackage());
+        FileDescriptorSet.Builder files = FileDescriptorSet.newBuilder();
+        mappers.find(ePackage).map(ePackage, files);
+        DescriptorProtos.FileDescriptorProto pbPackage = files.getFile(0); 
 
         resource.addEpackageBuilder().setUri(eClass.getEPackage().getNsURI()).setDefinition(pbPackage);
 
@@ -95,8 +99,10 @@ public class ProtobufResourceImpl extends ResourceImpl
       Descriptors.FileDescriptor pbPackage = ePackages.get(eClass.getEPackage());
       Descriptors.Descriptor pbClass = pbPackage.findMessageTypeByName(eClass.getName());
 
+      DynamicMessage data = toProtoBuf.convert(eObject, pbClass);
+      
       resource.addEobjectBuilder().setEpackageIndex(0).setEclassIndex(pbClass.getIndex()).setData(
-        toProtoBuf.convert(eObject, pbClass).toByteString());
+        data.toByteString());
     }
 
     outputStream.write(resource.build().toByteArray());
@@ -107,8 +113,8 @@ public class ProtobufResourceImpl extends ResourceImpl
   {
     EcoreProtos.EResourceProto resource = EcoreProtos.EResourceProto.parseFrom(inputStream);
 
-    DynamicFromProtoBufMessageConverter converter = new DynamicFromProtoBufMessageConverter(new EObjectPool(), registry, naming);
-
+    DynamicFromProtoBufMessageConverter converter = new DynamicFromProtoBufMessageConverter(new EObjectPool(), converters, naming);
+    
     for (EcoreProtos.EObjectProto pbObject : resource.getEobjectList())
     {
       EcoreProtos.EPackageProto pbEpackage = resource.getEpackage(pbObject.getEpackageIndex());
@@ -124,9 +130,20 @@ public class ProtobufResourceImpl extends ResourceImpl
       {
         throw new IOWrappedException(e);
       }
-
+      
+      ExtensionRegistry registry = ExtensionRegistry.newInstance();
+      
+      for(Descriptors.Descriptor pbClass : pbPackage.getMessageTypes())
+      {
+        for(Descriptors.FieldDescriptor pbExtension : pbClass.getExtensions())
+        {
+          registry.add(pbExtension, DynamicMessage.getDefaultInstance(pbClass));
+        }
+      }
+      
       Descriptors.Descriptor pbClass = pbPackage.getMessageTypes().get(pbObject.getEclassIndex());
-      DynamicMessage pbData = DynamicMessage.parseFrom(pbClass, pbObject.getData());
+      DynamicMessage pbData = DynamicMessage.parseFrom(pbClass, pbObject.getData(), registry);
+      
       EClass eClass = (EClass)ePackage.getEClassifier(pbClass.getName());
 
       getContents().add(converter.convert(pbData, eClass));
