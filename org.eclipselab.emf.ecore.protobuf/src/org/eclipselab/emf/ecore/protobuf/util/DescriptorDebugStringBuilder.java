@@ -16,6 +16,7 @@ package org.eclipselab.emf.ecore.protobuf.util;
 
 import java.util.Arrays;
 
+import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
@@ -30,7 +31,6 @@ import com.google.protobuf.Descriptors.FileDescriptor;
  */
 public class DescriptorDebugStringBuilder
 {
-
   private StringBuilder content;
   private int depth;
 
@@ -87,8 +87,23 @@ public class DescriptorDebugStringBuilder
       build(pbField);
     }
 
-    // TODO extension ranges
-    // TODO extensions
+    // somewhat hacky
+    for(DescriptorProtos.DescriptorProto.ExtensionRange pbExtensionRange : pbMessage.toProto().getExtensionRangeList())
+    {
+      int start = pbExtensionRange.getStart();
+      int end = pbExtensionRange.getEnd();
+      
+      prefix().append("extensions %s to %s;", start, (end < Integer.MAX_VALUE ? end : "max")).nl();
+    }
+    
+    for(FieldDescriptor pbExtension : pbMessage.getExtensions()) 
+    {
+      prefix().append("extend .%s {", pbExtension.getContainingType().getFullName()).nl();
+      depth++;
+      build(pbExtension);
+      depth--;
+      prefix().append("}").nl();
+    }
 
     depth--;
 
