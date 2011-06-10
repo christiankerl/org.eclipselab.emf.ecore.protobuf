@@ -66,8 +66,8 @@ public class ProtobufResourceImplTest
     lib.getAuthors().add(author);
     lib.getBooks().add(book);
 
-    resource.getContents().add(lib);
-
+    resource.getContents().add(EcoreUtil.copy(lib));
+    
     ByteArrayOutputStream dataOutput = new ByteArrayOutputStream(1024);
 
     long start = System.nanoTime();
@@ -83,7 +83,7 @@ public class ProtobufResourceImplTest
     System.out.println((System.nanoTime() - start) / 10.0e5);
 
     Library loadedLib = (Library) resource.getContents().get(0);
-
+    
     assertTrue(EcoreUtil.equals(lib, loadedLib));
   }
 }
