@@ -18,12 +18,19 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipselab.emf.ecore.protobuf.mapping.BasicEClassifierMapperImpl;
+import org.eclipselab.emf.ecore.protobuf.mapping.EClassifierMapper;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 
 import com.google.protobuf.DescriptorProtos.EnumDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 
+/**
+ * EEnumMapperImpl provides an {@link EClassifierMapper} implementation for
+ * mapping {@link EEnum} to {@link EnumDescriptorProto}.
+ * 
+ * @author Christian Kerl
+ */
 public class EEnumMapperImpl extends BasicEClassifierMapperImpl<EEnum>
 {
   private final NamingStrategy naming;

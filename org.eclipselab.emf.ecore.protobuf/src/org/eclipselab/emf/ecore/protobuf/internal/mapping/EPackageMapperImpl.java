@@ -16,12 +16,20 @@ package org.eclipselab.emf.ecore.protobuf.internal.mapping;
 
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipselab.emf.ecore.protobuf.mapping.EClassifierMapper;
 import org.eclipselab.emf.ecore.protobuf.mapping.EPackageMapper;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 
+/**
+ * EPackageMapperImpl provides the default {@link EPackageMapper} implementation
+ * using a {@link MapperRegistry} to find {@link EClassifierMapper}s for the
+ * {@link EPackage#getEClassifiers()}.
+ * 
+ * @author Christian Kerl
+ */
 public class EPackageMapperImpl implements EPackageMapper
 {
   private final MapperRegistry registry;

@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipselab.emf.ecore.protobuf.mapping.BasicEClassifierMapperImpl;
+import org.eclipselab.emf.ecore.protobuf.mapping.EClassifierMapper;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 
@@ -27,6 +28,12 @@ import com.google.protobuf.DescriptorProtos.DescriptorProto;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 
+/**
+ * EClassMapperImpl provides an {@link EClassifierMapper} implementation for
+ * mapping {@link EClass} to {@link DescriptorProto}.
+ * 
+ * @author Christian Kerl
+ */
 public class EClassMapperImpl extends BasicEClassifierMapperImpl<EClass>
 {
   private static class MappingData extends AdapterImpl

@@ -17,10 +17,17 @@ package org.eclipselab.emf.ecore.protobuf.internal.mapping;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipselab.emf.ecore.protobuf.mapping.BasicEClassifierMapperImpl;
+import org.eclipselab.emf.ecore.protobuf.mapping.EClassifierMapper;
 
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 
+/**
+ * DefaultEDataTypeMapperImpl provides an {@link EClassifierMapper} implementation for
+ * mapping {@link EDataType}s to {@link FieldDescriptorProto.Type#TYPE_STRING}.
+ * 
+ * @author Christian Kerl
+ */
 public class DefaultEDataTypeMapperImpl extends BasicEClassifierMapperImpl<EDataType>
 {
   @Override
