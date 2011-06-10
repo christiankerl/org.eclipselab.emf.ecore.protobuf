@@ -14,6 +14,11 @@
  */
 package org.eclipselab.emf.ecore.protobuf.mapping;
 
+/**
+ * ReferenceMapper maps a reference to SourceType to its representation in the ContextType.
+ * 
+ * @author Christian Kerl
+ */
 public interface ReferenceMapper<SourceType, ContextType> extends MapperRegistry.Element<SourceType> 
 {    
   void mapReference(SourceType source, ContextType context);

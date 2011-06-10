@@ -19,6 +19,13 @@ import org.eclipse.emf.ecore.EClassifier;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 
+/**
+ * EClassifierMapper  is a {@link Mapper}, which maps an {@link EClassifier} to its representation
+ * as child of a given {@link FileDescriptorProto}. It also is a {@link ReferenceMapper}, which maps a
+ * reference to an {@link EClassifier} into a {@link FieldDescriptorProto}.
+ * 
+ * @author Christian Kerl
+ */
 public interface EClassifierMapper extends 
   Mapper<EClassifier, FileDescriptorProto.Builder>, 
   ReferenceMapper<EClassifier, FieldDescriptorProto.Builder>

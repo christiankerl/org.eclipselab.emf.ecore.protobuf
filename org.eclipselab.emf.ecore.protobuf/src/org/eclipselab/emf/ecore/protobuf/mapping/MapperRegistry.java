@@ -25,6 +25,12 @@ import org.eclipselab.emf.ecore.protobuf.internal.mapping.EEnumMapperImpl;
 import org.eclipselab.emf.ecore.protobuf.internal.mapping.EPackageMapperImpl;
 import org.eclipselab.emf.ecore.protobuf.internal.mapping.EcoreEDataTypeMapperImpl;
 
+/**
+ * MapperRegistry provides methods to find special {@link Mapper}s for different
+ * source types.
+ * 
+ * @author Christian Kerl
+ */
 public class MapperRegistry 
 {
   public static interface Element<Type>
@@ -43,11 +49,23 @@ public class MapperRegistry
     eClassifierMappers.add(new DefaultEDataTypeMapperImpl());
   }
   
+  /**
+   * Finds the {@link EPackageMapper} supporting the given {@link EPackage}.
+   * 
+   * @param ePackage
+   * @return
+   */
   public EPackageMapper find(EPackage ePackage)
   {
     return ePackageMapper;
   }
   
+  /**
+   * Finds the {@link EClassifierMapper} supporting the given {@link EClassifier}.
+   * 
+   * @param eClassifier
+   * @return
+   */
   public EClassifierMapper find(EClassifier eClassifier)
   {
     for(EClassifierMapper mapper : eClassifierMappers)

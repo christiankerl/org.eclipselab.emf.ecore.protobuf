@@ -19,6 +19,15 @@ import org.eclipse.emf.ecore.EClassifier;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 
+/**
+ * BasicEClassifierMapperImpl provides a base class for an {@link EClassifierMapper} implementation for 
+ * an {@link EClassifier} subclass. Subclasses have to implement {@link EClassifierMapper#supports(EClassifier)}
+ * so that if it returns true casting the given {@link EClassifier} to SourceType is safe.
+ * 
+ * @param <SourceType> The subclass of {@link EClassifier} this {@link EClassifierMapper} supports
+ * 
+ * @author Christian Kerl
+ */
 public abstract class BasicEClassifierMapperImpl<SourceType extends EClassifier> implements EClassifierMapper
 {
   @Override

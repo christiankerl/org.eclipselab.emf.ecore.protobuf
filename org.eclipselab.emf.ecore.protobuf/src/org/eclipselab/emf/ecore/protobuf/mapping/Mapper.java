@@ -14,6 +14,12 @@
  */
 package org.eclipselab.emf.ecore.protobuf.mapping;
 
+/**
+ * Mapper maps some SourceType to another representation, which is a child of some ContextType.
+ * This allows to map the SourceType to more than one object in the target representation.
+ * 
+ * @author Christian Kerl
+ */
 public interface Mapper<SourceType, ContextType> extends MapperRegistry.Element<SourceType> 
 {    
   void map(SourceType source, ContextType context);

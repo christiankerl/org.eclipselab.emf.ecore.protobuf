@@ -16,8 +16,14 @@ package org.eclipselab.emf.ecore.protobuf.mapping;
 
 import org.eclipse.emf.ecore.EPackage;
 
-import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
+import com.google.protobuf.DescriptorProtos;
 
-public interface EPackageMapper extends Mapper<EPackage, FileDescriptorSet.Builder> 
+/**
+ * EPackageMapper is a {@link Mapper}, which maps an {@link EPackage} to a {@link DescriptorProtos.FileDescriptorProto}
+ * as child of a given {@link DescriptorProtos.FileDescriptorSet}.
+ * 
+ * @author Christian Kerl
+ */
+public interface EPackageMapper extends Mapper<EPackage, DescriptorProtos.FileDescriptorSet.Builder> 
 {
 }
