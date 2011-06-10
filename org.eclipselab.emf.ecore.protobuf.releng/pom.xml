@@ -19,8 +19,6 @@
 		<maven>3.0</maven>
 	</prerequisites>	
 	<modules>
-		<module>../com.google.protobuf/</module>
-		
 		<module>../org.eclipselab.emf.ecore.protobuf/</module>
 		<module>../org.eclipselab.emf.ecore.protobuf.tests/</module>
 		
