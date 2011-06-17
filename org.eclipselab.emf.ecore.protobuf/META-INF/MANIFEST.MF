@@ -7,3 +7,4 @@ Require-Bundle: org.eclipse.emf.ecore;bundle-version="2.7.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.google.protobuf
+Export-Package: org.eclipselab.emf.ecore.protobuf
