@@ -76,7 +76,7 @@ public class MapperRegistry
       }
     }
 
-    throw new IllegalArgumentException();
+    throw MappingException.causeMissingMapper(eClassifier);
   }
   
   
