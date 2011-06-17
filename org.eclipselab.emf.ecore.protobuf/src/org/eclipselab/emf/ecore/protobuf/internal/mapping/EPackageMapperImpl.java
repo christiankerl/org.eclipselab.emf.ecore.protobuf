@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipselab.emf.ecore.protobuf.mapping.EClassifierMapper;
 import org.eclipselab.emf.ecore.protobuf.mapping.EPackageMapper;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
+import org.eclipselab.emf.ecore.protobuf.util.EcoreUtil2;
 
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
@@ -52,7 +53,7 @@ public class EPackageMapperImpl implements EPackageMapper
     FileDescriptorProto.Builder pbPackage = pbPackages.addFileBuilder();
     pbPackage.setPackage(ePackage.getName());
     
-    for(EClassifier eClassifier : ePackage.getEClassifiers())
+    for(EClassifier eClassifier : EcoreUtil2.getAllClassifiersFromPackageHierarchy(ePackage))
     {
       registry
         .find(eClassifier)
