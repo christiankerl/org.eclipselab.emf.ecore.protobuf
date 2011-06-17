@@ -39,8 +39,13 @@ public class DescriptorDebugStringBuilder
     content = new StringBuilder();
     depth = 0;
 
-    // TODO dependencies
+    for(FileDescriptor pbDependency : pbFile.getDependencies())
+    {
+      append("import \"%s\"; // package %s", pbDependency.getName(), pbDependency.getPackage()).nl();
+    }
 
+    nl();
+    
     if (!pbFile.getPackage().isEmpty())
     {
       append("package %s;", pbFile.getPackage()).nl().nl();
