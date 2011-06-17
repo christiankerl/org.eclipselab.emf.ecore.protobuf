@@ -149,7 +149,7 @@ public class EClassMapperImpl extends BasicEClassifierMapperImpl<EClass>
   
   private void createFields(EClass eClass, DescriptorProto.Builder pbMessage)
   {
-    for(EStructuralFeature eFeature : eClass.getEStructuralFeatures())
+    for(EStructuralFeature eFeature : eClass.getEAllStructuralFeatures())
     {
       if(shouldIgnoreFeature(eFeature)) continue;
       
