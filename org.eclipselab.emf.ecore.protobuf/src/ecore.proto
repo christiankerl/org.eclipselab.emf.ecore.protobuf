@@ -5,7 +5,8 @@ option java_outer_classname = "EcoreProtos";
 
 message EPackageProto {
 	required string uri = 1;
-	optional .google.protobuf.FileDescriptorProto definition = 2;
+	repeated int32 dependency = 2;
+	optional .google.protobuf.FileDescriptorProto definition = 3;
 }
 
 message EResourceProto {
