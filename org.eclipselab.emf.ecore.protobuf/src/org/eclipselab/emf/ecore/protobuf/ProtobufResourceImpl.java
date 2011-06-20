@@ -77,8 +77,7 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
-  // TODO: maybe this is not the best name
-  private static class PbPackageExporter
+  private static class ProtobufPackageDumper
   {
     private MapperRegistry mappers;
     private EcoreProtos.EResourceProto.Builder resource;
@@ -86,7 +85,7 @@ public class ProtobufResourceImpl extends ResourceImpl
     
     private Set<EPackage> packagesCurrentlyLoading;
     
-    public PbPackageExporter(MapperRegistry mappers, EcoreProtos.EResourceProto.Builder resource)
+    public ProtobufPackageDumper(MapperRegistry mappers, EcoreProtos.EResourceProto.Builder resource)
     {
       this.mappers = mappers;
       this.resource = resource;
@@ -156,12 +155,12 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
-  private static class PbPackageImporter
+  private static class ProtobufPackageLoader
   {
     private Descriptors.FileDescriptor[] pbPackages;
     private ExtensionRegistry pbExtensionRegistry;
     
-    public PbPackageImporter(EcoreProtos.EResourceProto resource)
+    public ProtobufPackageLoader(EcoreProtos.EResourceProto resource)
     {
       initialize(resource);
     }
@@ -252,7 +251,7 @@ public class ProtobufResourceImpl extends ResourceImpl
   private void internalDoSave(OutputStream outputStream, Map< ? , ? > options) throws IOException
   {
     EcoreProtos.EResourceProto.Builder resource = EcoreProtos.EResourceProto.newBuilder();
-    PbPackageExporter ePackages = new PbPackageExporter(mappers, resource);
+    ProtobufPackageDumper ePackages = new ProtobufPackageDumper(mappers, resource);
     
     DynamicToProtoBufMessageConverter toProtoBuf = new DynamicToProtoBufMessageConverter(new EObjectPool(), converters, naming);
 
@@ -294,7 +293,7 @@ public class ProtobufResourceImpl extends ResourceImpl
   private void internalDoLoad(InputStream inputStream, Map< ? , ? > options) throws IOException
   {
     EcoreProtos.EResourceProto resource = EcoreProtos.EResourceProto.parseFrom(inputStream);
-    PbPackageImporter pbPackages = new PbPackageImporter(resource);
+    ProtobufPackageLoader pbPackages = new ProtobufPackageLoader(resource);
     
     DynamicFromProtoBufMessageConverter fromProtoBuf = new DynamicFromProtoBufMessageConverter(new EObjectPool(), converters, naming);
     
