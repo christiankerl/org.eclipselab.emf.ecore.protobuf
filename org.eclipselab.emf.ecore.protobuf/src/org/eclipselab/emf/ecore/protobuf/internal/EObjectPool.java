@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf;
+package org.eclipselab.emf.ecore.protobuf.internal;
 
 import java.util.HashMap;
 import java.util.Map;

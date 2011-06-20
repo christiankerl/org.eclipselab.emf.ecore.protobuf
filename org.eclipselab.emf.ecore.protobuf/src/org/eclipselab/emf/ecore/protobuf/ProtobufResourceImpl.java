@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicFromProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicToProtoBufMessageConverter;
+import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.DefaultNamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 import org.eclipselab.emf.ecore.protobuf.mapping.MappingException;
