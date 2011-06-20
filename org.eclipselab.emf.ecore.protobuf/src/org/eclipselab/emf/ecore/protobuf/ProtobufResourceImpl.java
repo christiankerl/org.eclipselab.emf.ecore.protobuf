@@ -83,14 +83,14 @@ public class ProtobufResourceImpl extends ResourceImpl
     private EcoreProtos.EResourceProto.Builder resource;
     private Map<EPackage, PbPackageEntry> packages;
     
-    private Set<EPackage> packagesCurrentlyLoading;
+    private Set<EPackage> packagesBeingAdded;
     
     public ProtobufPackageDumper(MapperRegistry mappers, EcoreProtos.EResourceProto.Builder resource)
     {
       this.mappers = mappers;
       this.resource = resource;
       this.packages = new HashMap<EPackage, PbPackageEntry>();
-      this.packagesCurrentlyLoading = new HashSet<EPackage>();
+      this.packagesBeingAdded = new HashSet<EPackage>();
     }
     
     public PbPackageEntry get(EPackage ePackage)
@@ -107,12 +107,12 @@ public class ProtobufResourceImpl extends ResourceImpl
     {
       EPackageDependencyAnalyzer dependencyAnalyzer = EPackageDependencyAnalyzer.get(ePackage);
       
-      if(packagesCurrentlyLoading.contains(ePackage))
+      if(packagesBeingAdded.contains(ePackage))
       {
         throw MappingException.causeDependencyCycle();
       }
       
-      packagesCurrentlyLoading.add(ePackage);
+      packagesBeingAdded.add(ePackage);
       
       List<EPackage> eDependencies = dependencyAnalyzer.getDependencies();
       
@@ -151,7 +151,7 @@ public class ProtobufResourceImpl extends ResourceImpl
         throw new MappingException(e);
       }
       
-      packagesCurrentlyLoading.remove(ePackage);
+      packagesBeingAdded.remove(ePackage);
     }
   }
   
