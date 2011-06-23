@@ -65,6 +65,6 @@ public class EEnumMapperImpl extends BasicEClassifierMapperImpl<EEnum>
   protected void doMapReference(EEnum eEnum, FieldDescriptorProto.Builder pbField)
   {
     pbField.setType(FieldDescriptorProto.Type.TYPE_ENUM);
-    pbField.setTypeName(naming.getEnum(eEnum));
+    pbField.setTypeName(naming.getQualifiedEnum(eEnum));
   }
 }

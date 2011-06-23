@@ -94,4 +94,13 @@ public class DefaultNamingStrategy implements NamingStrategy
   {
     return String.format("%s_%s", getRefMessageField(eSuperClass), getRefMessageField(eClass));
   }
+
+  @Override
+  public String getQualifiedEnum(EEnum eEnum)
+  {
+    String pbPackage = EcoreUtil2.getRootPackage(eEnum).getName();
+    String pbEnum = getEnum(eEnum);
+  
+    return String.format(".%s.%s", pbPackage, pbEnum);
+  }
 }

@@ -32,6 +32,8 @@ public interface NamingStrategy
 
   String getEnum(EEnum eEnum);
 
+  String getQualifiedEnum(EEnum eEnum);
+  
   boolean isRefMessage(String name);
 
   String getRefMessage();
@@ -43,4 +45,5 @@ public interface NamingStrategy
   
   String getRefMessageField(EClass eClass);
   String getRefMessageExtensionField(EClass eSuperClass, EClass eClass);
+
 }
