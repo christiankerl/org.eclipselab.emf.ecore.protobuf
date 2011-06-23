@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipselab.emf.ecore.protobuf.mapping.BasicEClassifierMapperImpl;
 import org.eclipselab.emf.ecore.protobuf.mapping.EClassifierMapper;
+import org.eclipselab.emf.ecore.protobuf.mapping.MappingException;
 
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto.Builder;
@@ -84,7 +85,7 @@ public class EcoreEDataTypeMapperImpl extends BasicEClassifierMapperImpl<EDataTy
         pbField.setType(FieldDescriptorProto.Type.TYPE_INT64);
         break;
       default:
-        throw new IllegalArgumentException();
+        throw MappingException.causeMissingMapper(eDataType);
     }    
   }
 }
