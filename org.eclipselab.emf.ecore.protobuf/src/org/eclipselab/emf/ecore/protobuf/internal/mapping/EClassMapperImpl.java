@@ -166,8 +166,7 @@ public class EClassMapperImpl extends BasicEClassifierMapperImpl<EClass>
   
   private boolean shouldIgnoreFeature(EStructuralFeature feature)
   {
-    // TODO: is this right?
-    return feature.isTransient() || feature.isVolatile() || feature.isDerived();
+    return feature.isTransient();
   }
 
   private FieldDescriptorProto.Label getFieldLabel(EStructuralFeature feature)
