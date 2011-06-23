@@ -14,6 +14,10 @@
  */
 package org.eclipselab.emf.ecore.protobuf.internal.mapping;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -33,10 +37,32 @@ import com.google.protobuf.DescriptorProtos.FileDescriptorProto.Builder;
  */
 public class EcoreEDataTypeMapperImpl extends BasicEClassifierMapperImpl<EDataType>
 {
+  private Set<Integer> supportedEClassifierIds = new HashSet<Integer>(Arrays.asList(
+    EcorePackage.EBOOLEAN, 
+    EcorePackage.EBOOLEAN_OBJECT, 
+    EcorePackage.ECHAR, 
+    EcorePackage.ECHARACTER_OBJECT, 
+    EcorePackage.EBYTE, 
+    EcorePackage.EBYTE_OBJECT, 
+    EcorePackage.ESHORT, 
+    EcorePackage.ESHORT_OBJECT, 
+    EcorePackage.EINT, 
+    EcorePackage.EINTEGER_OBJECT, 
+    EcorePackage.ELONG, 
+    EcorePackage.ELONG_OBJECT, 
+    EcorePackage.EFLOAT, 
+    EcorePackage.EFLOAT_OBJECT, 
+    EcorePackage.EDOUBLE, 
+    EcorePackage.EDOUBLE_OBJECT, 
+    EcorePackage.EBYTE_ARRAY, 
+    EcorePackage.ESTRING, 
+    EcorePackage.EDATE
+  ));
+  
   @Override
   public boolean supports(EClassifier eClassifier)
   {
-    return eClassifier instanceof EDataType && EcorePackage.eINSTANCE == eClassifier.getEPackage();
+    return eClassifier instanceof EDataType && EcorePackage.eINSTANCE == eClassifier.getEPackage() && supportedEClassifierIds.contains(eClassifier.getClassifierID());
   }
 
   @Override
