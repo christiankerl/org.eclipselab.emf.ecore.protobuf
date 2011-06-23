@@ -171,7 +171,7 @@ public class ProtobufResourceImpl extends ResourceImpl
   {
     private Descriptors.FileDescriptor[] pbPackages;
     private ExtensionRegistry pbExtensionRegistry;
-    private Map<Descriptors.FileDescriptor, EPackage> packages;
+    private Map<Descriptors.FileDescriptor, EPackage> ePackageLookup;
     
     public ProtobufPackageLoader(EcoreProtos.EResourceProto resource)
     {
@@ -192,14 +192,14 @@ public class ProtobufResourceImpl extends ResourceImpl
     @Override
     public EClass lookup(Descriptors.Descriptor sourceType)
     {
-      return (EClass)packages.get(sourceType.getFile()).getEClassifier(sourceType.getName());
+      return (EClass)EcoreUtil2.getClassifierFromPackageHierarchy(ePackageLookup.get(sourceType.getFile()), sourceType.getName());
     }
     
     private void initialize(EcoreProtos.EResourceProto resource)
     {
       pbExtensionRegistry = ExtensionRegistry.newInstance();
       pbPackages = new Descriptors.FileDescriptor[resource.getEpackageCount()];
-      packages = new HashMap<Descriptors.FileDescriptor, EPackage>(resource.getEpackageCount());
+      ePackageLookup = new HashMap<Descriptors.FileDescriptor, EPackage>(resource.getEpackageCount());
       
       for(int idx = 0; idx < pbPackages.length; idx++)
       {
@@ -229,7 +229,7 @@ public class ProtobufResourceImpl extends ResourceImpl
           throw new MappingException(e);
         }
         
-        packages.put(pbPackages[pbPackageIdx], getResourceSet().getPackageRegistry().getEPackage(pbPackage.getUri()));
+        ePackageLookup.put(pbPackages[pbPackageIdx], getResourceSet().getPackageRegistry().getEPackage(pbPackage.getUri()));
         
         for(Descriptors.Descriptor pbMessage : pbPackages[pbPackageIdx].getMessageTypes())
         {

@@ -62,4 +62,21 @@ public class EcoreUtil2
     
     return result;
   }
+  
+  public static EClassifier getClassifierFromPackageHierarchy(EPackage eRootPackage, String eClassifierName)
+  {
+    EClassifier result = null;
+    Queue<EPackage> ePackages = new ArrayDeque<EPackage>();
+    ePackages.add(eRootPackage);
+    
+    while(!ePackages.isEmpty() && result == null)
+    {
+      EPackage ePackage = ePackages.poll();
+      ePackages.addAll(ePackage.getESubpackages());
+      
+      result = ePackage.getEClassifier(eClassifierName);
+    }
+    
+    return result;
+  }
 }
