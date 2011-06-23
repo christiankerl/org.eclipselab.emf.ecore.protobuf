@@ -134,9 +134,8 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
     private EObject resolveReference(Descriptor refSourceType, DynamicMessage refSource, boolean containment)
     {
       DynamicMessage fieldValue = (DynamicMessage)ProtobufUtil.getFirstFieldValue(refSource);
-      String refTargetTypeName = fieldValue.getDescriptorForType().getName();
-
-      EClass refTargetType = (EClass)target.eClass().getEPackage().getEClassifier(refTargetTypeName);
+      
+      EClass refTargetType = getMappingContext().lookup(fieldValue.getDescriptorForType());
       EObject refTarget;
       
       if (containment)

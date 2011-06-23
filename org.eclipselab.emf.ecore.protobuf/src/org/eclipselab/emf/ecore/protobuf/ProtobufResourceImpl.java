@@ -30,6 +30,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipselab.emf.ecore.protobuf.converter.Converter;
+import org.eclipselab.emf.ecore.protobuf.converter.Converter.MappingContext;
 import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicFromProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.converter.DynamicToProtoBufMessageConverter;
@@ -78,17 +80,15 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
-  private static class ProtobufPackageDumper
+  private class ProtobufPackageDumper implements MappingContext<EClass, Descriptors.Descriptor>
   {
-    private MapperRegistry mappers;
     private EcoreProtos.EResourceProto.Builder resource;
     private Map<EPackage, PbPackageEntry> packages;
     
     private Set<EPackage> packagesBeingAdded;
     
-    public ProtobufPackageDumper(MapperRegistry mappers, EcoreProtos.EResourceProto.Builder resource)
+    public ProtobufPackageDumper(EcoreProtos.EResourceProto.Builder resource)
     {
-      this.mappers = mappers;
       this.resource = resource;
       this.packages = new HashMap<EPackage, PbPackageEntry>();
       this.packagesBeingAdded = new HashSet<EPackage>();
@@ -103,6 +103,17 @@ public class ProtobufResourceImpl extends ResourceImpl
       
       return packages.get(ePackage);
     }
+
+    @Override
+    public Descriptors.Descriptor lookup(EClass sourceType)
+    {
+      return lookup(get(EcoreUtil2.getRootPackage(sourceType)), sourceType);
+    }
+    
+    public Descriptors.Descriptor lookup(PbPackageEntry pbPackageEntry, EClass sourceType)
+    {
+      return pbPackageEntry.getPbPackage().findMessageTypeByName(naming.getMessage(sourceType));
+    } 
 
     private void add(EPackage ePackage)
     {
@@ -156,30 +167,39 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
-  private static class ProtobufPackageLoader
+  private class ProtobufPackageLoader implements Converter.MappingContext<Descriptors.Descriptor, EClass>
   {
     private Descriptors.FileDescriptor[] pbPackages;
     private ExtensionRegistry pbExtensionRegistry;
+    private Map<Descriptors.FileDescriptor, EPackage> packages;
     
     public ProtobufPackageLoader(EcoreProtos.EResourceProto resource)
     {
       initialize(resource);
     }
-
-    public Descriptors.FileDescriptor get(int index)
+    
+    public Descriptors.Descriptor get(int pbPackageIndex, int pbMessageIndex)
     {
-      return pbPackages[index];
+      return pbPackages[pbPackageIndex].getMessageTypes().get(pbMessageIndex);
     }
+    
     
     public ExtensionRegistry getExtentionRegistry()
     {
       return pbExtensionRegistry;
+    }
+
+    @Override
+    public EClass lookup(Descriptors.Descriptor sourceType)
+    {
+      return (EClass)packages.get(sourceType.getFile()).getEClassifier(sourceType.getName());
     }
     
     private void initialize(EcoreProtos.EResourceProto resource)
     {
       pbExtensionRegistry = ExtensionRegistry.newInstance();
       pbPackages = new Descriptors.FileDescriptor[resource.getEpackageCount()];
+      packages = new HashMap<Descriptors.FileDescriptor, EPackage>(resource.getEpackageCount());
       
       for(int idx = 0; idx < pbPackages.length; idx++)
       {
@@ -208,6 +228,8 @@ public class ProtobufResourceImpl extends ResourceImpl
         {
           throw new MappingException(e);
         }
+        
+        packages.put(pbPackages[pbPackageIdx], getResourceSet().getPackageRegistry().getEPackage(pbPackage.getUri()));
         
         for(Descriptors.Descriptor pbMessage : pbPackages[pbPackageIdx].getMessageTypes())
         {
@@ -252,19 +274,18 @@ public class ProtobufResourceImpl extends ResourceImpl
   private void internalDoSave(OutputStream outputStream, Map< ? , ? > options) throws IOException
   {
     EcoreProtos.EResourceProto.Builder resource = EcoreProtos.EResourceProto.newBuilder();
-    ProtobufPackageDumper ePackages = new ProtobufPackageDumper(mappers, resource);
+    ProtobufPackageDumper ePackages = new ProtobufPackageDumper(resource);
     
     DynamicToProtoBufMessageConverter toProtoBuf = new DynamicToProtoBufMessageConverter(new EObjectPool(), converters, naming);
-
+    toProtoBuf.setMappingContext(ePackages);
+    
     for (EObject eObject : getContents())
     {
       EClass eClass = eObject.eClass();
       EPackage ePackage = EcoreUtil2.getRootPackage(eClass);
 
       PbPackageEntry pbPackageEntry = ePackages.get(ePackage);
-      
-      Descriptors.FileDescriptor pbPackage = pbPackageEntry.getPbPackage();
-      Descriptors.Descriptor pbClass = pbPackage.findMessageTypeByName(eClass.getName());
+      Descriptors.Descriptor pbClass = ePackages.lookup(pbPackageEntry, eClass);
 
       DynamicMessage data = toProtoBuf.convert(eObject, pbClass);
       
@@ -297,20 +318,17 @@ public class ProtobufResourceImpl extends ResourceImpl
     ProtobufPackageLoader pbPackages = new ProtobufPackageLoader(resource);
     
     DynamicFromProtoBufMessageConverter fromProtoBuf = new DynamicFromProtoBufMessageConverter(new EObjectPool(), converters, naming);
+    fromProtoBuf.setMappingContext(pbPackages);
     
     for (EcoreProtos.EObjectProto pbObject : resource.getEobjectList())
     {
-      EcoreProtos.EPackageProto pbEpackage = resource.getEpackage(pbObject.getEpackageIndex());
-      EPackage ePackage = getResourceSet().getPackageRegistry().getEPackage(pbEpackage.getUri());
-
-      Descriptors.FileDescriptor pbPackage = pbPackages.get(pbObject.getEpackageIndex());
-            
-      Descriptors.Descriptor pbClass = pbPackage.getMessageTypes().get(pbObject.getEclassIndex());
-      DynamicMessage pbData = DynamicMessage.parseFrom(pbClass, pbObject.getData(), pbPackages.getExtentionRegistry());
+      DynamicMessage pbData = DynamicMessage.parseFrom(
+        pbPackages.get(pbObject.getEpackageIndex(), pbObject.getEclassIndex()), 
+        pbObject.getData(), 
+        pbPackages.getExtentionRegistry()
+      );
       
-      EClass eClass = (EClass)ePackage.getEClassifier(pbClass.getName());
-
-      getContents().add(fromProtoBuf.convert(pbData, eClass));
+      getContents().add(fromProtoBuf.convert(pbData));
     }
   }
 }

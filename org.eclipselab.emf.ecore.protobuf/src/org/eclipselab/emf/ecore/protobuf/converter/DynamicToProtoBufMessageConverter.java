@@ -25,7 +25,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
-import org.eclipselab.emf.ecore.protobuf.util.ProtobufUtil;
 
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -161,7 +160,7 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
     {      
       DynamicMessage.Builder refTarget = DynamicMessage.newBuilder(refTargetType);
       // lookup message defining extension for 'refTargetType'
-      Descriptors.Descriptor refTargetExtension = ProtobufUtil.getMessageTypeByName(refTargetType, naming.getQualifiedMessage(refSourceType));
+      Descriptors.Descriptor refTargetExtension = getMappingContext().lookup(refSourceType);
       // lookup extension field
       FieldDescriptor refTargetField = refTargetExtension.findFieldByName(naming.getRefMessageExtensionField(refType, refSourceType));
       

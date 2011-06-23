@@ -19,8 +19,8 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 
 import com.google.protobuf.Descriptors;
-import com.google.protobuf.Message;
 import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Message;
 
 
 /**
@@ -55,6 +55,18 @@ public interface Converter<Source, SourceType, Target, TargetType>
    */
   Target convert(SourceType sourceType, Source source, TargetType targetType);
 
+  public interface MappingContext<SourceType, TargetType>
+  {
+    TargetType lookup(SourceType sourceType);
+  }
+  
+  public interface ConverterWithMappingContext<Source, SourceType, Target, TargetType> extends Converter<Source, SourceType, Target, TargetType>
+  {
+    void setMappingContext(MappingContext<SourceType, TargetType> context);
+    
+    MappingContext<SourceType, TargetType> getMappingContext();
+  }
+  
   /**
    * A FromProtoBufMessageConverter converts from a ProtoBuf {@link Message} to
    * an Ecore {@link EObject}.
@@ -63,12 +75,33 @@ public interface Converter<Source, SourceType, Target, TargetType>
    */
   abstract class FromProtoBufMessageConverter<SourceType extends Message, TargetType extends EObject>
     implements
-      Converter<SourceType, Descriptors.Descriptor, TargetType, EClass>
+      ConverterWithMappingContext<SourceType, Descriptors.Descriptor, TargetType, EClass>
   {
-    public EObject convert(SourceType source, EClass targetType)
+    private MappingContext<Descriptor, EClass> mappingContext;
+
+    @Override
+    public void setMappingContext(MappingContext<Descriptors.Descriptor, EClass> context)
+    {
+      mappingContext = context;
+    }
+    
+    @Override
+    public MappingContext<Descriptors.Descriptor, EClass> getMappingContext()
+    {
+      return mappingContext;
+    }
+    
+    public TargetType convert(SourceType source)
+    {
+      return convert(source, getMappingContext().lookup(source.getDescriptorForType()));
+    }
+    
+    public TargetType convert(SourceType source, EClass targetType)
     {
       return convert(source.getDescriptorForType(), source, targetType);
     }
+    
+    
   }
 
   /**
@@ -79,9 +112,28 @@ public interface Converter<Source, SourceType, Target, TargetType>
    */
   abstract class ToProtoBufMessageConverter<SourceType extends EObject, TargetType extends Message>
     implements
-      Converter<SourceType, EClass, TargetType, Descriptors.Descriptor>
+      ConverterWithMappingContext<SourceType, EClass, TargetType, Descriptors.Descriptor>
   {
-    public TargetType convert(SourceType source, Descriptor targetType)
+    private MappingContext<EClass, Descriptors.Descriptor> mappingContext;
+
+    @Override
+    public void setMappingContext(MappingContext<EClass, Descriptors.Descriptor> context)
+    {
+      mappingContext = context;
+    }
+    
+    @Override
+    public MappingContext<EClass, Descriptors.Descriptor> getMappingContext()
+    {
+      return mappingContext;
+    }
+    
+    public TargetType convert(SourceType source)
+    {
+      return convert(source, getMappingContext().lookup(source.eClass()));
+    }
+    
+    public TargetType convert(SourceType source, Descriptors.Descriptor targetType)
     {
       return convert(source.eClass(), source, targetType);
     }
