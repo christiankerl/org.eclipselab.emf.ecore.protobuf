@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipselab.emf.ecore.protobuf.feature_0.1.0.qualifier.jar" id="org.eclipselab.emf.ecore.protobuf.feature" version="0.1.0.qualifier">
+      <category name="org.eclipselab.emf.ecore.protobuf.category"/>
+   </feature>
+   <category-def name="org.eclipselab.emf.ecore.protobuf.category" label="EMF ProtoBuf Integration"/>
+</site>

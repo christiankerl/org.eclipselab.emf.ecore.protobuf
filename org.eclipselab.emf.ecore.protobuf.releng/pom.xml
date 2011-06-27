@@ -24,6 +24,7 @@
 		
 		<module>../org.eclipselab.emf.ecore.protobuf.feature/</module>
 		
+		<module>../org.eclipselab.emf.ecore.protobuf.releng.repository/</module>
 		<module>../org.eclipselab.emf.ecore.protobuf.releng.target/</module>
 	</modules>
 	<properties>
