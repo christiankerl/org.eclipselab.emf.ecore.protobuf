@@ -5,4 +5,9 @@ Bundle-SymbolicName: org.eclipselab.emf.ecore.protobuf.tests
 Bundle-Version: 0.1.0.qualifier
 Fragment-Host: org.eclipselab.emf.ecore.protobuf;bundle-version="0.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit;bundle-version="4.8.2"
+Require-Bundle: org.junit;bundle-version="4.8.2",
+ org.eclipse.emf.ecore.xmi;bundle-version="2.6.0"
+Bundle-ClassPath: lib/bb.jar,
+ lib/jsci-core.jar,
+ lib/mt-13.jar,
+ .
