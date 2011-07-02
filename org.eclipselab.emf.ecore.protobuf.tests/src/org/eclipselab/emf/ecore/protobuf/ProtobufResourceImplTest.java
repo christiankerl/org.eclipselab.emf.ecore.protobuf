@@ -70,17 +70,13 @@ public class ProtobufResourceImplTest
     
     ByteArrayOutputStream dataOutput = new ByteArrayOutputStream(1024);
 
-    long start = System.nanoTime();
     resource.save(dataOutput, null);
-    System.out.println((System.nanoTime() - start) / 10.0e5);
 
     resource.unload();
 
     ByteArrayInputStream dataInput = new ByteArrayInputStream(dataOutput.toByteArray());
-
-    start = System.nanoTime();
+    
     resource.load(dataInput, null);
-    System.out.println((System.nanoTime() - start) / 10.0e5);
 
     Library loadedLib = (Library) resource.getContents().get(0);
     
