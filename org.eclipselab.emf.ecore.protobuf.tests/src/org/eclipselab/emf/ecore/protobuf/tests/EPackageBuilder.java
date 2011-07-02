@@ -43,7 +43,7 @@ public class EPackageBuilder
 
       feature = parent.parent.factory.createEAttribute();
       feature.setName(name);
-      feature.setLowerBound(0);
+      feature.setLowerBound(1);
       feature.setUpperBound(1);
     }
 
@@ -101,6 +101,13 @@ public class EPackageBuilder
       return this;
     }
 
+    public EStructuralFeatureBuilder maybe()
+    {
+      feature.setLowerBound(0);
+      
+      return this;
+    }
+    
     public EClassBuilder end()
     {
       parent.eclass.getEStructuralFeatures().add(feature);
