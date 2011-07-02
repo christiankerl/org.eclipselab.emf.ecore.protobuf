@@ -114,7 +114,7 @@ public class ProtobufResourceImpl extends ResourceImpl
     {
       return pbPackageEntry.getPbPackage().findMessageTypeByName(naming.getMessage(sourceType));
     } 
-
+    
     private void add(EPackage ePackage)
     {
       EPackageDependencyAnalyzer dependencyAnalyzer = EPackageDependencyAnalyzer.get(ePackage);
@@ -270,7 +270,7 @@ public class ProtobufResourceImpl extends ResourceImpl
       throw new IOWrappedException(e);
     }
   }
-  
+    
   private void internalDoSave(OutputStream outputStream, Map< ? , ? > options) throws IOException
   {
     EcoreProtos.EResourceProto.Builder resource = EcoreProtos.EResourceProto.newBuilder();
@@ -296,7 +296,7 @@ public class ProtobufResourceImpl extends ResourceImpl
         .setData(data.toByteString());
     }
 
-    outputStream.write(resource.build().toByteArray());
+    resource.build().writeTo(outputStream);
   }
 
   @Override

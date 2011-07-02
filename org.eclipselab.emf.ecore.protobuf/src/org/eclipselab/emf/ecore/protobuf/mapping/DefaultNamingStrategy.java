@@ -14,6 +14,9 @@
  */
 package org.eclipselab.emf.ecore.protobuf.mapping;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipselab.emf.ecore.protobuf.util.EcoreUtil2;
@@ -89,10 +92,22 @@ public class DefaultNamingStrategy implements NamingStrategy
     return String.format(".%s.%s", pbPackage, pbMessage);
   }
 
+  private Map<EClass, Map<EClass, String>> cache = new HashMap<EClass, Map<EClass,String>>();
+  
   @Override
   public String getRefMessageExtensionField(EClass eSuperClass, EClass eClass)
   {
-    return String.format("%s_%s", getRefMessageField(eSuperClass), getRefMessageField(eClass));
+    if(!cache.containsKey(eSuperClass)) {
+      cache.put(eSuperClass, new HashMap<EClass, String>());
+    }
+    
+    Map<EClass, String> subCache = cache.get(eSuperClass);
+    
+    if(!subCache.containsKey(eClass)) {
+      subCache.put(eClass, String.format("%s_%s", getRefMessageField(eSuperClass), getRefMessageField(eClass)));
+    }
+    
+    return subCache.get(eClass);
   }
 
   @Override

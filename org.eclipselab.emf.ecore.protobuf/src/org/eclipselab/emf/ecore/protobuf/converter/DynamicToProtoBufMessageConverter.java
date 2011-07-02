@@ -15,7 +15,6 @@
 package org.eclipselab.emf.ecore.protobuf.converter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EAttribute;
@@ -88,12 +87,14 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
         if (attr.isMany())
         {
           @SuppressWarnings("unchecked")
-          Collection<Object> attrValues = (Collection<Object>)attrRawValue;
+          List<Object> attrValues = (List<Object>)attrRawValue;
           List<Object> fieldValues = new ArrayList<Object>();
 
-          for (Object attrValue : attrValues)
-          {
-            fieldValues.add(converter.convert(attrType, attrValue, field));
+          int size = attrValues.size();
+          
+          for(int idx = 0; idx < size; idx++)
+          {            
+            fieldValues.add(converter.convert(attrType, attrValues.get(idx), field));
           }
 
           fieldValue = fieldValues;
@@ -109,8 +110,15 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
 
     private void createReferenceFields()
     {
-      for (EReference ref : sourceType.getEAllReferences())
+      List<EReference> refs = sourceType.getEAllReferences();
+      EReference ref;
+      
+      int refSize = refs.size();
+      
+      for(int refIdx = 0; refIdx < refSize; refIdx++)
       {
+        ref = refs.get(refIdx);
+        
         if (!source.eIsSet(ref))
           continue;
 
@@ -121,12 +129,16 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
 
         if (ref.isMany())
         {
+          EObject refValue;
           @SuppressWarnings("unchecked")
-          Collection<EObject> refValues = (Collection<EObject>)refRawValue;
+          List<EObject> refValues = (List<EObject>)refRawValue;
           List<DynamicMessage> fieldValues = new ArrayList<DynamicMessage>();
-
-          for (EObject refValue : refValues)
+          
+          int size = refValues.size();
+          
+          for(int refValueIdx = 0; refValueIdx < size; refValueIdx++)
           {
+            refValue = refValues.get(refValueIdx);
             fieldValues.add(createReference(ref.getEReferenceType(), refValue.eClass(), refValue, field.getMessageType(), ref.isContainment()));
           }
 
