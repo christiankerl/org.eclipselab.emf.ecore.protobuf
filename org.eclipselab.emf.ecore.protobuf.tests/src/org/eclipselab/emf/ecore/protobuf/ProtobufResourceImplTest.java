@@ -84,6 +84,7 @@ public class ProtobufResourceImplTest
 
     Library loadedLib = (Library) resource.getContents().get(0);
     
+    assertNotSame(lib, loadedLib);
     assertTrue(EcoreUtil.equals(lib, loadedLib));
   }
 }
