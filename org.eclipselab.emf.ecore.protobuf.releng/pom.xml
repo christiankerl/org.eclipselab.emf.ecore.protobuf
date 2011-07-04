@@ -22,6 +22,9 @@
 		<module>../org.eclipselab.emf.ecore.protobuf/</module>
 		<module>../org.eclipselab.emf.ecore.protobuf.tests/</module>
 		
+		<module>../org.eclipselab.emf.codegen.protobuf/</module>
+		<module>../org.eclipselab.emf.codegen.protobuf.ui/</module>
+		
 		<module>../org.eclipselab.emf.ecore.protobuf.feature/</module>
 		
 		<module>../org.eclipselab.emf.ecore.protobuf.releng.repository/</module>
