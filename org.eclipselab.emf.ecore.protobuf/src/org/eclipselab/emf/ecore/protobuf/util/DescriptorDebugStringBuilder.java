@@ -17,6 +17,7 @@ package org.eclipselab.emf.ecore.protobuf.util;
 import java.util.Arrays;
 
 import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.DescriptorProtos.FileOptions;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
@@ -48,11 +49,24 @@ public class DescriptorDebugStringBuilder
     
     if (!pbFile.getPackage().isEmpty())
     {
-      append("package %s;", pbFile.getPackage()).nl().nl();
+      append("package %s;", pbFile.getPackage()).nl();
     }
+    
+    nl();
 
+    FileOptions options = pbFile.getOptions();
+    if(options.hasJavaPackage()) 
+    {
+      append("option java_package = \"%s\";", options.getJavaPackage()).nl();
+    }
+    if(options.hasJavaOuterClassname()) 
+    {
+      append("option java_outer_classname = \"%s\";", options.getJavaOuterClassname()).nl();
+    }
     // TODO options
 
+    nl();
+    
     for (EnumDescriptor pbEnum : pbFile.getEnumTypes())
     {
       build(pbEnum).nl();
