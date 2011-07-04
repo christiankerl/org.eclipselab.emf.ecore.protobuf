@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.eclipselab.emf.codegen.protobuf.ui.ProtobufCompiler">
+   <implementation class="org.eclipselab.emf.codegen.protobuf.ui.internal.ProtobufCompilerImpl"/>
+   <service>
+      <provide interface="org.eclipselab.emf.codegen.protobuf.ProtobufCompiler"/>
+   </service>
+</scr:component>
