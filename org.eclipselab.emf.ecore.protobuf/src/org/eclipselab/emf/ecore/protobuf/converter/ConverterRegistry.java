@@ -14,12 +14,16 @@
  */
 package org.eclipselab.emf.ecore.protobuf.converter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EObject;
 
 import com.google.protobuf.Descriptors;
+import com.google.protobuf.Message;
 
 
 public class ConverterRegistry
@@ -35,6 +39,18 @@ public class ConverterRegistry
     new EcoreScalarConverter.FromProtoBuf(),
     new DefaultScalarConverter.FromProtoBuf());
 
+  private List<Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject>> fromProtobufMessageConverters = new ArrayList<Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject>>();
+  
+  public void register(Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> fromProtobufMessageConverter)
+  {
+    fromProtobufMessageConverters.add(fromProtobufMessageConverter);
+    
+    if(fromProtobufMessageConverter instanceof Converter.WithRegistry)
+    {
+      ((Converter.WithRegistry) fromProtobufMessageConverter).setRegistry(this);
+    }
+  }
+  
   public Converter.ToProtoBufScalarConverter find(EDataType sourceType, Descriptors.FieldDescriptor targetType)
   {
     for (Converter.ToProtoBufScalarConverter converter : toProtoBufScalarConverters)
@@ -58,6 +74,19 @@ public class ConverterRegistry
       }
     }
 
+    throw new IllegalArgumentException();
+  }
+  
+  public Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> find(Descriptors.Descriptor sourceType, EClass targetType)
+  {
+    for(Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> converter : fromProtobufMessageConverters)
+    {
+      if(converter.supports(sourceType, targetType))
+      {
+        return converter;
+      }
+    }
+    
     throw new IllegalArgumentException();
   }
 }
