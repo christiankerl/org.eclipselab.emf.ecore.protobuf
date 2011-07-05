@@ -15,12 +15,12 @@
 package org.eclipselab.emf.ecore.protobuf.util;
 
 import com.google.protobuf.Descriptors;
-import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.Message;
 
 public class ProtobufUtil
 {
 
-  public static Object getFirstFieldValue(DynamicMessage pbMessage)
+  public static Object getFirstFieldValue(Message pbMessage)
   {
     if(pbMessage.getAllFields().isEmpty())
     {
