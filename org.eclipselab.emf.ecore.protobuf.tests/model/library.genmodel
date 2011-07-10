@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipselab.emf.ecore.protobuf.tests/src"
-    modelPluginID="org.eclipselab.emf.ecore.protobuf.tests" modelName="Library" importerID="org.eclipse.emf.importer.ecore"
-    bundleManifest="false" complianceLevel="6.0" copyrightFields="false" classNamePattern="">
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="&lt;copyright>&#xD;&#xA;Copyright (c) 2011 Christian Kerl&#xD;&#xA;All rights reserved. This program and the accompanying materials&#xD;&#xA;are made available under the terms of the Eclipse Public License v1.0&#xD;&#xA;which accompanies this distribution, and is available at&#xD;&#xA;http://www.eclipse.org/legal/epl-v10.html&#xD;&#xA; &#xD;&#xA;Contributors: &#xD;&#xA;  Christian Kerl - Initial API and implementation&#xD;&#xA;&lt;/copyright>"
+    modelDirectory="/org.eclipselab.emf.ecore.protobuf.tests/src" modelPluginID="org.eclipselab.emf.ecore.protobuf.tests"
+    modelName="Library" importerID="org.eclipse.emf.importer.ecore" bundleManifest="false"
+    complianceLevel="6.0" copyrightFields="false" classNamePattern="">
   <foreignModel>library.ecore</foreignModel>
   <genPackages prefix="Library" basePackage="org.eclipselab.emf.ecore.protobuf.tests"
       resource="Basic" disposableProviderFactory="true" contentTypeIdentifier="" ecorePackage="library.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="library.ecore#//Rating">
+      <genEnumLiterals ecoreEnumLiteral="library.ecore#//Rating/NO_RATING"/>
+      <genEnumLiterals ecoreEnumLiteral="library.ecore#//Rating/GOOD"/>
+      <genEnumLiterals ecoreEnumLiteral="library.ecore#//Rating/MEDIUM"/>
+      <genEnumLiterals ecoreEnumLiteral="library.ecore#//Rating/BAD"/>
+    </genEnums>
     <genClasses ecoreClass="library.ecore#//Library">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute library.ecore#//Library/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference library.ecore#//Library/authors"/>
@@ -15,6 +22,7 @@
     <genClasses ecoreClass="library.ecore#//Book">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute library.ecore#//Book/name"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference library.ecore#//Book/author"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute library.ecore#//Book/rating"/>
     </genClasses>
     <genClasses ecoreClass="library.ecore#//Author">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute library.ecore#//Author/name"/>
