@@ -29,10 +29,13 @@ import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.util.ProtobufUtil;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 
 /**
@@ -169,6 +172,15 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
   }
 
   /* (non-Javadoc)
+   * @see org.eclipselab.emf.ecore.protobuf.converter.Converter.FromProtoBufMessageConverter#supports(com.google.protobuf.Descriptors.Descriptor)
+   */
+  @Override
+  public boolean supports(Descriptor sourceType)
+  {
+    return true;
+  }
+  
+  /* (non-Javadoc)
    * @see org.eclipselab.emf.ecore.protobuf.converter.Converter#supports(java.lang.Object, java.lang.Object)
    */
   @Override
@@ -184,5 +196,17 @@ public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufM
   public EObject convert(Descriptor sourceType, DynamicMessage source, EClass targetType)
   {
     return new ObjectConversion(source, targetType).run();
+  }
+
+  @Override
+  protected EClass getTargetType(Descriptor sourceType)
+  {
+    return getMappingContext().lookup(sourceType);
+  }
+
+  @Override
+  public DynamicMessage doLoad(Descriptor sourceType, ExtensionRegistry extensions, ByteString data) throws InvalidProtocolBufferException 
+  {
+    return DynamicMessage.parseFrom(sourceType, data, extensions);
   }
 }

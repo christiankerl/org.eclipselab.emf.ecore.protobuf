@@ -38,16 +38,28 @@ public class ConverterRegistry
     new EnumConverter.FromProtoBuf(),
     new EcoreScalarConverter.FromProtoBuf(),
     new DefaultScalarConverter.FromProtoBuf());
-
+  
+  private List<Converter.ToProtoBufMessageConverter< ? extends EObject, ? extends Message>> toProtobufMessageConverters = new ArrayList<Converter.ToProtoBufMessageConverter< ? extends EObject, ? extends Message>>();
+  
   private List<Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject>> fromProtobufMessageConverters = new ArrayList<Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject>>();
   
   public void register(Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> fromProtobufMessageConverter)
   {
-    fromProtobufMessageConverters.add(fromProtobufMessageConverter);
+    fromProtobufMessageConverters.add(0, fromProtobufMessageConverter);
     
     if(fromProtobufMessageConverter instanceof Converter.WithRegistry)
     {
       ((Converter.WithRegistry) fromProtobufMessageConverter).setRegistry(this);
+    }
+  }
+
+  public void register(Converter.ToProtoBufMessageConverter<? extends EObject, ? extends Message> toProtobufMessageConverter)
+  {
+    toProtobufMessageConverters.add(0, toProtobufMessageConverter);
+    
+    if(toProtobufMessageConverter instanceof Converter.WithRegistry)
+    {
+      ((Converter.WithRegistry) toProtobufMessageConverter).setRegistry(this);
     }
   }
   
@@ -77,11 +89,37 @@ public class ConverterRegistry
     throw new IllegalArgumentException();
   }
   
+  public Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> find(Descriptors.Descriptor sourceType)
+  {
+    for(Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> converter : fromProtobufMessageConverters)
+    {
+      if(converter.supports(sourceType))
+      {
+        return converter;
+      }
+    }
+    
+    throw new IllegalArgumentException();
+  }
+  
   public Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> find(Descriptors.Descriptor sourceType, EClass targetType)
   {
     for(Converter.FromProtoBufMessageConverter<? extends Message, ? extends EObject> converter : fromProtobufMessageConverters)
     {
       if(converter.supports(sourceType, targetType))
+      {
+        return converter;
+      }
+    }
+    
+    throw new IllegalArgumentException();
+  }
+  
+  public Converter.ToProtoBufMessageConverter<? extends EObject, ? extends Message> find(EClass sourceType)
+  {
+    for(Converter.ToProtoBufMessageConverter<? extends EObject, ? extends Message> converter : toProtobufMessageConverters)
+    {
+      if(converter.supports(sourceType))
       {
         return converter;
       }

@@ -216,7 +216,22 @@ public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessa
     this.registry = registry;
     this.naming = naming;
   }
-
+  
+  @Override
+  protected Descriptor getTargetType(EClass sourceType)
+  {
+    return getMappingContext().lookup(sourceType);
+  }
+  
+  /* (non-Javadoc)
+   * @see org.eclipselab.emf.ecore.protobuf.converter.Converter.ToProtoBufMessageConverter#supports(org.eclipse.emf.ecore.EClass)
+   */
+  @Override
+  public boolean supports(EClass sourceType)
+  {
+    return true;
+  }
+  
   /* (non-Javadoc)
    * @see org.eclipselab.emf.ecore.protobuf.converter.Converter#supports(java.lang.Object, java.lang.Object)
    */

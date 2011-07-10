@@ -32,11 +32,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipselab.emf.ecore.protobuf.converter.Converter;
 import org.eclipselab.emf.ecore.protobuf.converter.Converter.MappingContext;
+import org.eclipselab.emf.ecore.protobuf.converter.Converter.ToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
-import org.eclipselab.emf.ecore.protobuf.converter.DynamicFromProtoBufMessageConverter;
-import org.eclipselab.emf.ecore.protobuf.converter.DynamicToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.DefaultNamingStrategy;
+import org.eclipselab.emf.ecore.protobuf.mapping.EPackageMappingCache;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 import org.eclipselab.emf.ecore.protobuf.mapping.MappingException;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
@@ -48,6 +48,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.Message;
 
 
 /**
@@ -84,6 +85,7 @@ public class ProtobufResourceImpl extends ResourceImpl
   {
     private EcoreProtos.EResourceProto.Builder resource;
     private Map<EPackage, PbPackageEntry> packages;
+    private Map<Descriptors.FileDescriptor, PbPackageEntry> pbPackages;
     
     private Set<EPackage> packagesBeingAdded;
     
@@ -91,6 +93,7 @@ public class ProtobufResourceImpl extends ResourceImpl
     {
       this.resource = resource;
       this.packages = new HashMap<EPackage, PbPackageEntry>();
+      this.pbPackages = new HashMap<Descriptors.FileDescriptor, PbPackageEntry>();
       this.packagesBeingAdded = new HashSet<EPackage>();
     }
     
@@ -114,9 +117,27 @@ public class ProtobufResourceImpl extends ResourceImpl
     {
       return pbPackageEntry.getPbPackage().findMessageTypeByName(naming.getMessage(sourceType));
     } 
-    
+       
     private void add(EPackage ePackage)
     {
+      EPackageMappingCache cache = EPackageMappingCache.get(ePackage);
+      
+      if(cache != null)
+      {
+        Descriptors.FileDescriptor pbPackage = cache.getCachedDescriptor();
+        
+        resource.addEpackageBuilder()
+          .setUri(ePackage.getNsURI())
+          .setDefinition(pbPackage.toProto());
+        
+        packages.put(ePackage, new PbPackageEntry(resource.getEpackageCount() - 1, pbPackage));
+        return;
+      }
+      else
+      {
+        throw new UnsupportedOperationException();
+      }
+      /*
       EPackageDependencyAnalyzer dependencyAnalyzer = EPackageDependencyAnalyzer.get(ePackage);
       
       if(packagesBeingAdded.contains(ePackage))
@@ -164,6 +185,7 @@ public class ProtobufResourceImpl extends ResourceImpl
       }
       
       packagesBeingAdded.remove(ePackage);
+      */
     }
   }
   
@@ -244,8 +266,10 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
+  public static final String OPTION_CONVERTER_REGISTRY = "converterRegistry";
+  
   private final NamingStrategy naming = new DefaultNamingStrategy();
-  private final ConverterRegistry converters = new ConverterRegistry();
+  private ConverterRegistry converters = new ConverterRegistry();
   private final MapperRegistry mappers = new MapperRegistry(naming);
 
   public ProtobufResourceImpl()
@@ -273,11 +297,18 @@ public class ProtobufResourceImpl extends ResourceImpl
     
   private void internalDoSave(OutputStream outputStream, Map< ? , ? > options) throws IOException
   {
+    if(options.containsKey(OPTION_CONVERTER_REGISTRY))
+    {
+      converters = (ConverterRegistry)options.get(OPTION_CONVERTER_REGISTRY);
+    }
+    else
+    {
+      converters = new ConverterRegistry();
+    }
+    
     EcoreProtos.EResourceProto.Builder resource = EcoreProtos.EResourceProto.newBuilder();
     ProtobufPackageDumper ePackages = new ProtobufPackageDumper(resource);
-    
-    DynamicToProtoBufMessageConverter toProtoBuf = new DynamicToProtoBufMessageConverter(new EObjectPool(), converters, naming);
-    toProtoBuf.setMappingContext(ePackages);
+    EObjectPool pool = new EObjectPool();
     
     for (EObject eObject : getContents())
     {
@@ -287,7 +318,12 @@ public class ProtobufResourceImpl extends ResourceImpl
       PbPackageEntry pbPackageEntry = ePackages.get(ePackage);
       Descriptors.Descriptor pbClass = ePackages.lookup(pbPackageEntry, eClass);
 
-      DynamicMessage data = toProtoBuf.convert(eObject, pbClass);
+      // strange cast but who cares
+      ToProtoBufMessageConverter<EObject, Message> converter = ((ToProtoBufMessageConverter<EObject, Message>) converters.find(eClass));
+      converter.setMappingContext(ePackages);
+      converter.setObjectPool(pool);
+      
+      Message data = converter.convert(eClass, eObject, pbClass);
       
       resource
         .addEobjectBuilder()
@@ -316,19 +352,16 @@ public class ProtobufResourceImpl extends ResourceImpl
   {
     EcoreProtos.EResourceProto resource = EcoreProtos.EResourceProto.parseFrom(inputStream);
     ProtobufPackageLoader pbPackages = new ProtobufPackageLoader(resource);
-    
-    DynamicFromProtoBufMessageConverter fromProtoBuf = new DynamicFromProtoBufMessageConverter(new EObjectPool(), converters, naming);
-    fromProtoBuf.setMappingContext(pbPackages);
-    
+        
     for (EcoreProtos.EObjectProto pbObject : resource.getEobjectList())
     {
-      DynamicMessage pbData = DynamicMessage.parseFrom(
-        pbPackages.get(pbObject.getEpackageIndex(), pbObject.getEclassIndex()), 
-        pbObject.getData(), 
-        pbPackages.getExtentionRegistry()
-      );
+      Descriptors.Descriptor pbClass = pbPackages.get(pbObject.getEpackageIndex(), pbObject.getEclassIndex());
       
-      getContents().add(fromProtoBuf.convert(pbData));
+      getContents().add(
+        converters
+          .find(pbClass)
+          .loadAndConvert(pbClass, pbPackages.getExtentionRegistry(), pbObject.getData())
+      );
     }
   }
 }
