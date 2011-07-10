@@ -40,6 +40,7 @@ public class MapperRegistry
   }
 
   private final EPackageMapper ePackageMapper = new CachingEPackageMapperImpl(new EPackageMapperImpl(this));  
+  private final List<EPackageMapper> ePackageMappers = new ArrayList<EPackageMapper>();
   private final List<EClassifierMapper> eClassifierMappers = new ArrayList<EClassifierMapper>();
   
   public MapperRegistry(NamingStrategy naming)
@@ -48,6 +49,11 @@ public class MapperRegistry
     eClassifierMappers.add(new EEnumMapperImpl(naming));
     eClassifierMappers.add(new EcoreEDataTypeMapperImpl());
     eClassifierMappers.add(new DefaultEDataTypeMapperImpl());
+  }
+
+  public void register(EPackageMapper ePackageMapper)
+  {
+    ePackageMappers.add(ePackageMapper);
   }
   
   /**
@@ -58,7 +64,15 @@ public class MapperRegistry
    */
   public EPackageMapper find(EPackage ePackage)
   {
-    return ePackageMapper;
+    for(EPackageMapper ePackageMapper : ePackageMappers)
+    {
+      if(ePackageMapper.supports(ePackage))
+      {
+        return ePackageMapper;
+      }
+    }
+    
+    return this.ePackageMapper;
   }
   
   /**
@@ -79,6 +93,4 @@ public class MapperRegistry
 
     throw MappingException.causeMissingMapper(eClassifier);
   }
-  
-  
 }
