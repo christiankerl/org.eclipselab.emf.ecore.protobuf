@@ -129,7 +129,13 @@ public enum Rating implements Enumerator {
    * <!-- end-user-doc -->
    * @generated
    */
-  private static final Rating[] VALUES_ARRAY = new Rating []{ NO_RATING, GOOD, MEDIUM, BAD, };
+  private static final Rating[] VALUES_ARRAY = new Rating[]
+    {
+      NO_RATING,
+      GOOD,
+      MEDIUM,
+      BAD,
+    };
 
   /**
    * A public read-only list of all the '<em><b>Rating</b></em>' enumerators.
@@ -187,14 +193,10 @@ public enum Rating implements Enumerator {
   {
     switch (value)
     {
-      case NO_RATING_VALUE:
-        return NO_RATING;
-      case GOOD_VALUE:
-        return GOOD;
-      case MEDIUM_VALUE:
-        return MEDIUM;
-      case BAD_VALUE:
-        return BAD;
+      case NO_RATING_VALUE: return NO_RATING;
+      case GOOD_VALUE: return GOOD;
+      case MEDIUM_VALUE: return MEDIUM;
+      case BAD_VALUE: return BAD;
     }
     return null;
   }

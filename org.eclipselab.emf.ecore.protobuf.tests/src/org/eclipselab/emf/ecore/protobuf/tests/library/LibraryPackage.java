@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EReference;
  * <!-- end-user-doc -->
  * @see org.eclipselab.emf.ecore.protobuf.tests.library.LibraryFactory
  * @model kind="package"
+ *        annotation="org.eclipselab.emf.codegen.protobuf generate='true'"
  * @generated
  */
 public interface LibraryPackage extends EPackage

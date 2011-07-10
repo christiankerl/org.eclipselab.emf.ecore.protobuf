@@ -99,12 +99,10 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage
    */
   public static LibraryPackage init()
   {
-    if (isInited)
-      return (LibraryPackage)EPackage.Registry.INSTANCE.getEPackage(LibraryPackage.eNS_URI);
+    if (isInited) return (LibraryPackage)EPackage.Registry.INSTANCE.getEPackage(LibraryPackage.eNS_URI);
 
     // Obtain or create and register package
-    LibraryPackageImpl theLibraryPackage = (LibraryPackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof LibraryPackageImpl
-      ? EPackage.Registry.INSTANCE.get(eNS_URI) : new LibraryPackageImpl());
+    LibraryPackageImpl theLibraryPackage = (LibraryPackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof LibraryPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new LibraryPackageImpl());
 
     isInited = true;
 
@@ -117,6 +115,7 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage
     // Mark meta-data to indicate it can't be changed
     theLibraryPackage.freeze();
 
+  
     // Update the registry and return the package
     EPackage.Registry.INSTANCE.put(LibraryPackage.eNS_URI, theLibraryPackage);
     return theLibraryPackage;
@@ -258,8 +257,7 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage
    */
   public void createPackageContents()
   {
-    if (isCreated)
-      return;
+    if (isCreated) return;
     isCreated = true;
 
     // Create classes and their features
@@ -296,8 +294,7 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage
    */
   public void initializePackageContents()
   {
-    if (isInitialized)
-      return;
+    if (isInitialized) return;
     isInitialized = true;
 
     // Initialize package
@@ -313,128 +310,17 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage
 
     // Initialize classes and features; add operations and parameters
     initEClass(libraryEClass, Library.class, "Library", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(
-      getLibrary_Name(),
-      ecorePackage.getEString(),
-      "name",
-      null,
-      0,
-      1,
-      Library.class,
-      !IS_TRANSIENT,
-      !IS_VOLATILE,
-      IS_CHANGEABLE,
-      !IS_UNSETTABLE,
-      !IS_ID,
-      IS_UNIQUE,
-      !IS_DERIVED,
-      IS_ORDERED);
-    initEReference(
-      getLibrary_Authors(),
-      this.getAuthor(),
-      null,
-      "authors",
-      null,
-      0,
-      -1,
-      Library.class,
-      !IS_TRANSIENT,
-      !IS_VOLATILE,
-      IS_CHANGEABLE,
-      IS_COMPOSITE,
-      !IS_RESOLVE_PROXIES,
-      !IS_UNSETTABLE,
-      IS_UNIQUE,
-      !IS_DERIVED,
-      IS_ORDERED);
-    initEReference(
-      getLibrary_Books(),
-      this.getBook(),
-      null,
-      "books",
-      null,
-      0,
-      -1,
-      Library.class,
-      !IS_TRANSIENT,
-      !IS_VOLATILE,
-      IS_CHANGEABLE,
-      IS_COMPOSITE,
-      !IS_RESOLVE_PROXIES,
-      !IS_UNSETTABLE,
-      IS_UNIQUE,
-      !IS_DERIVED,
-      IS_ORDERED);
+    initEAttribute(getLibrary_Name(), ecorePackage.getEString(), "name", null, 0, 1, Library.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getLibrary_Authors(), this.getAuthor(), null, "authors", null, 0, -1, Library.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getLibrary_Books(), this.getBook(), null, "books", null, 0, -1, Library.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(bookEClass, Book.class, "Book", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(
-      getBook_Name(),
-      ecorePackage.getEString(),
-      "name",
-      null,
-      0,
-      1,
-      Book.class,
-      !IS_TRANSIENT,
-      !IS_VOLATILE,
-      IS_CHANGEABLE,
-      !IS_UNSETTABLE,
-      !IS_ID,
-      IS_UNIQUE,
-      !IS_DERIVED,
-      IS_ORDERED);
-    initEReference(
-      getBook_Author(),
-      this.getAuthor(),
-      null,
-      "author",
-      null,
-      0,
-      1,
-      Book.class,
-      !IS_TRANSIENT,
-      !IS_VOLATILE,
-      IS_CHANGEABLE,
-      !IS_COMPOSITE,
-      IS_RESOLVE_PROXIES,
-      !IS_UNSETTABLE,
-      IS_UNIQUE,
-      !IS_DERIVED,
-      IS_ORDERED);
-    initEAttribute(
-      getBook_Rating(),
-      this.getRating(),
-      "rating",
-      null,
-      0,
-      1,
-      Book.class,
-      !IS_TRANSIENT,
-      !IS_VOLATILE,
-      IS_CHANGEABLE,
-      !IS_UNSETTABLE,
-      !IS_ID,
-      IS_UNIQUE,
-      !IS_DERIVED,
-      IS_ORDERED);
+    initEAttribute(getBook_Name(), ecorePackage.getEString(), "name", null, 0, 1, Book.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getBook_Author(), this.getAuthor(), null, "author", null, 0, 1, Book.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getBook_Rating(), this.getRating(), "rating", null, 0, 1, Book.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(authorEClass, Author.class, "Author", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(
-      getAuthor_Name(),
-      ecorePackage.getEString(),
-      "name",
-      null,
-      0,
-      1,
-      Author.class,
-      !IS_TRANSIENT,
-      !IS_VOLATILE,
-      IS_CHANGEABLE,
-      !IS_UNSETTABLE,
-      !IS_ID,
-      IS_UNIQUE,
-      !IS_DERIVED,
-      IS_ORDERED);
+    initEAttribute(getAuthor_Name(), ecorePackage.getEString(), "name", null, 0, 1, Author.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Initialize enums and add enum literals
     initEEnum(ratingEEnum, Rating.class, "Rating");
@@ -445,6 +331,28 @@ public class LibraryPackageImpl extends EPackageImpl implements LibraryPackage
 
     // Create resource
     createResource(eNS_URI);
+
+    // Create annotations
+    // org.eclipselab.emf.codegen.protobuf
+    createOrgAnnotations();
+  }
+
+  /**
+   * Initializes the annotations for <b>org.eclipselab.emf.codegen.protobuf</b>.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  protected void createOrgAnnotations()
+  {
+    String source = "org.eclipselab.emf.codegen.protobuf";		
+    addAnnotation
+      (this, 
+       source, 
+       new String[] 
+       {
+       "generate", "true"
+       });
   }
 
 } //LibraryPackageImpl

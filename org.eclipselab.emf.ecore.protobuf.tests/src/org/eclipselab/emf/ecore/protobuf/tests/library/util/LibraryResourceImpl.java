@@ -15,7 +15,7 @@ import org.eclipselab.emf.ecore.protobuf.ProtobufResourceImpl;
  * The <b>Resource </b> associated with the package.
  * <!-- end-user-doc -->
  * @see org.eclipselab.emf.ecore.protobuf.tests.library.util.LibraryResourceFactoryImpl
- * @generated
+ * @generated NOT
  */
 public class LibraryResourceImpl extends ProtobufResourceImpl
 {

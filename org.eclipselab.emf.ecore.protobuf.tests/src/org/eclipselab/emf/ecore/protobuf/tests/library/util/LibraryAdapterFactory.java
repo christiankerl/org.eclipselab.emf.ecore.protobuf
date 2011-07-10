@@ -83,19 +83,16 @@ public class LibraryAdapterFactory extends AdapterFactoryImpl
       {
         return createLibraryAdapter();
       }
-
       @Override
       public Adapter caseBook(Book object)
       {
         return createBookAdapter();
       }
-
       @Override
       public Adapter caseAuthor(Author object)
       {
         return createAuthorAdapter();
       }
-
       @Override
       public Adapter defaultCase(EObject object)
       {

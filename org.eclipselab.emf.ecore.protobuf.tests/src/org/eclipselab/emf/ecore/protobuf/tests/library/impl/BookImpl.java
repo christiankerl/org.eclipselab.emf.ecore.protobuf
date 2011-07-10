@@ -210,8 +210,7 @@ public class BookImpl extends EObjectImpl implements Book
       case LibraryPackage.BOOK__NAME:
         return getName();
       case LibraryPackage.BOOK__AUTHOR:
-        if (resolve)
-          return getAuthor();
+        if (resolve) return getAuthor();
         return basicGetAuthor();
       case LibraryPackage.BOOK__RATING:
         return getRating();
@@ -293,8 +292,7 @@ public class BookImpl extends EObjectImpl implements Book
   @Override
   public String toString()
   {
-    if (eIsProxy())
-      return super.toString();
+    if (eIsProxy()) return super.toString();
 
     StringBuffer result = new StringBuffer(super.toString());
     result.append(" (name: ");

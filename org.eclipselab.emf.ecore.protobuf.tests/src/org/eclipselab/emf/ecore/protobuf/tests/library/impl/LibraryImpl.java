@@ -168,9 +168,9 @@ public class LibraryImpl extends EObjectImpl implements Library
     switch (featureID)
     {
       case LibraryPackage.LIBRARY__AUTHORS:
-        return ((InternalEList< ? >)getAuthors()).basicRemove(otherEnd, msgs);
+        return ((InternalEList<?>)getAuthors()).basicRemove(otherEnd, msgs);
       case LibraryPackage.LIBRARY__BOOKS:
-        return ((InternalEList< ? >)getBooks()).basicRemove(otherEnd, msgs);
+        return ((InternalEList<?>)getBooks()).basicRemove(otherEnd, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -211,11 +211,11 @@ public class LibraryImpl extends EObjectImpl implements Library
         return;
       case LibraryPackage.LIBRARY__AUTHORS:
         getAuthors().clear();
-        getAuthors().addAll((Collection< ? extends Author>)newValue);
+        getAuthors().addAll((Collection<? extends Author>)newValue);
         return;
       case LibraryPackage.LIBRARY__BOOKS:
         getBooks().clear();
-        getBooks().addAll((Collection< ? extends Book>)newValue);
+        getBooks().addAll((Collection<? extends Book>)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -272,8 +272,7 @@ public class LibraryImpl extends EObjectImpl implements Library
   @Override
   public String toString()
   {
-    if (eIsProxy())
-      return super.toString();
+    if (eIsProxy()) return super.toString();
 
     StringBuffer result = new StringBuffer(super.toString());
     result.append(" (name: ");

@@ -36,7 +36,7 @@ public class LibraryFactoryImpl extends EFactoryImpl implements LibraryFactory
   {
     try
     {
-      LibraryFactory theLibraryFactory = (LibraryFactory)EPackage.Registry.INSTANCE.getEFactory("http://eclipselab.org/emf/ecore/protobuf/tests/library");
+      LibraryFactory theLibraryFactory = (LibraryFactory)EPackage.Registry.INSTANCE.getEFactory("http://eclipselab.org/emf/ecore/protobuf/tests/library"); 
       if (theLibraryFactory != null)
       {
         return theLibraryFactory;
@@ -70,12 +70,9 @@ public class LibraryFactoryImpl extends EFactoryImpl implements LibraryFactory
   {
     switch (eClass.getClassifierID())
     {
-      case LibraryPackage.LIBRARY:
-        return createLibrary();
-      case LibraryPackage.BOOK:
-        return createBook();
-      case LibraryPackage.AUTHOR:
-        return createAuthor();
+      case LibraryPackage.LIBRARY: return createLibrary();
+      case LibraryPackage.BOOK: return createBook();
+      case LibraryPackage.AUTHOR: return createAuthor();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
@@ -156,8 +153,7 @@ public class LibraryFactoryImpl extends EFactoryImpl implements LibraryFactory
   public Rating createRatingFromString(EDataType eDataType, String initialValue)
   {
     Rating result = Rating.get(initialValue);
-    if (result == null)
-      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
     return result;
   }
 
