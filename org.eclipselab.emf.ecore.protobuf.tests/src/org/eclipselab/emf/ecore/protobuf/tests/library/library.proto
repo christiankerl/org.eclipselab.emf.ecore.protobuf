@@ -1,0 +1,50 @@
+
+package library;
+
+option java_package = "org.eclipselab.emf.ecore.protobuf.tests.library";
+option java_outer_classname = "LibraryProtos";
+
+enum Rating {
+  NO_RATING = 0;
+  GOOD = 1;
+  MEDIUM = 2;
+  BAD = 3;
+}
+
+message Library {
+  message Ref {
+    extensions 1 to max;
+  }
+  required int32 __id = 1;
+  optional string name = 2;
+  repeated .library.Author.Ref authors = 3;
+  repeated .library.Book.Ref books = 4;
+  extend .library.Library.Ref {
+    optional .library.Library library_library = 1;
+  }
+}
+
+message Book {
+  message Ref {
+    extensions 1 to max;
+  }
+  required int32 __id = 1;
+  optional string name = 2;
+  optional .library.Author.Ref author = 3;
+  optional .library.Rating rating = 4;
+  extend .library.Book.Ref {
+    optional .library.Book book_book = 1;
+  }
+}
+
+message Author {
+  message Ref {
+    extensions 1 to max;
+  }
+  required int32 __id = 1;
+  optional string name = 2;
+  extend .library.Author.Ref {
+    optional .library.Author author_author = 1;
+  }
+}
+
