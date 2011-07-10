@@ -26,20 +26,22 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * 
  * @author Christian Kerl
  */
-public class EObjectPool
+public final class EObjectPool
 {
-  private Integer lastId = 1;
-  private Map<EObject, Integer> objectToIdMap = new HashMap<EObject, Integer>();
-  private Map<Integer, EObject> idToObjectMap = new HashMap<Integer, EObject>();
+  private final Map<EObject, Integer> objectToIdMap = new HashMap<EObject, Integer>();
+  private final Map<Integer, EObject> idToObjectMap = new HashMap<Integer, EObject>();
 
-  public Integer getId(EObject eObject)
+  public final Integer getId(final EObject eObject)
   {
-    if (!objectToIdMap.containsKey(eObject))
+    Integer id = objectToIdMap.get(eObject);
+    
+    if(id == null)
     {
-      objectToIdMap.put(eObject, lastId++);
+      id = objectToIdMap.size();
+      objectToIdMap.put(eObject, id);
     }
-
-    return objectToIdMap.get(eObject);
+    
+    return id;
   }
 
   public EObject getObject(EClass eClass, Integer id)
