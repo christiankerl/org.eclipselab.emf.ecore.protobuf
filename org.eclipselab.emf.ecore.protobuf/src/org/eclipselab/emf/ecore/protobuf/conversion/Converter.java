@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.converter;
+package org.eclipselab.emf.ecore.protobuf.conversion;
 
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 

@@ -18,8 +18,8 @@ import java.util.Date;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipselab.emf.ecore.protobuf.converter.FromProtoBufScalarConverter;
-import org.eclipselab.emf.ecore.protobuf.converter.ToProtoBufScalarConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.FromProtoBufScalarConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.ToProtoBufScalarConverter;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor;

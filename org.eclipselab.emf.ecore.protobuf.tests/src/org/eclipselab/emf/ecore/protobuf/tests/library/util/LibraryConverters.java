@@ -15,9 +15,10 @@
 package org.eclipselab.emf.ecore.protobuf.tests.library.util;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipselab.emf.ecore.protobuf.converter.Converter;
-import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
-import org.eclipselab.emf.ecore.protobuf.converter.FromProtoBufMessageConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.Converter;
+import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
+import org.eclipselab.emf.ecore.protobuf.conversion.FromProtoBufMessageConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.ToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Author;
 import org.eclipselab.emf.ecore.protobuf.tests.library.Book;
@@ -47,19 +48,19 @@ public class LibraryConverters
     registry.register(new LibraryToProtobufConverter());
   }
   
-  public static class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Library, Library, Source, SourceType, Target, TargetType> implements Converter.WithRegistry
+  public static class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Library, Library> implements Converter.WithRegistry
   {
     private EObjectPool pool;
     
-    private FromProtoBufMessageConverter<LibraryProtos.Author, Author, Source, SourceType, Target, TargetType> authorConverter;
-    private FromProtoBufMessageConverter<LibraryProtos.Book, Book, Source, SourceType, Target, TargetType> bookConverter;
+    private FromProtoBufMessageConverter<LibraryProtos.Author, Author> authorConverter;
+    private FromProtoBufMessageConverter<LibraryProtos.Book, Book> bookConverter;
 
     @Override
     @SuppressWarnings("unchecked")
     public void setRegistry(ConverterRegistry registry)
     {
-      authorConverter = (FromProtoBufMessageConverter<LibraryProtos.Author, Author, Source, SourceType, Target, TargetType>)registry.find(LibraryProtos.Author.getDescriptor(), LibraryPackage.Literals.AUTHOR);
-      bookConverter =  (FromProtoBufMessageConverter<LibraryProtos.Book, Book, Source, SourceType, Target, TargetType>)registry.find(LibraryProtos.Book.getDescriptor(), LibraryPackage.Literals.BOOK);
+      authorConverter = (FromProtoBufMessageConverter<LibraryProtos.Author, Author>)registry.find(LibraryProtos.Author.getDescriptor(), LibraryPackage.Literals.AUTHOR);
+      bookConverter =  (FromProtoBufMessageConverter<LibraryProtos.Book, Book>)registry.find(LibraryProtos.Book.getDescriptor(), LibraryPackage.Literals.BOOK);
     }
         
     @Override
@@ -130,17 +131,17 @@ public class LibraryConverters
     }
   }
   
-  public static class LibraryToProtobufConverter extends Converter.ToProtoBufMessageConverter<Library, LibraryProtos.Library> implements Converter.WithRegistry
+  public static class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Library, LibraryProtos.Library> implements Converter.WithRegistry
   {
-    private Converter.ToProtoBufMessageConverter<Author, LibraryProtos.Author> authorConverter;
-    private Converter.ToProtoBufMessageConverter<Book, LibraryProtos.Book> bookConverter;
+    private ToProtoBufMessageConverter<Author, LibraryProtos.Author> authorConverter;
+    private ToProtoBufMessageConverter<Book, LibraryProtos.Book> bookConverter;
 
     @Override
     @SuppressWarnings("unchecked")
     public void setRegistry(ConverterRegistry registry)
     {
-      authorConverter = (Converter.ToProtoBufMessageConverter<Author, LibraryProtos.Author>)registry.find(LibraryPackage.Literals.AUTHOR);
-      bookConverter = (Converter.ToProtoBufMessageConverter<Book, LibraryProtos.Book>)registry.find(LibraryPackage.Literals.BOOK);
+      authorConverter = (ToProtoBufMessageConverter<Author, LibraryProtos.Author>)registry.find(LibraryPackage.Literals.AUTHOR);
+      bookConverter = (ToProtoBufMessageConverter<Book, LibraryProtos.Book>)registry.find(LibraryPackage.Literals.BOOK);
     }
 
     @Override
@@ -212,7 +213,7 @@ public class LibraryConverters
     }
   }
   
-  public static class AuthorFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Author, Author, Source, SourceType, Target, TargetType>
+  public static class AuthorFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Author, Author>
   {
     private EObjectPool pool;
 
@@ -248,7 +249,7 @@ public class LibraryConverters
     }
   }
   
-  public static class AuthorToProtobufConverter extends Converter.ToProtoBufMessageConverter<Author, LibraryProtos.Author>
+  public static class AuthorToProtobufConverter extends ToProtoBufMessageConverter<Author, LibraryProtos.Author>
   {    
     @Override
     public boolean supports(EClass sourceType, Descriptor targetType)
@@ -277,7 +278,7 @@ public class LibraryConverters
     }
   }
   
-  public static class BookFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Book, Book, Source, SourceType, Target, TargetType> implements Converter.WithRegistry
+  public static class BookFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Book, Book> implements Converter.WithRegistry
   {
     private EObjectPool pool;
 
@@ -358,7 +359,7 @@ public class LibraryConverters
     }
   }
   
-  public static class BookToProtobufConverter extends Converter.ToProtoBufMessageConverter<Book, LibraryProtos.Book>
+  public static class BookToProtobufConverter extends ToProtoBufMessageConverter<Book, LibraryProtos.Book>
   {    
     @Override
     public boolean supports(EClass sourceType, Descriptor targetType)

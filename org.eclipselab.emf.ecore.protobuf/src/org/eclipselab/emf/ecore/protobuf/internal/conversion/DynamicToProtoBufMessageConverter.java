@@ -22,9 +22,9 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipselab.emf.ecore.protobuf.converter.Converter;
-import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
-import org.eclipselab.emf.ecore.protobuf.converter.ToProtoBufMessageConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.Converter;
+import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
+import org.eclipselab.emf.ecore.protobuf.conversion.ToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 

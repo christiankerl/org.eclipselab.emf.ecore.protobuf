@@ -12,19 +12,19 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.converter;
+package org.eclipselab.emf.ecore.protobuf.conversion;
 
 import org.eclipse.emf.ecore.EDataType;
 
 import com.google.protobuf.Descriptors;
 
 /**
- * A FromProtoBufScalarConverter converts a scalar value from its ProtoBuf representation
- * to its Ecore representation.
+ * A ToProtoBufScalarConverter converts a scalar value from its Ecore representation
+ * to its ProtoBuf representation.
  * 
  * @author Christian Kerl
  */
-public abstract class FromProtoBufScalarConverter implements Converter<Object, Descriptors.FieldDescriptor, Object, EDataType>
+public abstract class ToProtoBufScalarConverter implements Converter<Object, EDataType, Object, Descriptors.FieldDescriptor>
 {
 
 }

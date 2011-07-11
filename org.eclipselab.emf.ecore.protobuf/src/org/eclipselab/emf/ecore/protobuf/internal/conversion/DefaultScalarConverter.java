@@ -16,8 +16,8 @@ package org.eclipselab.emf.ecore.protobuf.internal.conversion;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipselab.emf.ecore.protobuf.converter.FromProtoBufScalarConverter;
-import org.eclipselab.emf.ecore.protobuf.converter.ToProtoBufScalarConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.FromProtoBufScalarConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.ToProtoBufScalarConverter;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.Type;

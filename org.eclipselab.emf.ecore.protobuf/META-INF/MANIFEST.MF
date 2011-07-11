@@ -8,5 +8,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.google.protobuf
 Export-Package: org.eclipselab.emf.ecore.protobuf,
+ org.eclipselab.emf.ecore.protobuf.conversion,
  org.eclipselab.emf.ecore.protobuf.mapping,
  org.eclipselab.emf.ecore.protobuf.util
