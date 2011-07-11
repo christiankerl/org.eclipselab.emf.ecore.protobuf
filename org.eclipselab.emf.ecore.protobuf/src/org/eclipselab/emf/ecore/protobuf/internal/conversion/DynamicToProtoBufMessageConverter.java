@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.converter;
+package org.eclipselab.emf.ecore.protobuf.internal.conversion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,9 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipselab.emf.ecore.protobuf.converter.Converter;
+import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
+import org.eclipselab.emf.ecore.protobuf.converter.ToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 
@@ -32,12 +35,12 @@ import com.google.protobuf.DynamicMessage;
 
 
 /**
- * DynamicToProtoBufMessageConverter provides a {@link Converter.ToProtoBufMessageConverter} implementation
+ * DynamicToProtoBufMessageConverter provides a {@link ToProtoBufMessageConverter} implementation
  * based on ProtoBuf's {@link DynamicMessage}.
  * 
  * @author Christian Kerl
  */
-public class DynamicToProtoBufMessageConverter extends Converter.ToProtoBufMessageConverter<EObject, DynamicMessage>
+public class DynamicToProtoBufMessageConverter extends ToProtoBufMessageConverter<EObject, DynamicMessage>
 {
   private final class ObjectConversion
   {

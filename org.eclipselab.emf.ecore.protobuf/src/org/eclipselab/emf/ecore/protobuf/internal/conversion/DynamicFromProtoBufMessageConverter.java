@@ -12,7 +12,7 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.converter;
+package org.eclipselab.emf.ecore.protobuf.internal.conversion;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,6 +25,9 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipselab.emf.ecore.protobuf.converter.Converter;
+import org.eclipselab.emf.ecore.protobuf.converter.ConverterRegistry;
+import org.eclipselab.emf.ecore.protobuf.converter.FromProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.util.ProtobufUtil;
@@ -44,7 +47,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * 
  * @author Christian Kerl
  */
-public class DynamicFromProtoBufMessageConverter extends Converter.FromProtoBufMessageConverter<DynamicMessage, EObject>
+public class DynamicFromProtoBufMessageConverter extends FromProtoBufMessageConverter<DynamicMessage, EObject>
 {
   private final class ObjectConversion
   {

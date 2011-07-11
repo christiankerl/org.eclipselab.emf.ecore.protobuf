@@ -12,11 +12,13 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.converter;
+package org.eclipselab.emf.ecore.protobuf.internal.conversion;
 
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipselab.emf.ecore.protobuf.converter.FromProtoBufScalarConverter;
+import org.eclipselab.emf.ecore.protobuf.converter.ToProtoBufScalarConverter;
 
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
@@ -25,8 +27,8 @@ import com.google.protobuf.Descriptors.FieldDescriptor.Type;
 
 
 /**
- * EnumConverter provides {@link Converter.FromProtoBufScalarConverter} and
- * {@link Converter.ToProtoBufScalarConverter} implementations for arbitrary
+ * EnumConverter provides {@link FromProtoBufScalarConverter} and
+ * {@link ToProtoBufScalarConverter} implementations for arbitrary
  * enums. 
  * 
  * @author Christian Kerl
@@ -34,7 +36,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor.Type;
 public class EnumConverter
 {
 
-  public static class FromProtoBuf extends Converter.FromProtoBufScalarConverter
+  public static class FromProtoBuf extends FromProtoBufScalarConverter
   {
     @Override
     public boolean supports(FieldDescriptor sourceType, EDataType targetType)
@@ -54,7 +56,7 @@ public class EnumConverter
     }
   }
 
-  public static class ToProtoBuf extends Converter.ToProtoBufScalarConverter
+  public static class ToProtoBuf extends ToProtoBufScalarConverter
   {
     @Override
     public boolean supports(EDataType sourceType, FieldDescriptor targetType)

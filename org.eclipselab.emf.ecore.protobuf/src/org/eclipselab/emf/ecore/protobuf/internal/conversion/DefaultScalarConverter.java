@@ -12,18 +12,20 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.converter;
+package org.eclipselab.emf.ecore.protobuf.internal.conversion;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipselab.emf.ecore.protobuf.converter.FromProtoBufScalarConverter;
+import org.eclipselab.emf.ecore.protobuf.converter.ToProtoBufScalarConverter;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.Type;
 
 
 /**
- * DefaultScalarConverter provides {@link Converter.FromProtoBufScalarConverter} and
- * {@link Converter.ToProtoBufScalarConverter} implementations for arbitrary
+ * DefaultScalarConverter provides {@link FromProtoBufScalarConverter} and
+ * {@link ToProtoBufScalarConverter} implementations for arbitrary
  * {@link EDataType} definitions based on {@link EcoreUtil#createFromString(EDataType, String)} and
  * {@link EcoreUtil#convertToString(EDataType, Object)}. 
  * 
@@ -32,7 +34,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor.Type;
 public class DefaultScalarConverter
 {
 
-  public static class FromProtoBuf extends Converter.FromProtoBufScalarConverter
+  public static class FromProtoBuf extends FromProtoBufScalarConverter
   {
 
     @Override
@@ -48,7 +50,7 @@ public class DefaultScalarConverter
     }
   }
 
-  public static class ToProtoBuf extends Converter.ToProtoBufScalarConverter
+  public static class ToProtoBuf extends ToProtoBufScalarConverter
   {
 
     @Override

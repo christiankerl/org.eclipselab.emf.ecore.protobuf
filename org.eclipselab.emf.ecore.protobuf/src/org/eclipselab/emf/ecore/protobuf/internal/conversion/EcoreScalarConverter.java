@@ -12,20 +12,22 @@
  *
  * </copyright>
  */
-package org.eclipselab.emf.ecore.protobuf.converter;
+package org.eclipselab.emf.ecore.protobuf.internal.conversion;
 
 import java.util.Date;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipselab.emf.ecore.protobuf.converter.FromProtoBufScalarConverter;
+import org.eclipselab.emf.ecore.protobuf.converter.ToProtoBufScalarConverter;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 
 
 /**
- * EcoreScalarConverter provides {@link Converter.FromProtoBufScalarConverter} and
- * {@link Converter.ToProtoBufScalarConverter} implementations for {@link EDataType}s
+ * EcoreScalarConverter provides {@link FromProtoBufScalarConverter} and
+ * {@link ToProtoBufScalarConverter} implementations for {@link EDataType}s
  * defined in the {@link EcorePackage}.
  * 
  * @author Christian Kerl
@@ -33,7 +35,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 public class EcoreScalarConverter
 {
 
-  public static class FromProtoBuf extends Converter.FromProtoBufScalarConverter
+  public static class FromProtoBuf extends FromProtoBufScalarConverter
   {
 
     @Override
@@ -57,7 +59,7 @@ public class EcoreScalarConverter
     }
   }
 
-  public static class ToProtoBuf extends Converter.ToProtoBufScalarConverter
+  public static class ToProtoBuf extends ToProtoBufScalarConverter
   {
 
     @Override
