@@ -28,7 +28,6 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipselab.emf.ecore.protobuf.conversion.Converter;
 import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.conversion.FromProtoBufMessageConverter;
-import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 import org.eclipselab.emf.ecore.protobuf.mapping.NamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.util.ProtobufUtil;
 
@@ -47,7 +46,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * 
  * @author Christian Kerl
  */
-public class DynamicFromProtoBufMessageConverter extends FromProtoBufMessageConverter<DynamicMessage, EObject>
+public class DynamicFromProtoBufMessageConverter extends FromProtoBufMessageConverter<DynamicMessage, EObject> implements Converter.WithRegistry
 {
   private final class ObjectConversion
   {
@@ -162,16 +161,19 @@ public class DynamicFromProtoBufMessageConverter extends FromProtoBufMessageConv
     }
   }
 
-  private final EObjectPool pool;
-  private final ConverterRegistry registry;
   private final NamingStrategy naming;
+  private ConverterRegistry registry;
 
-  public DynamicFromProtoBufMessageConverter(EObjectPool pool, ConverterRegistry registry, NamingStrategy naming)
+  public DynamicFromProtoBufMessageConverter(NamingStrategy naming)
   {
     super();
-    this.pool = pool;
-    this.registry = registry;
     this.naming = naming;
+  }
+
+  @Override
+  public void setRegistry(ConverterRegistry registry)
+  {
+    this.registry = registry;
   }
 
   /* (non-Javadoc)

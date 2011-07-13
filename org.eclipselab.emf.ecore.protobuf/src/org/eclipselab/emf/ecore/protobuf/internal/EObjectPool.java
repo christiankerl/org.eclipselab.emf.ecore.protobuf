@@ -44,13 +44,16 @@ public final class EObjectPool
     return id;
   }
 
-  public EObject getObject(EClass eClass, Integer id)
+  public final EObject getObject(EClass eClass, Integer id)
   {
-    if (!idToObjectMap.containsKey(id))
+    EObject eObject = idToObjectMap.get(id);
+    
+    if (eObject == null)
     {
-      idToObjectMap.put(id, EcoreUtil.create(eClass));
+      eObject = EcoreUtil.create(eClass);
+      idToObjectMap.put(id, eObject);
     }
 
-    return idToObjectMap.get(id);
+    return eObject;
   }
 }

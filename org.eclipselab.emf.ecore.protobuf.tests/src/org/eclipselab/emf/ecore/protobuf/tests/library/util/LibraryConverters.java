@@ -49,9 +49,7 @@ public class LibraryConverters
   }
   
   public static class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Library, Library> implements Converter.WithRegistry
-  {
-    private EObjectPool pool;
-    
+  {    
     private FromProtoBufMessageConverter<LibraryProtos.Author, Author> authorConverter;
     private FromProtoBufMessageConverter<LibraryProtos.Book, Book> bookConverter;
 
@@ -62,6 +60,15 @@ public class LibraryConverters
       authorConverter = (FromProtoBufMessageConverter<LibraryProtos.Author, Author>)registry.find(LibraryProtos.Author.getDescriptor(), LibraryPackage.Literals.AUTHOR);
       bookConverter =  (FromProtoBufMessageConverter<LibraryProtos.Book, Book>)registry.find(LibraryProtos.Book.getDescriptor(), LibraryPackage.Literals.BOOK);
     }
+
+    @Override
+    public void setObjectPool(EObjectPool pool)
+    {
+      super.setObjectPool(pool);
+      
+      authorConverter.setObjectPool(pool);
+      bookConverter.setObjectPool(pool);
+    }
         
     @Override
     public boolean supports(Descriptor sourceType, EClass targetType)
@@ -70,25 +77,25 @@ public class LibraryConverters
     }
 
     @Override
-    public Library convert(Descriptor sourceType, LibraryProtos.Library source, EClass targetType)
+    public Library convert(final Descriptor sourceType, final LibraryProtos.Library source, final EClass targetType)
     {
-      Library library = (Library) pool.getObject(LibraryPackage.Literals.LIBRARY, source.getId());
+      final Library library = (Library) pool.getObject(LibraryPackage.Literals.LIBRARY, source.getId());
       
       if(source.hasName()) {
         library.setName(source.getName());
       }
       
-      int nAuthors = source.getAuthorsCount();
+      final int nAuthors = source.getAuthorsCount();
       
       for(int idxAuthor = 0; idxAuthor < nAuthors; idxAuthor++)
       {
-        LibraryProtos.Author.Ref authorRef = source.getAuthors(idxAuthor);
+        final LibraryProtos.Author.Ref authorRef = source.getAuthors(idxAuthor);
         
         if(authorRef.hasExtension(LibraryProtos.Author.authorAuthor))
         {
-          LibraryProtos.Author author = authorRef.getExtension(LibraryProtos.Author.authorAuthor);
+          final LibraryProtos.Author author = authorRef.getExtension(LibraryProtos.Author.authorAuthor);
           
-          library.getAuthors().add((Author) authorConverter.convert(author, LibraryPackage.Literals.AUTHOR));
+          library.getAuthors().add(authorConverter.convert(author, LibraryPackage.Literals.AUTHOR));
         }
         else
         {
@@ -96,17 +103,17 @@ public class LibraryConverters
         }
       }
       
-      int nBooks = source.getBooksCount();
+      final int nBooks = source.getBooksCount();
       
       for(int idxBook = 0; idxBook < nBooks; idxBook++)
       {
-        LibraryProtos.Book.Ref bookRef = source.getBooks(idxBook);
+        final LibraryProtos.Book.Ref bookRef = source.getBooks(idxBook);
         
         if(bookRef.hasExtension(LibraryProtos.Book.bookBook))
         {
-          LibraryProtos.Book book = bookRef.getExtension(LibraryProtos.Book.bookBook);
+          final LibraryProtos.Book book = bookRef.getExtension(LibraryProtos.Book.bookBook);
           
-          library.getBooks().add((Book) bookConverter.convert(book, LibraryPackage.Literals.BOOK));
+          library.getBooks().add(bookConverter.convert(book, LibraryPackage.Literals.BOOK));
         }
         // add more branches
         else
@@ -215,8 +222,6 @@ public class LibraryConverters
   
   public static class AuthorFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Author, Author>
   {
-    private EObjectPool pool;
-
     @Override
     public boolean supports(Descriptor sourceType, EClass targetType)
     {
@@ -224,9 +229,9 @@ public class LibraryConverters
     }
 
     @Override
-    public Author convert(Descriptor sourceType, LibraryProtos.Author source, EClass targetType)
+    public Author convert(final Descriptor sourceType, final LibraryProtos.Author source, final EClass targetType)
     {
-      Author author = (Author) pool.getObject(LibraryPackage.Literals.AUTHOR, source.getId());
+      final Author author = (Author) pool.getObject(LibraryPackage.Literals.AUTHOR, source.getId());
       
       if(source.hasName())
       {
@@ -280,8 +285,6 @@ public class LibraryConverters
   
   public static class BookFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Book, Book> implements Converter.WithRegistry
   {
-    private EObjectPool pool;
-
     @Override
     public void setRegistry(ConverterRegistry registry)
     {
@@ -294,9 +297,9 @@ public class LibraryConverters
     }
     
     @Override
-    public Book convert(Descriptor sourceType, LibraryProtos.Book source, EClass targetType)
+    public Book convert(final Descriptor sourceType, final LibraryProtos.Book source, final EClass targetType)
     {
-      Book book = (Book) pool.getObject(LibraryPackage.Literals.BOOK, source.getId());
+      final Book book = (Book) pool.getObject(LibraryPackage.Literals.BOOK, source.getId());
       
       if(source.hasName())
       {

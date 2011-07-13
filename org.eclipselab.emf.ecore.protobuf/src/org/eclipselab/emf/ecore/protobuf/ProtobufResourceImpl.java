@@ -31,10 +31,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipselab.emf.ecore.protobuf.conversion.Converter;
-import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
-import org.eclipselab.emf.ecore.protobuf.conversion.ToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.conversion.Converter.MappingContext;
+import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
+import org.eclipselab.emf.ecore.protobuf.conversion.FromProtoBufMessageConverter;
+import org.eclipselab.emf.ecore.protobuf.conversion.ToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
+import org.eclipselab.emf.ecore.protobuf.internal.conversion.DynamicFromProtoBufMessageConverter;
+import org.eclipselab.emf.ecore.protobuf.internal.conversion.DynamicToProtoBufMessageConverter;
 import org.eclipselab.emf.ecore.protobuf.mapping.DefaultNamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.mapping.EPackageMappingCache;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
@@ -46,7 +49,6 @@ import org.eclipselab.emf.ecore.protobuf.util.EcoreUtil2;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
-import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 
@@ -85,7 +87,6 @@ public class ProtobufResourceImpl extends ResourceImpl
   {
     private EcoreProtos.EResourceProto.Builder resource;
     private Map<EPackage, PbPackageEntry> packages;
-    private Map<Descriptors.FileDescriptor, PbPackageEntry> pbPackages;
     
     private Set<EPackage> packagesBeingAdded;
     
@@ -93,7 +94,6 @@ public class ProtobufResourceImpl extends ResourceImpl
     {
       this.resource = resource;
       this.packages = new HashMap<EPackage, PbPackageEntry>();
-      this.pbPackages = new HashMap<Descriptors.FileDescriptor, PbPackageEntry>();
       this.packagesBeingAdded = new HashSet<EPackage>();
     }
     
@@ -120,25 +120,7 @@ public class ProtobufResourceImpl extends ResourceImpl
        
     private void add(EPackage ePackage)
     {
-      EPackageMappingCache cache = EPackageMappingCache.get(ePackage);
-      
-      if(cache != null)
-      {
-        Descriptors.FileDescriptor pbPackage = cache.getCachedDescriptor();
-        
-        resource.addEpackageBuilder()
-          .setUri(ePackage.getNsURI())
-          .setDefinition(pbPackage.toProto());
-        
-        packages.put(ePackage, new PbPackageEntry(resource.getEpackageCount() - 1, pbPackage));
-        return;
-      }
-      else
-      {
-        throw new UnsupportedOperationException();
-      }
-      /*
-      EPackageDependencyAnalyzer dependencyAnalyzer = EPackageDependencyAnalyzer.get(ePackage);
+      final EPackageDependencyAnalyzer dependencyAnalyzer = EPackageDependencyAnalyzer.get(ePackage);
       
       if(packagesBeingAdded.contains(ePackage))
       {
@@ -147,45 +129,63 @@ public class ProtobufResourceImpl extends ResourceImpl
       
       packagesBeingAdded.add(ePackage);
       
-      List<EPackage> eDependencies = dependencyAnalyzer.getDependencies();
+      final List<EPackage> eDependencies = dependencyAnalyzer.getDependencies();
+      final List<Integer> pbDependencyIndices = new ArrayList<Integer>(eDependencies.size());
       
-      DescriptorProtos.FileDescriptorSet.Builder files = DescriptorProtos.FileDescriptorSet.newBuilder();
+      final EPackageMappingCache cache = EPackageMappingCache.get(ePackage);
+      Descriptors.FileDescriptor pbPackage;
       
-      mappers
-        .find(ePackage)
-        .map(ePackage, files);
-      
-      DescriptorProtos.FileDescriptorProto.Builder pbPackage = files.getFileBuilder(0);
-      
-      Descriptors.FileDescriptor[] pbDependencies = new Descriptors.FileDescriptor[eDependencies.size()];
-      List<Integer> pbDependencyIndices = new ArrayList<Integer>(eDependencies.size());
-      
-      for(int idx = 0; idx < eDependencies.size(); idx++)
+      if(cache != null)
       {
-        PbPackageEntry entry = get(eDependencies.get(idx));
-        pbDependencyIndices.add(entry.getIndex());
-        pbDependencies[idx] = entry.getPbPackage();
-        
-        pbPackage.addDependency(entry.getPbPackage().getName());
+        pbPackage = cache.getDescriptor();
+
+        for(int idx = 0; idx < eDependencies.size(); idx++)
+        {
+          PbPackageEntry entry = get(eDependencies.get(idx));
+          pbDependencyIndices.add(entry.getIndex());
+        }
       }
-      
-      resource
-        .addEpackageBuilder()
+      else
+      {
+        final DescriptorProtos.FileDescriptorSet.Builder files = DescriptorProtos.FileDescriptorSet.newBuilder();
+        
+        mappers
+          .find(ePackage)
+          .map(ePackage, files);
+        
+        final DescriptorProtos.FileDescriptorProto.Builder pbPackageProto = files.getFileBuilder(0);
+        
+        final Descriptors.FileDescriptor[] pbDependencies = new Descriptors.FileDescriptor[eDependencies.size()];
+
+        for(int idx = 0; idx < eDependencies.size(); idx++)
+        {
+          PbPackageEntry entry = get(eDependencies.get(idx));
+          pbDependencyIndices.add(entry.getIndex());
+          pbDependencies[idx] = entry.getPbPackage();
+          
+          pbPackageProto.addDependency(entry.getPbPackage().getName());
+        }
+        
+        try
+        {
+          pbPackage = Descriptors.FileDescriptor.buildFrom(pbPackageProto.build(), pbDependencies);
+        }
+        catch (DescriptorValidationException e)
+        {
+          throw new MappingException(e);
+        }
+        
+        EPackageMappingCache.create(ePackage, pbPackage);
+      }
+
+      resource.addEpackageBuilder()
         .setUri(ePackage.getNsURI())
         .addAllDependency(pbDependencyIndices)
-        .setDefinition(pbPackage);
+        .setDefinition(pbPackage.toProto());
       
-      try
-      {
-        packages.put(ePackage, new PbPackageEntry(resource.getEpackageCount() - 1, Descriptors.FileDescriptor.buildFrom(pbPackage.build(), pbDependencies)));
-      }
-      catch (DescriptorValidationException e)
-      {
-        throw new MappingException(e);
-      }
+      packages.put(ePackage, new PbPackageEntry(resource.getEpackageCount() - 1, pbPackage));
       
       packagesBeingAdded.remove(ePackage);
-      */
     }
   }
   
@@ -233,33 +233,42 @@ public class ProtobufResourceImpl extends ResourceImpl
     {
       if(pbPackages[pbPackageIdx] == null)
       {
-        EcoreProtos.EPackageProto pbPackage = resource.getEpackage(pbPackageIdx);
+        EcoreProtos.EPackageProto pbPackageProto = resource.getEpackage(pbPackageIdx);
+        EPackage ePackage = getResourceSet().getPackageRegistry().getEPackage(pbPackageProto.getUri());
+        Descriptors.FileDescriptor pbPackage;
+        EPackageMappingCache cache = EPackageMappingCache.get(ePackage);
         
-        Descriptors.FileDescriptor[] pbDependencies = new Descriptors.FileDescriptor[pbPackage.getDependencyCount()];
-        
-        for(int idx = 0; idx < pbDependencies.length; idx++)
+        if(cache != null)
         {
-          pbDependencies[idx] = loadPackage(resource, idx); 
+          pbPackage = cache.getDescriptor();
         }
-        
-        try
+        else
         {
-          pbPackages[pbPackageIdx] = Descriptors.FileDescriptor.buildFrom(pbPackage.getDefinition(), pbDependencies);
-        }
-        catch (DescriptorValidationException e)
-        {
-          throw new MappingException(e);
-        }
-        
-        ePackageLookup.put(pbPackages[pbPackageIdx], getResourceSet().getPackageRegistry().getEPackage(pbPackage.getUri()));
-        
-        for(Descriptors.Descriptor pbMessage : pbPackages[pbPackageIdx].getMessageTypes())
-        {
-          for(Descriptors.FieldDescriptor pbExtension : pbMessage.getExtensions())
+          // TODO: no cache, but we should try to do some "fast lookup" in mapper registry
+          
+          Descriptors.FileDescriptor[] pbDependencies = new Descriptors.FileDescriptor[pbPackageProto.getDependencyCount()];
+          
+          for(int idx = 0; idx < pbDependencies.length; idx++)
           {
-            pbExtensionRegistry.add(pbExtension, DynamicMessage.getDefaultInstance(pbMessage));
+            pbDependencies[idx] = loadPackage(resource, idx); 
           }
+          
+          try
+          {
+            pbPackage = Descriptors.FileDescriptor.buildFrom(pbPackageProto.getDefinition(), pbDependencies);
+          }
+          catch (DescriptorValidationException e)
+          {
+            throw new MappingException(e);
+          }
+          
+          EPackageMappingCache.create(ePackage, pbPackage);
         }
+        
+        ePackageLookup.put(pbPackage, ePackage);
+        pbPackages[pbPackageIdx] = pbPackage;
+        
+        mappers.find(ePackage).registerExtensions(pbPackage, pbExtensionRegistry);
       }
       
       return pbPackages[pbPackageIdx]; 
@@ -267,19 +276,24 @@ public class ProtobufResourceImpl extends ResourceImpl
   }
   
   public static final String OPTION_CONVERTER_REGISTRY = "converterRegistry";
+  public static final String OPTION_MAPPER_REGISTRY = "mapperRegistry";
   
   private final NamingStrategy naming = new DefaultNamingStrategy();
-  private ConverterRegistry converters = new ConverterRegistry();
-  private final MapperRegistry mappers = new MapperRegistry(naming);
+  private ConverterRegistry defaultConverters = new ConverterRegistry();
+  private MapperRegistry mappers;
 
   public ProtobufResourceImpl()
   {
     super();
+    defaultConverters.register(new DynamicToProtoBufMessageConverter(naming));
+    defaultConverters.register(new DynamicFromProtoBufMessageConverter(naming));
   }
 
   public ProtobufResourceImpl(URI uri)
   {
     super(uri);
+    defaultConverters.register(new DynamicToProtoBufMessageConverter(naming));
+    defaultConverters.register(new DynamicFromProtoBufMessageConverter(naming));
   }
 
   @Override
@@ -297,18 +311,19 @@ public class ProtobufResourceImpl extends ResourceImpl
     
   private void internalDoSave(OutputStream outputStream, Map< ? , ? > options) throws IOException
   {
-    if(options.containsKey(OPTION_CONVERTER_REGISTRY))
+    if(options != null && options.containsKey(OPTION_MAPPER_REGISTRY))
     {
-      converters = (ConverterRegistry)options.get(OPTION_CONVERTER_REGISTRY);
+      mappers = (MapperRegistry)options.get(OPTION_MAPPER_REGISTRY);
     }
     else
     {
-      converters = new ConverterRegistry();
+      mappers = new MapperRegistry(naming);
     }
     
-    EcoreProtos.EResourceProto.Builder resource = EcoreProtos.EResourceProto.newBuilder();
-    ProtobufPackageDumper ePackages = new ProtobufPackageDumper(resource);
-    EObjectPool pool = new EObjectPool();
+    final ConverterRegistry converters = getConverterRegistry(options);
+    final EcoreProtos.EResourceProto.Builder resource = EcoreProtos.EResourceProto.newBuilder();
+    final ProtobufPackageDumper ePackages = new ProtobufPackageDumper(resource);
+    final EObjectPool pool = new EObjectPool();
     
     for (EObject eObject : getContents())
     {
@@ -319,11 +334,12 @@ public class ProtobufResourceImpl extends ResourceImpl
       Descriptors.Descriptor pbClass = ePackages.lookup(pbPackageEntry, eClass);
 
       // strange cast but who cares
-      ToProtoBufMessageConverter<EObject, Message> converter = ((ToProtoBufMessageConverter<EObject, Message>) converters.find(eClass));
+      @SuppressWarnings("unchecked")
+      final ToProtoBufMessageConverter<EObject, Message> converter = ((ToProtoBufMessageConverter<EObject, Message>) converters.find(eClass));
       converter.setMappingContext(ePackages);
       converter.setObjectPool(pool);
       
-      Message data = converter.convert(eClass, eObject, pbClass);
+      final Message data = converter.convert(eClass, eObject, pbClass);
       
       resource
         .addEobjectBuilder()
@@ -350,18 +366,35 @@ public class ProtobufResourceImpl extends ResourceImpl
   
   private void internalDoLoad(InputStream inputStream, Map< ? , ? > options) throws IOException
   {
-    EcoreProtos.EResourceProto resource = EcoreProtos.EResourceProto.parseFrom(inputStream);
-    ProtobufPackageLoader pbPackages = new ProtobufPackageLoader(resource);
-        
+    if(options != null && options.containsKey(OPTION_MAPPER_REGISTRY))
+    {
+      mappers = (MapperRegistry)options.get(OPTION_MAPPER_REGISTRY);
+    }
+    else
+    {
+      mappers = new MapperRegistry(naming);
+    }
+    
+    final ConverterRegistry converters = getConverterRegistry(options);
+    final EcoreProtos.EResourceProto resource = EcoreProtos.EResourceProto.parseFrom(inputStream);
+    final ProtobufPackageLoader pbPackages = new ProtobufPackageLoader(resource);
+    final EObjectPool pool = new EObjectPool();
+    
     for (EcoreProtos.EObjectProto pbObject : resource.getEobjectList())
     {
-      Descriptors.Descriptor pbClass = pbPackages.get(pbObject.getEpackageIndex(), pbObject.getEclassIndex());
+      final Descriptors.Descriptor pbClass = pbPackages.get(pbObject.getEpackageIndex(), pbObject.getEclassIndex());
+      final FromProtoBufMessageConverter<? extends Message, ? extends EObject> converter = converters.find(pbClass);
+      converter.setObjectPool(pool);
+      converter.setMappingContext(pbPackages);
       
       getContents().add(
-        converters
-          .find(pbClass)
-          .loadAndConvert(pbClass, pbPackages.getExtentionRegistry(), pbObject.getData())
+        converter.loadAndConvert(pbClass, pbPackages.getExtentionRegistry(), pbObject.getData())
       );
     }
+  }
+  
+  private ConverterRegistry getConverterRegistry(Map<?, ?> options)
+  {
+    return options != null && options.containsKey(OPTION_CONVERTER_REGISTRY) ? (ConverterRegistry)options.get(OPTION_CONVERTER_REGISTRY) : defaultConverters;
   }
 }

@@ -16,6 +16,7 @@ package org.eclipselab.emf.ecore.protobuf.conversion;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
@@ -35,6 +36,7 @@ public abstract class FromProtoBufMessageConverter<SourceType extends Message, T
     Converter.WithMappingContext<SourceType, Descriptors.Descriptor, TargetType, EClass>
 {
   private Converter.MappingContext<Descriptor, EClass> mappingContext;
+  protected EObjectPool pool;
 
   @Override
   public void setMappingContext(Converter.MappingContext<Descriptors.Descriptor, EClass> context)
@@ -46,6 +48,11 @@ public abstract class FromProtoBufMessageConverter<SourceType extends Message, T
   public Converter.MappingContext<Descriptors.Descriptor, EClass> getMappingContext()
   {
     return mappingContext;
+  }
+  
+  public void setObjectPool(EObjectPool pool)
+  {
+    this.pool = pool;
   }
   
   public boolean supports(Descriptors.Descriptor sourceType)
