@@ -17,6 +17,8 @@ package org.eclipselab.emf.ecore.protobuf.mapping;
 import org.eclipse.emf.ecore.EPackage;
 
 import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.Descriptors;
+import com.google.protobuf.ExtensionRegistry;
 
 /**
  * EPackageMapper is a {@link Mapper}, which maps an {@link EPackage} to a {@link DescriptorProtos.FileDescriptorProto}
@@ -26,4 +28,6 @@ import com.google.protobuf.DescriptorProtos;
  */
 public interface EPackageMapper extends Mapper<EPackage, DescriptorProtos.FileDescriptorSet.Builder> 
 {
+  // TODO: move somewhere else :(
+  void registerExtensions(Descriptors.FileDescriptor pbPackage, ExtensionRegistry extensionRegistry);
 }

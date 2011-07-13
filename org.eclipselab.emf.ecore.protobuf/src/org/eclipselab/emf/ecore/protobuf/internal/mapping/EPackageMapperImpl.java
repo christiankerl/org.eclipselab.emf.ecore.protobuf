@@ -23,6 +23,9 @@ import org.eclipselab.emf.ecore.protobuf.util.EcoreUtil2;
 
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
+import com.google.protobuf.Descriptors;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.ExtensionRegistry;
 
 /**
  * EPackageMapperImpl provides the default {@link EPackageMapper} implementation
@@ -60,5 +63,16 @@ public class EPackageMapperImpl implements EPackageMapper
         .map(eClassifier, pbPackage);
     }
   }
-  
+
+  @Override
+  public void registerExtensions(Descriptors.FileDescriptor pbPackage, ExtensionRegistry extensionRegistry)
+  {
+    for(Descriptors.Descriptor pbMessage : pbPackage.getMessageTypes())
+    {
+      for(Descriptors.FieldDescriptor pbExtension : pbMessage.getExtensions())
+      {
+        extensionRegistry.add(pbExtension, DynamicMessage.getDefaultInstance(pbMessage));
+      }
+    }
+  }
 }

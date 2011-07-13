@@ -22,6 +22,8 @@ import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryProtos;
 
 import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.ExtensionRegistry;
 
 public class LibraryPackageMapper implements EPackageMapper
 {
@@ -48,5 +50,11 @@ public class LibraryPackageMapper implements EPackageMapper
   public void map(EPackage source, DescriptorProtos.FileDescriptorSet.Builder context)
   {    
     context.addFile(LibraryProtos.getDescriptor().toProto());
+  }
+
+  @Override
+  public void registerExtensions(FileDescriptor pbPackage, ExtensionRegistry extensionRegistry)
+  {
+    LibraryProtos.registerAllExtensions(extensionRegistry);
   }
 }
