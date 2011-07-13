@@ -50,7 +50,7 @@ public class EPackageMappingCache extends AdapterImpl
     return EPackageMappingCache.class == type;
   }
   
-  public Descriptors.FileDescriptor getCachedDescriptor()
+  public Descriptors.FileDescriptor getDescriptor()
   {
     return pbPackage;
   }
