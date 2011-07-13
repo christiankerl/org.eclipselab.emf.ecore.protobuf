@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipselab.emf.ecore.protobuf.internal.mapping.CachingEPackageMapperImpl;
 import org.eclipselab.emf.ecore.protobuf.internal.mapping.DefaultEDataTypeMapperImpl;
 import org.eclipselab.emf.ecore.protobuf.internal.mapping.EClassMapperImpl;
 import org.eclipselab.emf.ecore.protobuf.internal.mapping.EEnumMapperImpl;
@@ -39,7 +38,7 @@ public class MapperRegistry
     boolean supports(Type type);
   }
 
-  private final EPackageMapper ePackageMapper = new CachingEPackageMapperImpl(new EPackageMapperImpl(this));  
+  private final EPackageMapper ePackageMapper = new EPackageMapperImpl(this);  
   private final List<EPackageMapper> ePackageMappers = new ArrayList<EPackageMapper>();
   private final List<EClassifierMapper> eClassifierMappers = new ArrayList<EClassifierMapper>();
   
