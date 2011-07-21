@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.mapping.DefaultNamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
@@ -36,21 +37,26 @@ import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryFactory;
 import org.eclipselab.emf.ecore.protobuf.tests.library.LibraryPackage;
 import org.eclipselab.emf.ecore.protobuf.tests.library.util.LibraryConverters;
 import org.eclipselab.emf.ecore.protobuf.tests.library.util.LibraryPackageMapper;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.carrotsearch.junitbenchmarks.AbstractBenchmark;
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 
-@BenchmarkOptions(warmupRounds = 50, benchmarkRounds = 100)
+@BenchmarkOptions(warmupRounds = 150, benchmarkRounds = 150)
 public class ProtobufResourceBenchmark extends AbstractBenchmark
 {
-  private static final int INTERNAL_ROUNDS = 50;
+  /**
+   * Run several rounds inside one junit-benchmarks round to get visible per round measurements.
+   */
+  private static final int INTERNAL_ROUNDS = 1;
   
   private static EObject model;
   private static ByteArrayOutputStream out;
   private static Map<Object, Object> staticOptions;
   private static byte[] binaryData;
+  private static byte[] xmiData;
   private static byte[] protobufData;
   private static ResourceSetImpl resources;
   
@@ -59,8 +65,8 @@ public class ProtobufResourceBenchmark extends AbstractBenchmark
     
     lib.setName("Big Library");
     
-    int authors = 300;
-    int books = 1000;
+    int authors = 15000;
+    int books = 50000;
     
     for(int idx = 0; idx < authors; idx++) {
       Author author = LibraryFactory.eINSTANCE.createAuthor();
@@ -97,6 +103,7 @@ public class ProtobufResourceBenchmark extends AbstractBenchmark
     model = createModel();
     out = new ByteArrayOutputStream();
     binaryData = serialize(new BinaryResourceImpl(), null, model);
+    xmiData = serialize(new XMIResourceImpl(), null, model);
     protobufData = serialize(new ProtobufResourceImpl(), null, model);
     
     // clear dynamic cache
@@ -121,7 +128,13 @@ public class ProtobufResourceBenchmark extends AbstractBenchmark
     for(int idx = 0; idx < INTERNAL_ROUNDS; idx++)
       save(new BinaryResourceImpl(), null);
   }
-  
+
+  @Test
+  public void testXmiWritePerformance() throws Exception
+  {
+    for(int idx = 0; idx < INTERNAL_ROUNDS; idx++)
+      save(new XMIResourceImpl(), null);
+  }
   
   @Test
   public void testStaticProtobufWritePerformance() throws Exception
@@ -143,6 +156,13 @@ public class ProtobufResourceBenchmark extends AbstractBenchmark
     for(int idx = 0; idx < INTERNAL_ROUNDS; idx++)
       load(new BinaryResourceImpl(), null, binaryData);
   }
+
+  @Test
+  public void testXmiReadPerformance() throws Exception
+  {
+    for(int idx = 0; idx < INTERNAL_ROUNDS; idx++)
+      load(new XMIResourceImpl(), null, xmiData);
+  }
     
   @Test
   public void testStaticProtobufReadPerformance() throws Exception
@@ -156,6 +176,14 @@ public class ProtobufResourceBenchmark extends AbstractBenchmark
   {
     for(int idx = 0; idx < INTERNAL_ROUNDS; idx++)
       load(new ProtobufResourceImpl(), null, protobufData);
+  }
+  
+  @AfterClass
+  public static void printDataSizeComparision()
+  {
+    System.out.println(String.format("ProtobufResourceImpl: %s bytes", protobufData.length));
+    System.out.println(String.format("BinaryResourceImpl: %s bytes", binaryData.length));
+    System.out.println(String.format("XMIResourceImpl: %s bytes", xmiData.length));
   }
   
   private final void save(final Resource resource, final Map<?, ?> options) throws IOException
