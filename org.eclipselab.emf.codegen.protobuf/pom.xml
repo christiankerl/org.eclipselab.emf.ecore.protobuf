@@ -11,10 +11,10 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.eclipselab.emf.ecore.protobuf</groupId>
-		<artifactId>org.eclipselab.emf.ecore.protobuf.releng</artifactId>
+		<groupId>org.eclipselab.emf.protobuf</groupId>
+		<artifactId>org.eclipselab.emf.protobuf.releng</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
-		<relativePath>../org.eclipselab.emf.ecore.protobuf.releng/pom.xml</relativePath>
+		<relativePath>../org.eclipselab.emf.protobuf.releng/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.eclipselab.emf.codegen.protobuf</artifactId>
 	<packaging>eclipse-plugin</packaging>
