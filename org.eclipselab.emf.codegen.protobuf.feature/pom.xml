@@ -16,7 +16,7 @@
 		<version>0.1.0-SNAPSHOT</version>
 		<relativePath>../org.eclipselab.emf.protobuf.releng/pom.xml</relativePath>
 	</parent>
-	<artifactId>org.eclipselab.emf.codegen.protobuf</artifactId>
-	<packaging>eclipse-plugin</packaging>
-	<name>EMF ProtoBuf Code Generator</name>
+	<artifactId>org.eclipselab.emf.codegen.protobuf.feature</artifactId>
+	<packaging>eclipse-feature</packaging>
+	<name>EMF ProtoBuf Code Generator Feature</name>
 </project>

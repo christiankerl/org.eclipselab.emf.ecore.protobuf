@@ -18,5 +18,5 @@
 	</parent>
 	<artifactId>org.eclipselab.emf.codegen.protobuf.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
-	<name>EMF ProtoBuf Generator UI</name>
+	<name>EMF ProtoBuf Code Generator UI</name>
 </project>
