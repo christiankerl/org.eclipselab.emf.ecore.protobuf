@@ -1,0 +1,49 @@
+[comment encoding = UTF-8 /]
+[module common('http://www.eclipse.org/emf/2002/GenModel', 'http://www.eclipse.org/emf/2002/Ecore')]
+
+[query public toJavaName(parts : Sequence(String)) : Sequence(String) = parts->select(size() > 0)->sep('.') /]
+
+[query public utilPackage(aGenPackage : GenPackage) : Sequence(String) = toJavaName(Sequence{aGenPackage.basePackage, aGenPackage.ecorePackage.name, aGenPackage.utilityPackageSuffix }) /]
+
+[query public metaPackage(aGenPackage : GenPackage) : Sequence(String) = toJavaName(Sequence{aGenPackage.basePackage, aGenPackage.ecorePackage.name, aGenPackage.metaDataPackageSuffix}) /]
+
+[query public interfacePackage(aGenPackage : GenPackage) : Sequence(String) = toJavaName(Sequence{aGenPackage.basePackage, aGenPackage.ecorePackage.name, aGenPackage.interfacePackageSuffix}) /]
+
+[query public allEClasses(genPackage : GenPackage) : Collection(EClass) = ecorePackage.allEClasses() /]
+[query public allEClasses(ePackage : EPackage) : Collection(EClass) = eClassifiers->select(oclIsTypeOf(EClass)) /]
+
+[query public allReferencedEClasses(eClass : EClass) : Set(EClass) = eClass.eAllReferences->collect(eType.oclAsType(EClass))->asSet() /]
+
+[query public singleAttribute(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EAttribute) and not many /]
+[query public singleReference(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EReference) and not many /]
+
+[query public manyAttribute(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EAttribute) and many /]
+[query public manyReference(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EReference) and many /]
+
+[query public var(eFeature : EStructuralFeature) : String = eFeature.name.toLowerFirst() /]
+[query public Var(eFeature : EStructuralFeature) : String = eFeature.name.toUpperFirst() /]
+[query public Type(eFeature : EStructuralFeature) : String = eFeature.eType.name /]
+[query public type(eFeature : EStructuralFeature) : String = eFeature.eType.name.toLowerFirst() /]
+
+[query public num(eFeature : EStructuralFeature) : String = 'num' + Var() /]
+[query public idx(eFeature : EStructuralFeature) : String = 'idx' + Var() /]
+[query public cur(eFeature : EStructuralFeature) : String = 'cur' + Type() /]
+
+
+[query public Name(eClass : EClassifier) : String = eClass.name /]
+[query public name(eClass : EClassifier) : String = eClass.name.toLowerFirst() /]
+
+
+[query public getter(eFeature : EStructuralFeature) : String = 'get'.concat(eFeature.name.toUpperFirst()) /]
+[query public setter(eFeature : EStructuralFeature) : String = 'set'.concat(eFeature.name.toUpperFirst()) /]
+
+[query public literal(eClass : EClassifier) : String = 'Literals.' + name.emfUpperName() /]
+[query public literal(eClassifier : EClassifier, genPackage : GenPackage) : String = genPackage.prefix + 'Package.' + eClassifier.literal() /]
+[query public literal(eFeature : EStructuralFeature) : String = 'Literals.' + eContainingClass.name.emfUpperName() + '__' + name.emfUpperName() /]
+[query public literal(eFeature : EStructuralFeature, genPackage : GenPackage) : String = genPackage.prefix + 'Package.' + eFeature.literal() /]
+
+[query public emfUpperName(str : String) : String = invoke('org.eclipse.emf.codegen.util.CodeGenUtil', 'upperName(java.lang.String)', Sequence{str}) /]
+
+[query public pbName(eClassifier : EClassifier, genPackage : GenPackage) : String = genPackage.prefix + 'Protos.' + eClassifier.name /]
+
+

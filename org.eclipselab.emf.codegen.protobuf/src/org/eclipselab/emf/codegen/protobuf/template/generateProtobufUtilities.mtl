@@ -1,0 +1,13 @@
+[comment encoding = UTF-8 /]
+[module generateProtobufUtilities('http://www.eclipse.org/emf/2002/Ecore', 'http://www.eclipse.org/emf/2002/GenModel')/]
+
+[import org::eclipselab::emf::codegen::protobuf::template::generateMappingCode/]
+[import org::eclipselab::emf::codegen::protobuf::template::generateConversionCode/]
+
+[template public generateProtobufUtilitiesGenPackage(aGenPackage : GenPackage)]
+	
+	[comment @main /]
+	[aGenPackage.generateEPackageMapper()/]
+	[aGenPackage.generateConverters()/]
+	
+[/template]

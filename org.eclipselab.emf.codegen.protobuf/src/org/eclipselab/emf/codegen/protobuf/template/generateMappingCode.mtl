@@ -1,0 +1,55 @@
+[comment encoding = UTF-8 /]
+[module generateMappingCode('http://www.eclipse.org/emf/2002/GenModel', 'http://www.eclipse.org/emf/2002/Ecore')/]
+
+[import org::eclipselab::emf::codegen::protobuf::template::common /]
+
+[template public generateEPackageMapper(aGenPackage : GenPackage)]
+[file (prefix.concat('PackageMapper.java'), false, 'UTF-8')]
+package [utilPackage() /];
+
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipselab.emf.ecore.protobuf.mapping.EPackageMapper;
+import org.eclipselab.emf.ecore.protobuf.mapping.EPackageMappingCache;
+import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
+import [metaPackage() /].[prefix.concat('Package') /];
+import [metaPackage() /].[prefix.concat('Protos') /];
+
+import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.ExtensionRegistry;
+
+public class [prefix /]PackageMapper implements EPackageMapper
+{
+  public static void register(MapperRegistry registry)
+  {
+    registry.register(new [prefix /]PackageMapper());
+  }
+  
+  public [prefix /]PackageMapper()
+  {
+    if(EPackageMappingCache.get([prefix /]Package.eINSTANCE) == null)
+    {
+      EPackageMappingCache.create([prefix /]Package.eINSTANCE, [prefix /]Protos.getDescriptor());
+    }
+  }
+  
+  @Override
+  public boolean supports(EPackage type)
+  {
+    return type == [prefix /]Package.eINSTANCE;
+  }
+
+  @Override
+  public void map(EPackage source, DescriptorProtos.FileDescriptorSet.Builder context)
+  {    
+    context.addFile([prefix /]Protos.getDescriptor().toProto());
+  }
+
+  @Override
+  public void registerExtensions(FileDescriptor pbPackage, ExtensionRegistry extensionRegistry)
+  {
+    [prefix /]Protos.registerAllExtensions(extensionRegistry);
+  }
+}
+[/file]
+[/template]

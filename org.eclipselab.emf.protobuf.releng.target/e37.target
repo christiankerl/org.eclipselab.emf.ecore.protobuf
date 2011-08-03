@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target includeMode="feature" name="e37" sequenceNumber="7">
+<target includeMode="feature" name="e37" sequenceNumber="8">
 <locations>
 <location includeAllPlatforms="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.junit" version="4.8.2.v4_8_2_v20110321-1705"/>
@@ -15,6 +15,10 @@
 <location includeAllPlatforms="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.platform.sdk" version="3.7.0.I20110613-1736"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.7"/>
+</location>
+<location includeAllPlatforms="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.acceleo.runtime.feature.group" version="3.1.0.v20110607-0602"/>
+<repository location="http://download.eclipse.org/modeling/m2t/acceleo/updates/releases/3.1"/>
 </location>
 </locations>
 </target>

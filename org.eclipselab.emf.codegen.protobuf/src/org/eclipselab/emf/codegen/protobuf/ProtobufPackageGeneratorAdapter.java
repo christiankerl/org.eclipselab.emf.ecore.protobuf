@@ -15,8 +15,10 @@
 package org.eclipselab.emf.codegen.protobuf;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collections;
 
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.codegen.ecore.generator.GeneratorAdapterFactory;
@@ -31,6 +33,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipselab.emf.codegen.protobuf.annotations.EPackageAnnotation;
 import org.eclipselab.emf.codegen.protobuf.internal.ProtobufGeneratorPlugin;
+import org.eclipselab.emf.codegen.protobuf.template.GenerateProtobufUtilities;
 import org.eclipselab.emf.ecore.protobuf.mapping.DefaultNamingStrategy;
 import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 import org.eclipselab.emf.ecore.protobuf.util.DescriptorDebugStringBuilder;
@@ -122,11 +125,26 @@ public class ProtobufPackageGeneratorAdapter extends GenBaseGeneratorAdapter
         
         if(protobufCompiler.isAvailable())
         {
-          try {
+          try 
+          {
             protobufCompiler.invoke(workingDirectory, protoFile, workingDirectory);
-          } catch(Throwable t) {
+          } 
+          catch(Throwable t) 
+          {
             return BasicDiagnostic.toDiagnostic(t);
           }
+        }
+        
+        URI utilDirectory = toURI(genModel.getModelDirectory()).appendSegments(genPackage.getUtilitiesPackageName().split("\\."));
+        
+        try
+        {
+          GenerateProtobufUtilities generateProtobufUtilities = new GenerateProtobufUtilities(genPackage, new File(toAbsoluteFilesystemPath(utilDirectory)), Collections.emptyList());
+          generateProtobufUtilities.generate(monitor);
+        }
+        catch (IOException e)
+        {
+          return BasicDiagnostic.toDiagnostic(e);          
         }
       }
     }

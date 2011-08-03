@@ -1,0 +1,28 @@
+[comment encoding = UTF-8 /]
+[module generateConversionCode('http://www.eclipse.org/emf/2002/GenModel', 'http://www.eclipse.org/emf/2002/Ecore')]
+
+[import org::eclipselab::emf::codegen::protobuf::template::common]
+[import org::eclipselab::emf::codegen::protobuf::template::generateToProtobufConversionCode]
+[import org::eclipselab::emf::codegen::protobuf::template::generateFromProtobufConversionCode]
+
+[template public generateConverters(p : GenPackage)]
+[file (prefix.concat('Converters.java'), false, 'UTF-8')]
+package [utilPackage() /];
+
+import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
+
+class [prefix.concat('Converters') /]
+{
+  public static final void register(ConverterRegistry converterRegistry)
+  {
+    [for (eClass : EClass | allEClasses())]
+	[eClass.generateToProtobufConverter(p) /]
+	[eClass.generateFromProtobufConverter(p) /]
+    registry.register(new [Name() /]ToProtobufConverter());
+    registry.register(new [Name() /]FromProtobufConverter());    	
+    [/for]
+  }
+}
+
+[/file]
+[/template]
