@@ -11,15 +11,15 @@ package [utilPackage() /];
 
 import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
 
-class [prefix.concat('Converters') /]
+public class [prefix /]Converters
 {
   public static final void register(ConverterRegistry converterRegistry)
   {
     [for (eClass : EClass | allEClasses())]
 	[eClass.generateToProtobufConverter(p) /]
 	[eClass.generateFromProtobufConverter(p) /]
-    registry.register(new [Name() /]ToProtobufConverter());
-    registry.register(new [Name() /]FromProtobufConverter());    	
+    converterRegistry.register(new [Name() /]ToProtobufConverter());
+    converterRegistry.register(new [Name() /]FromProtobufConverter());    	
     [/for]
   }
 }

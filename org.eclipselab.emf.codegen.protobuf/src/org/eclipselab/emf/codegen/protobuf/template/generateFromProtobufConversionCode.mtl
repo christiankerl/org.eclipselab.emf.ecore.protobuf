@@ -7,10 +7,13 @@
 [file (Name() + 'FromProtobufConverter.java', false, 'UTF-8')]
 package [p.utilPackage() /];
 
+import com.google.protobuf.*;
+import com.google.protobuf.Descriptors.*;
+import org.eclipse.emf.ecore.*;
 import org.eclipselab.emf.ecore.protobuf.conversion.*;
 import [p.interfacePackage() /].*; 
 
-class [Name() /]FromProtobufConverte extends FromProtoBufMessageConverter<[pbName(p) /], [Name() /]> implements Converter.WithRegistry
+public class [Name() /]FromProtobufConverter extends FromProtoBufMessageConverter<[pbName(p) /], [Name() /]> implements Converter.WithRegistry
 {
   [for (allReferencedEClasses())]
   private FromProtoBufMessageConverter<[pbName(p) /], [Name() /]> [name() /]Converter;
@@ -144,7 +147,7 @@ if([cur() /]Ref.hasExtension([eType.pbName(p) /].[type() /][Type() /])
 [if (oclAsType(EReference).containment)]
     [type() /]Converter.convert([cur() /], [eType.literal(p) /])
 [else]
-    pool.getObject([eType.literal(p) /], [cur() /].getId())
+    ([Type() /]) pool.getObject([eType.literal(p) /], [cur() /].getId())
 [/if]
   );
 }
@@ -166,11 +169,11 @@ for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
   {
     final [eType.pbName(p) /] [cur() /] = [cur() /]Ref.getExtension([eType.pbName(p) /].[type() /][Type() /]);
 
-    result.[getter() /].add(
+    result.[getter() /]().add(
 	[if (oclAsType(EReference).containment)]
       [type() /]Converter.convert([cur() /], [eType.literal(p) /])
 	[else]
-      pool.getObject([eType.literal(p) /], [cur() /].getId())
+      ([Type() /]) pool.getObject([eType.literal(p) /], [cur() /].getId())
 	[/if]
     );
   }

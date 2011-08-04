@@ -7,10 +7,13 @@
 [file (Name() + 'ToProtobufConverter.java', false, 'UTF-8')]
 package [p.utilPackage() /];
 
+import com.google.protobuf.*;
+import com.google.protobuf.Descriptors.*;
+import org.eclipse.emf.ecore.*;
 import org.eclipselab.emf.ecore.protobuf.conversion.*;
 import [p.interfacePackage() /].*; 
 
-class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[Name() /], [pbName(p) /]> implements Converter.WithRegistry
+public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[Name() /], [pbName(p) /]> implements Converter.WithRegistry
 {
   [for (allReferencedEClasses())]
   private ToProtoBufMessageConverter<[Name() /], [pbName(p) /]> [name() /]Converter;
