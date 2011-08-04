@@ -23,22 +23,22 @@ public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[N
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
-	[for (allReferencedEClasses())]
-	[if (self = eClass)]
+    [for (allReferencedEClasses())]
+    [if (self = eClass)]
     [name() /]Converter = this;
-	[else]
+    [else]
     [name() /]Converter = (ToProtoBufMessageConverter<[Name() /], [pbName(p) /]>) registry.find([literal(p) /]);
-	[/if]
-	[/for]
+    [/if]
+    [/for]
   }
 
   @Override
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-	[for (allReferencedEClasses()->excluding(eClass))]
-  	[name() /]Converter.setObjectPool(pool);
-  	[/for]
+    [for (allReferencedEClasses()->excluding(eClass))]
+      [name() /]Converter.setObjectPool(pool);
+      [/for]
   }
   
   @Override
@@ -53,12 +53,12 @@ public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[N
     final [pbName(p) /].Builder result = [pbName(p) /].newBuilder();
     result.setId(pool.getId(source));
     
-	[for (eFeature : EStructuralFeature | eClass.eAllStructuralFeatures)]
-	if(source.eIsSet([literal(p) /]))
-	{	
-	  [eFeature.generateToProtobufFeatureConversion(p) /]
-	}
-	[/for]
+    [for (eFeature : EStructuralFeature | eClass.eAllStructuralFeatures)]
+    if(source.eIsSet([literal(p) /]))
+    {
+      [eFeature.generateToProtobufFeatureConversion(p) /]
+    }
+    [/for]
     
     return result.build();
   }
@@ -128,13 +128,13 @@ final [Type() /] [cur() /] = source.[getter() /]();
 
 if([cur() /].eClass() == [eType.literal(p) /])
 {
-result.get[Var() /]Builder().setExtension([eType.pbName(p) /].[type() /][Type() /],
-[if (oclAsType(EReference).containment)]
-  [type() /]Converter.convert([eType.literal(p) /], [cur() /], [eType.pbName(p) /].getDescriptor())
-[else]
-  [eType.pbName(p) /].newBuilder().setId(pool.getId([cur() /])).build()
-[/if]
-);
+  result.get[Var() /]Builder().setExtension([eType.pbName(p) /].[type() /][Type() /],
+  [if (oclAsType(EReference).containment)]
+    [type() /]Converter.convert([eType.literal(p) /], [cur() /], [eType.pbName(p) /].getDescriptor())
+  [else]
+    [eType.pbName(p) /].newBuilder().setId(pool.getId([cur() /])).build()
+  [/if]
+  );
 }
 else
 {
@@ -153,11 +153,11 @@ for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
   if([cur() /].eClass() == [eType.literal(p) /])
   {
     result.add[Var() /]Builder().setExtension([eType.pbName(p) /].[type() /][Type() /],
-	[if (oclAsType(EReference).containment)]
+    [if (oclAsType(EReference).containment)]
       [type() /]Converter.convert([eType.literal(p) /], [cur() /], [eType.pbName(p) /].getDescriptor())
-	[else]
+    [else]
       [eType.pbName(p) /].newBuilder().setId(pool.getId([cur() /])).build()
-	[/if]
+    [/if]
     );
   }
   else

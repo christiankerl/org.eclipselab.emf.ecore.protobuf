@@ -5,9 +5,9 @@
 [import org::eclipselab::emf::codegen::protobuf::template::generateConversionCode/]
 
 [template public generateProtobufUtilitiesGenPackage(aGenPackage : GenPackage)]
-	
-	[comment @main /]
-	[aGenPackage.generateEPackageMapper()/]
-	[aGenPackage.generateConverters()/]
-	
+    
+    [comment @main /]
+    [aGenPackage.generateEPackageMapper()/]
+    [aGenPackage.generateConverters()/]
+    
 [/template]

@@ -23,22 +23,22 @@ public class [Name() /]FromProtobufConverter extends FromProtoBufMessageConverte
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
-	[for (allReferencedEClasses())]
-	[if (self = eClass)]
+    [for (allReferencedEClasses())]
+    [if (self = eClass)]
     [name() /]Converter = this;
-	[else]
+    [else]
     [name() /]Converter = (FromProtoBufMessageConverter<[pbName(p) /], [Name() /]>) registry.find([pbName(p) /].getDescriptor(), [literal(p) /]);
-	[/if]
-	[/for]
+    [/if]
+    [/for]
   }
 
   @Override
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-	[for (allReferencedEClasses()->excluding(eClass))]
-  	[name() /]Converter.setObjectPool(pool);
-  	[/for]
+    [for (allReferencedEClasses()->excluding(eClass))]
+      [name() /]Converter.setObjectPool(pool);
+      [/for]
   }
       
   @Override
@@ -50,14 +50,14 @@ public class [Name() /]FromProtobufConverter extends FromProtoBufMessageConverte
   @Override
   public [Name() /] convert(final Descriptor sourceType, final [pbName(p) /] source, final EClass targetType)
   {
-	final [Name() /] result = ([Name() /]) pool.getObject([literal(p) /], source.getId());
+    final [Name() /] result = ([Name() /]) pool.getObject([literal(p) /], source.getId());
     
-	[for (eFeature : EStructuralFeature | eAllStructuralFeatures)]
-	if(source.[generateProtobufIsSet() /])
+    [for (eFeature : EStructuralFeature | eAllStructuralFeatures)]
+    if(source.[generateProtobufIsSet() /])
     {
       [generateFromProtobufFeatureConversion(p) /]
     }
-	[/for]
+    [/for]
     
     return result;
   }
@@ -170,11 +170,11 @@ for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
     final [eType.pbName(p) /] [cur() /] = [cur() /]Ref.getExtension([eType.pbName(p) /].[type() /][Type() /]);
 
     result.[getter() /]().add(
-	[if (oclAsType(EReference).containment)]
+    [if (oclAsType(EReference).containment)]
       [type() /]Converter.convert([cur() /], [eType.literal(p) /])
-	[else]
+    [else]
       ([Type() /]) pool.getObject([eType.literal(p) /], [cur() /].getId())
-	[/if]
+    [/if]
     );
   }
   else
