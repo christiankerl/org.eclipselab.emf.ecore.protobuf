@@ -36,7 +36,6 @@ public class DefaultScalarConverter
 
   public static class FromProtoBuf extends FromProtoBufScalarConverter
   {
-
     @Override
     public boolean supports(FieldDescriptor sourceType, EDataType targetType)
     {
@@ -52,7 +51,6 @@ public class DefaultScalarConverter
 
   public static class ToProtoBuf extends ToProtoBufScalarConverter
   {
-
     @Override
     public boolean supports(EDataType sourceType, FieldDescriptor targetType)
     {
