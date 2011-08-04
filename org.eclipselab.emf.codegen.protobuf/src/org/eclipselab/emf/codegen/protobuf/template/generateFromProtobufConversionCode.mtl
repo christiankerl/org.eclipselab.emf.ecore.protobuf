@@ -4,16 +4,179 @@
 [import org::eclipselab::emf::codegen::protobuf::template::common]
 
 [template public generateFromProtobufConverter(eClass : EClass, p : GenPackage)]
-[file (eClass.name.concat('FromProtobufConverter.java'), false, 'UTF-8')]
+[file (Name() + 'FromProtobufConverter.java', false, 'UTF-8')]
 package [p.utilPackage() /];
 
 import org.eclipselab.emf.ecore.protobuf.conversion.*;
 import [p.interfacePackage() /].*; 
 
-class [Name() /]FromProtobufConverte extends FromProtoBufMessageConverter<[pbName(p) /]> implements Converter.WithRegistry
+class [Name() /]FromProtobufConverte extends FromProtoBufMessageConverter<[pbName(p) /], [Name() /]> implements Converter.WithRegistry
 {
+  [for (allReferencedEClasses())]
+  private FromProtoBufMessageConverter<[pbName(p) /], [Name() /]> [name() /]Converter;
+  [/for]
 
+  @Override
+  @SuppressWarnings("unchecked")
+  public void setRegistry(ConverterRegistry registry)
+  {
+	[for (allReferencedEClasses())]
+	[if (self = eClass)]
+    [name() /]Converter = this;
+	[else]
+    [name() /]Converter = (FromProtoBufMessageConverter<[pbName(p) /], [Name() /]>) registry.find([pbName(p) /].getDescriptor(), [literal(p) /]);
+	[/if]
+	[/for]
+  }
+
+  @Override
+  public void setObjectPool(EObjectPool pool)
+  {
+    super.setObjectPool(pool);
+	[for (allReferencedEClasses()->excluding(eClass))]
+  	[name() /]Converter.setObjectPool(pool);
+  	[/for]
+  }
+      
+  @Override
+  public boolean supports(Descriptor sourceType, EClass targetType)
+  {
+    return [pbName(p) /].getDescriptor() == sourceType && [literal(p) /] == targetType;
+  }
+
+  @Override
+  public [Name() /] convert(final Descriptor sourceType, final [pbName(p) /] source, final EClass targetType)
+  {
+	final [Name() /] result = ([Name() /]) pool.getObject([literal(p) /], source.getId());
+    
+	[for (eFeature : EStructuralFeature | eAllStructuralFeatures)]
+	if(source.[generateProtobufIsSet() /])
+    {
+      [generateFromProtobufFeatureConversion(p) /]
+    }
+	[/for]
+    
+    return result;
+  }
+
+  @Override
+  protected EClass getTargetType(Descriptor sourceType)
+  {
+    return [literal(p) /];
+  }
+
+  @Override
+  public [pbName(p) /] doLoad(Descriptor sourceType, ExtensionRegistry extensions, ByteString data) throws InvalidProtocolBufferException
+  {
+    return [pbName(p) /].parseFrom(data, extensions);
+  }
 }
 
 [/file]
+[/template]
+
+[template public generateProtobufIsSet(eFeature : EStructuralFeature) ? (not many)]
+has[Var() /]()
+[/template]
+
+[template public generateProtobufIsSet(eFeature : EStructuralFeature) ? (many)]
+get[Var() /]Count() > 0
+[/template]
+
+[comment 0..1 EAttribute of type EEnum/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.oclIsKindOf(EEnum))]
+switch(source.[getter() /]())
+{
+  [let eEnum : EEnum = eFeature.eType.oclAsType(EEnum)]
+  [for (eEnum.eLiterals)]
+  case [name /]:
+    result.[eFeature.setter() /]([eEnum.Name() /].[name /]);
+    break;
+  [/for]
+  [/let]
+}
+[/template]
+
+[comment 0..n EAttribute of type EEnum/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.oclIsKindOf(EEnum))]
+// TODO: implement [Var() /] conversion
+[/template]
+
+[comment 0..1 EAttribute of type EByteArray/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.name = 'EByteArray')]
+result.[setter() /](source.[getter() /]().toByteArray());
+[/template]
+
+[comment 0..n EAttribute of type EByteArray/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.name = 'EByteArray')]
+// TODO: implement [Var() /] conversion
+[/template]
+
+[comment 0..1 EAttribute of type EDate/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.name = 'EDate')]
+result.[setter() /](new java.util.Date(source.[getter() /]()));
+[/template]
+
+[comment 0..n EAttribute of type EDate/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.name = 'EDate')]
+// TODO: implement [Var() /] conversion
+[/template]
+
+[comment 0..1 EAttribute /]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute())]
+result.[setter() /](source.[getter() /]());
+[/template]
+
+[comment 0..n EAttribute /]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute())]
+result.[getter() /]().addAll(source.[getter() /]List());
+[/template]
+
+[comment 0..1 EReference /]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleReference())]
+final [eType.pbName(p) /].Ref [cur() /]Ref = source.[getter() /]();
+
+if([cur() /]Ref.hasExtension([eType.pbName(p) /].[type() /][Type() /])
+{
+  final [eType.pbName(p) /] [cur() /] = [cur() /]Ref.getExtension([eType.pbName(p) /].[type() /][Type() /]);
+
+  result.[setter() /](
+[if (oclAsType(EReference).containment)]
+    [type() /]Converter.convert([cur() /], [eType.literal(p) /])
+[else]
+    pool.getObject([eType.literal(p) /], [cur() /].getId())
+[/if]
+  );
+}
+else
+{
+  throw new UnsupportedOperationException();
+}
+[/template]
+
+[comment 0..n EReference /]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyReference())]
+final int [num() /] = source.[getter() /]Count();
+
+for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
+{
+  final [eType.pbName(p) /].Ref [cur() /]Ref = source.[getter() /]([idx() /]);
+
+  if([cur() /]Ref.hasExtension([eType.pbName(p) /].[type() /][Type() /]))
+  {
+    final [eType.pbName(p) /] [cur() /] = [cur() /]Ref.getExtension([eType.pbName(p) /].[type() /][Type() /]);
+
+    result.[getter() /].add(
+	[if (oclAsType(EReference).containment)]
+      [type() /]Converter.convert([cur() /], [eType.literal(p) /])
+	[else]
+      pool.getObject([eType.literal(p) /], [cur() /].getId())
+	[/if]
+    );
+  }
+  else
+  {
+    throw new UnsupportedOperationException();
+  }
+}
 [/template]
