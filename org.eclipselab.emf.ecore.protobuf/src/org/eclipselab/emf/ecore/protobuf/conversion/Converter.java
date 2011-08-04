@@ -14,10 +14,6 @@
  */
 package org.eclipselab.emf.ecore.protobuf.conversion;
 
-import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
-
-
-
 /**
  * A Converter converts a source object of the runtime type Source, which is described by an instance of SourceType,
  * to a target object of the runtime type Target, which is described by an instance of TargetType.
@@ -73,14 +69,5 @@ public interface Converter<Source, SourceType, Target, TargetType>
   public static interface WithRegistry
   {
     void setRegistry(ConverterRegistry registry);
-  }
-
-  public static interface ConversionContext
-  {
-    EObjectPool pool();
-    
-    MappingContext<?, ?> mapping();
-    
-    ConverterRegistry converters();
   }
 }

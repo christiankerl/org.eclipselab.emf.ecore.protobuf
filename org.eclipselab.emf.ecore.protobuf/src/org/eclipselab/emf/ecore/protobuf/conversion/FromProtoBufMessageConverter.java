@@ -16,7 +16,6 @@ package org.eclipselab.emf.ecore.protobuf.conversion;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipselab.emf.ecore.protobuf.internal.EObjectPool;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
