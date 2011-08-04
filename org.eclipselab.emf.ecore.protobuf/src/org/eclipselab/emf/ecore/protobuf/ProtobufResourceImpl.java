@@ -30,6 +30,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipselab.emf.ecore.protobuf.conversion.ConversionException;
 import org.eclipselab.emf.ecore.protobuf.conversion.Converter;
 import org.eclipselab.emf.ecore.protobuf.conversion.Converter.MappingContext;
 import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
@@ -83,16 +84,20 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
-  private class ProtobufPackageDumper implements MappingContext<EClass, Descriptors.Descriptor>
+  private static final class ProtobufPackageDumper implements MappingContext<EClass, Descriptors.Descriptor>
   {
-    private EcoreProtos.EResourceProto.Builder resource;
-    private Map<EPackage, PbPackageEntry> packages;
+    private final EcoreProtos.EResourceProto.Builder resource;
+    private final NamingStrategy naming;
+    private final MapperRegistry mappers;
+    private final Map<EPackage, PbPackageEntry> packages;
     
-    private Set<EPackage> packagesBeingAdded;
+    private final Set<EPackage> packagesBeingAdded;
     
-    public ProtobufPackageDumper(EcoreProtos.EResourceProto.Builder resource)
+    public ProtobufPackageDumper(EcoreProtos.EResourceProto.Builder resource, NamingStrategy naming, MapperRegistry mappers)
     {
       this.resource = resource;
+      this.naming = naming;
+      this.mappers = mappers;
       this.packages = new HashMap<EPackage, PbPackageEntry>();
       this.packagesBeingAdded = new HashSet<EPackage>();
     }
@@ -189,15 +194,28 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
-  private class ProtobufPackageLoader implements Converter.MappingContext<Descriptors.Descriptor, EClass>
+  private static final class ProtobufPackageLoader implements Converter.MappingContext<Descriptors.Descriptor, EClass>
   {
-    private Descriptors.FileDescriptor[] pbPackages;
-    private ExtensionRegistry pbExtensionRegistry;
-    private Map<Descriptors.FileDescriptor, EPackage> ePackageLookup;
+    private final EPackage.Registry ePackageRegistry;
+    private final MapperRegistry mappers;
     
-    public ProtobufPackageLoader(EcoreProtos.EResourceProto resource)
+    private final Descriptors.FileDescriptor[] pbPackages;
+    private final ExtensionRegistry pbExtensionRegistry;
+    private final Map<Descriptors.FileDescriptor, EPackage> ePackageLookup;
+    
+    public ProtobufPackageLoader(EcoreProtos.EResourceProto resource, EPackage.Registry ePackageRegistry, MapperRegistry mappers)
     {
-      initialize(resource);
+      this.ePackageRegistry = ePackageRegistry;
+      this.mappers = mappers;
+
+      pbExtensionRegistry = ExtensionRegistry.newInstance();
+      pbPackages = new Descriptors.FileDescriptor[resource.getEpackageCount()];
+      ePackageLookup = new HashMap<Descriptors.FileDescriptor, EPackage>(resource.getEpackageCount());
+      
+      for(int idx = 0; idx < pbPackages.length; idx++)
+      {
+        loadPackage(resource, idx);
+      }
     }
     
     public Descriptors.Descriptor get(int pbPackageIndex, int pbMessageIndex)
@@ -217,24 +235,12 @@ public class ProtobufResourceImpl extends ResourceImpl
       return (EClass)EcoreUtil2.getClassifierFromPackageHierarchy(ePackageLookup.get(sourceType.getFile()), sourceType.getName());
     }
     
-    private void initialize(EcoreProtos.EResourceProto resource)
-    {
-      pbExtensionRegistry = ExtensionRegistry.newInstance();
-      pbPackages = new Descriptors.FileDescriptor[resource.getEpackageCount()];
-      ePackageLookup = new HashMap<Descriptors.FileDescriptor, EPackage>(resource.getEpackageCount());
-      
-      for(int idx = 0; idx < pbPackages.length; idx++)
-      {
-        loadPackage(resource, idx);
-      }
-    }
-
     private Descriptors.FileDescriptor loadPackage(EcoreProtos.EResourceProto resource, int pbPackageIdx)
     {
       if(pbPackages[pbPackageIdx] == null)
       {
         EcoreProtos.EPackageProto pbPackageProto = resource.getEpackage(pbPackageIdx);
-        EPackage ePackage = getResourceSet().getPackageRegistry().getEPackage(pbPackageProto.getUri());
+        EPackage ePackage = ePackageRegistry.getEPackage(pbPackageProto.getUri());
         Descriptors.FileDescriptor pbPackage;
         EPackageMappingCache cache = EPackageMappingCache.get(ePackage);
         
@@ -278,30 +284,58 @@ public class ProtobufResourceImpl extends ResourceImpl
   public static final String OPTION_CONVERTER_REGISTRY = "converterRegistry";
   public static final String OPTION_MAPPER_REGISTRY = "mapperRegistry";
   
-  private final NamingStrategy naming = new DefaultNamingStrategy();
-  private ConverterRegistry defaultConverters = new ConverterRegistry();
-  private MapperRegistry mappers;
-
+  protected final NamingStrategy naming;
+  private final ConverterRegistry defaultConverters;
+  private final MapperRegistry defaultMappers;
+  
   public ProtobufResourceImpl()
   {
-    super();
-    defaultConverters.register(new DynamicToProtoBufMessageConverter(naming));
-    defaultConverters.register(new DynamicFromProtoBufMessageConverter(naming));
+    this(new DefaultNamingStrategy(), null);
   }
-
+  
   public ProtobufResourceImpl(URI uri)
   {
-    super(uri);
-    defaultConverters.register(new DynamicToProtoBufMessageConverter(naming));
-    defaultConverters.register(new DynamicFromProtoBufMessageConverter(naming));
+    this(new DefaultNamingStrategy(), uri);
   }
 
+  public ProtobufResourceImpl(NamingStrategy namingStrategy)
+  {
+    this(namingStrategy, null);
+  }
+  
+  public ProtobufResourceImpl(NamingStrategy namingStrategy, URI uri)
+  {
+    super(uri);
+    
+    naming = namingStrategy;
+    defaultMappers = new MapperRegistry(naming);
+    defaultConverters = new ConverterRegistry();
+    
+    registerMappers(defaultMappers);
+    registerConverters(defaultConverters);
+  }
+  
+  protected void registerConverters(final ConverterRegistry converterRegistry)
+  {
+    converterRegistry.register(new DynamicToProtoBufMessageConverter(naming));
+    converterRegistry.register(new DynamicFromProtoBufMessageConverter(naming));
+  }
+  
+  protected void registerMappers(final MapperRegistry mapperRegistry)
+  {
+    
+  }
+  
   @Override
   protected void doSave(OutputStream outputStream, Map< ? , ? > options) throws IOException
   {
     try
     {
       internalDoSave(outputStream, options);
+    }
+    catch(ConversionException e)
+    {
+      throw new IOWrappedException(e);
     }
     catch(MappingException e)
     {
@@ -311,18 +345,10 @@ public class ProtobufResourceImpl extends ResourceImpl
     
   private void internalDoSave(OutputStream outputStream, Map< ? , ? > options) throws IOException
   {
-    if(options != null && options.containsKey(OPTION_MAPPER_REGISTRY))
-    {
-      mappers = (MapperRegistry)options.get(OPTION_MAPPER_REGISTRY);
-    }
-    else
-    {
-      mappers = new MapperRegistry(naming);
-    }
-    
     final ConverterRegistry converters = getConverterRegistry(options);
+    final MapperRegistry mappers = getMapperRegistry(options);
     final EcoreProtos.EResourceProto.Builder resource = EcoreProtos.EResourceProto.newBuilder();
-    final ProtobufPackageDumper ePackages = new ProtobufPackageDumper(resource);
+    final ProtobufPackageDumper ePackages = new ProtobufPackageDumper(resource, naming, mappers);
     final EObjectPool pool = new EObjectPool();
     
     for (EObject eObject : getContents())
@@ -358,6 +384,10 @@ public class ProtobufResourceImpl extends ResourceImpl
     {
       internalDoLoad(inputStream, options);
     }
+    catch(ConversionException e)
+    {
+      throw new IOWrappedException(e);
+    }
     catch(MappingException e)
     {
       throw new IOWrappedException(e);
@@ -366,18 +396,10 @@ public class ProtobufResourceImpl extends ResourceImpl
   
   private void internalDoLoad(InputStream inputStream, Map< ? , ? > options) throws IOException
   {
-    if(options != null && options.containsKey(OPTION_MAPPER_REGISTRY))
-    {
-      mappers = (MapperRegistry)options.get(OPTION_MAPPER_REGISTRY);
-    }
-    else
-    {
-      mappers = new MapperRegistry(naming);
-    }
-    
     final ConverterRegistry converters = getConverterRegistry(options);
+    final MapperRegistry mappers = getMapperRegistry(options);
     final EcoreProtos.EResourceProto resource = EcoreProtos.EResourceProto.parseFrom(inputStream);
-    final ProtobufPackageLoader pbPackages = new ProtobufPackageLoader(resource);
+    final ProtobufPackageLoader pbPackages = new ProtobufPackageLoader(resource, getResourceSet().getPackageRegistry(), mappers);
     final EObjectPool pool = new EObjectPool();
     
     for (EcoreProtos.EObjectProto pbObject : resource.getEobjectList())
@@ -393,8 +415,17 @@ public class ProtobufResourceImpl extends ResourceImpl
     }
   }
   
+  private MapperRegistry getMapperRegistry(Map<?, ?> options)
+  {
+    MapperRegistry result = options != null ? (MapperRegistry) options.get(OPTION_MAPPER_REGISTRY) : null;
+    
+    return result != null ? result : defaultMappers;
+  }
+  
   private ConverterRegistry getConverterRegistry(Map<?, ?> options)
   {
-    return options != null && options.containsKey(OPTION_CONVERTER_REGISTRY) ? (ConverterRegistry)options.get(OPTION_CONVERTER_REGISTRY) : defaultConverters;
+    ConverterRegistry result = options != null ? (ConverterRegistry) options.get(OPTION_CONVERTER_REGISTRY) : null;
+    
+    return result != null ? result : defaultConverters;
   }
 }
