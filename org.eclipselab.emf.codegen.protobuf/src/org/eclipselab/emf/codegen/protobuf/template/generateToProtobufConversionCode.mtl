@@ -153,7 +153,7 @@ for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
 	[if (oclAsType(EReference).containment)]
       [type() /]Converter.convert([eType.literal(p) /], [cur() /], [eType.pbName(p) /].getDescriptor())
 	[else]
-	  [eType.pbName(p) /].newBuilder().setId(pool.getId([cur() /])).build()
+      [eType.pbName(p) /].newBuilder().setId(pool.getId([cur() /])).build()
 	[/if]
     );
   }
