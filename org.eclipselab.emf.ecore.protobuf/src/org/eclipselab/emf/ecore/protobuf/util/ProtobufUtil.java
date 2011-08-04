@@ -24,7 +24,7 @@ public class ProtobufUtil
   {
     if(pbMessage.getAllFields().isEmpty())
     {
-      throw new IllegalArgumentException("The DynamicMessage is empty!");
+      throw new IllegalArgumentException("The Message is empty!");
     }
     
     return pbMessage.getAllFields().entrySet().iterator().next().getValue();
