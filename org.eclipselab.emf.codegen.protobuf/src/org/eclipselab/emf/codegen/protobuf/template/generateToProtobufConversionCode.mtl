@@ -7,7 +7,6 @@
 [file (Name() + 'ToProtobufConverter.java', false, 'UTF-8')]
 package [p.utilPackage() /];
 
-import com.google.protobuf.*;
 import com.google.protobuf.Descriptors.*;
 import org.eclipse.emf.ecore.*;
 import org.eclipselab.emf.ecore.protobuf.conversion.*;
@@ -38,7 +37,7 @@ public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[N
     super.setObjectPool(pool);
     [for (allReferencedEClasses()->excluding(eClass))]
       [name() /]Converter.setObjectPool(pool);
-      [/for]
+    [/for]
   }
   
   @Override
