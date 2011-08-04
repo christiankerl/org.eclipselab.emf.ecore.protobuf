@@ -139,7 +139,7 @@ result.[getter() /]().addAll(source.[getter() /]List());
 [template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleReference())]
 final [eType.pbName(p) /].Ref [cur() /]Ref = source.[getter() /]();
 
-if([cur() /]Ref.hasExtension([eType.pbName(p) /].[type() /][Type() /])
+if([cur() /]Ref.hasExtension([eType.pbName(p) /].[type() /][Type() /]))
 {
   final [eType.pbName(p) /] [cur() /] = [cur() /]Ref.getExtension([eType.pbName(p) /].[type() /][Type() /]);
 
