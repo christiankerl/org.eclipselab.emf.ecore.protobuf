@@ -56,6 +56,24 @@ public class ConverterRegistry
     }
   }
 
+  public void register(FromProtoBufMessageConverter<? extends Message, ? extends EObject>... newFromProtobufMessageConverters)
+  {
+    registerFromProtobufConverters(Arrays.asList(newFromProtobufMessageConverters));
+  }
+
+  public void registerFromProtobufConverters(List<FromProtoBufMessageConverter<? extends Message, ? extends EObject>> newFromProtobufMessageConverters)
+  {
+    fromProtobufMessageConverters.addAll(0, newFromProtobufMessageConverters);
+    
+    for(FromProtoBufMessageConverter<? extends Message, ? extends EObject> converter : newFromProtobufMessageConverters)
+    {
+      if(converter instanceof Converter.WithRegistry)
+      {
+        ((Converter.WithRegistry) converter).setRegistry(this);
+      }
+    }
+  }
+  
   public void register(ToProtoBufMessageConverter<? extends EObject, ? extends Message> toProtobufMessageConverter)
   {
     toProtobufMessageConverters.add(0, toProtobufMessageConverter);
@@ -63,6 +81,24 @@ public class ConverterRegistry
     if(toProtobufMessageConverter instanceof Converter.WithRegistry)
     {
       ((Converter.WithRegistry) toProtobufMessageConverter).setRegistry(this);
+    }
+  }
+  
+  public void register(ToProtoBufMessageConverter<? extends EObject, ? extends Message>... newToProtobufMessageConverter)
+  {
+    registerToProtobufConverters(Arrays.asList(newToProtobufMessageConverter));
+  }
+  
+  public void registerToProtobufConverters(List<ToProtoBufMessageConverter<? extends EObject, ? extends Message>> newToProtobufMessageConverter)
+  {
+    toProtobufMessageConverters.addAll(0, newToProtobufMessageConverter);
+    
+    for(ToProtoBufMessageConverter<? extends EObject, ? extends Message> converter : newToProtobufMessageConverter)
+    {
+      if(converter instanceof Converter.WithRegistry)
+      {
+        ((Converter.WithRegistry) converter).setRegistry(this);
+      }
     }
   }
   

@@ -6,6 +6,10 @@
 [import org::eclipselab::emf::codegen::protobuf::template::generateFromProtobufConversionCode]
 
 [template public generateConverters(p : GenPackage)]
+[for (eClass : EClass | allEClasses())]
+	[eClass.generateToProtobufConverter(p) /]
+	[eClass.generateFromProtobufConverter(p) /]
+[/for]
 [file (prefix.concat('Converters.java'), false, 'UTF-8')]
 package [utilPackage() /];
 
@@ -15,12 +19,17 @@ public class [prefix /]Converters
 {
   public static final void register(ConverterRegistry converterRegistry)
   {
-    [for (eClass : EClass | allEClasses())]
-	[eClass.generateToProtobufConverter(p) /]
-	[eClass.generateFromProtobufConverter(p) /]
-    converterRegistry.register(new [Name() /]ToProtobufConverter());
-    converterRegistry.register(new [Name() /]FromProtobufConverter());    	
+    converterRegistry.register(
+    [for (eClass : EClass | allEClasses()) separator (',')]
+      new [Name() /]ToProtobufConverter()
     [/for]
+    );
+
+    converterRegistry.register(
+    [for (eClass : EClass | allEClasses()) separator (',')]
+      new [Name() /]FromProtobufConverter()
+    [/for]
+    );
   }
 }
 
