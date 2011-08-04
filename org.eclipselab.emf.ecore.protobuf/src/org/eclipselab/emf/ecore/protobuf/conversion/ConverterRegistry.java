@@ -112,7 +112,7 @@ public class ConverterRegistry
       }
     }
 
-    throw new IllegalArgumentException();
+    throw ConversionException.causeMissingConverter(sourceType, targetType);
   }
 
   public FromProtoBufScalarConverter find(Descriptors.FieldDescriptor sourceType, EDataType targetType)
@@ -125,7 +125,7 @@ public class ConverterRegistry
       }
     }
 
-    throw new IllegalArgumentException();
+    throw ConversionException.causeMissingConverter(sourceType, targetType);
   }
   
   public FromProtoBufMessageConverter<? extends Message, ? extends EObject> find(Descriptors.Descriptor sourceType)
@@ -138,7 +138,7 @@ public class ConverterRegistry
       }
     }
     
-    throw new IllegalArgumentException();
+    throw ConversionException.causeMissingConverter(sourceType);
   }
   
   public FromProtoBufMessageConverter<? extends Message, ? extends EObject> find(Descriptors.Descriptor sourceType, EClass targetType)
@@ -151,7 +151,7 @@ public class ConverterRegistry
       }
     }
     
-    throw new IllegalArgumentException();
+    throw ConversionException.causeMissingConverter(sourceType, targetType);
   }
   
   public ToProtoBufMessageConverter<? extends EObject, ? extends Message> find(EClass sourceType)
@@ -164,6 +164,6 @@ public class ConverterRegistry
       }
     }
     
-    throw new IllegalArgumentException();
+    throw ConversionException.causeMissingConverter(sourceType);
   }
 }

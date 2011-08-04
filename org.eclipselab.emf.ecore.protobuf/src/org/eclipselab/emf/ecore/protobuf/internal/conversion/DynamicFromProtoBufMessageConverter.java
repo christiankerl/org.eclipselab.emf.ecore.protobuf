@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipselab.emf.ecore.protobuf.conversion.ConversionException;
 import org.eclipselab.emf.ecore.protobuf.conversion.Converter;
 import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
 import org.eclipselab.emf.ecore.protobuf.conversion.FromProtoBufMessageConverter;
@@ -63,21 +64,21 @@ public class DynamicFromProtoBufMessageConverter extends FromProtoBufMessageConv
 
     public EObject run()
     {
-      Iterator<Map.Entry<FieldDescriptor, Object>> it = source.getAllFields().entrySet().iterator();
+      final Iterator<Map.Entry<FieldDescriptor, Object>> it = source.getAllFields().entrySet().iterator();
 
-      Map.Entry<FieldDescriptor, Object> firstFieldAndValue = it.next();
+      final Map.Entry<FieldDescriptor, Object> firstFieldAndValue = it.next();
 
       if (!firstFieldAndValue.getKey().getName().equals(naming.getInternalIdField()))
       {
-        throw new IllegalArgumentException();
+        throw ConversionException.causeUnexpectedField(naming.getInternalIdField(), firstFieldAndValue.getKey().getName());
       }
 
       target = pool.getObject(targetType, (Integer)firstFieldAndValue.getValue());
 
       while (it.hasNext())
       {
-        Map.Entry<Descriptors.FieldDescriptor, Object> fieldAndValue = it.next();
-        EStructuralFeature feature = feature(fieldAndValue.getKey());
+        final Map.Entry<Descriptors.FieldDescriptor, Object> fieldAndValue = it.next();
+        final EStructuralFeature feature = feature(fieldAndValue.getKey());
 
         if (feature instanceof EAttribute)
         {
