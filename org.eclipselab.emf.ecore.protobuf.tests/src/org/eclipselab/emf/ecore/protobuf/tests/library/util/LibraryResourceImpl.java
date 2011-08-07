@@ -8,6 +8,8 @@ package org.eclipselab.emf.ecore.protobuf.tests.library.util;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipselab.emf.ecore.protobuf.ProtobufResourceImpl;
+import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
+import org.eclipselab.emf.ecore.protobuf.mapping.MapperRegistry;
 
 
 /**
@@ -29,6 +31,22 @@ public class LibraryResourceImpl extends ProtobufResourceImpl
   public LibraryResourceImpl(URI uri)
   {
     super(uri);
+  }
+  
+  @Override
+  protected void registerMappers(MapperRegistry mapperRegistry)
+  {
+    super.registerMappers(mapperRegistry);
+    
+    LibraryPackageMapper.register(mapperRegistry);
+  }
+  
+  @Override
+  protected void registerConverters(ConverterRegistry converterRegistry)
+  {
+    super.registerConverters(converterRegistry);
+    
+    LibraryConverters.register(converterRegistry);
   }
 
 } //LibraryResourceImpl
