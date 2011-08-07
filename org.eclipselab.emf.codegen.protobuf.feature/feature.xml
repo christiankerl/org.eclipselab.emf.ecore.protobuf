@@ -18,6 +18,8 @@
 
    <requires>
       <import feature="org.eclipselab.emf.ecore.protobuf.feature" version="0.1.0.qualifier"/>
+      <import feature="org.eclipse.acceleo.runtime" version="3.1.0.v20110607-0602"/>
+      <import feature="org.eclipse.emf.codegen.ecore" version="2.7.0.v20110606-0949"/>
    </requires>
 
    <plugin
