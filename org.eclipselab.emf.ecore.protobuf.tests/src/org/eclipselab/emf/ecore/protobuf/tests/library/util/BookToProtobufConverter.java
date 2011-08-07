@@ -1,6 +1,5 @@
 package org.eclipselab.emf.ecore.protobuf.tests.library.util;
 
-import com.google.protobuf.*;
 import com.google.protobuf.Descriptors.*;
 import org.eclipse.emf.ecore.*;
 import org.eclipselab.emf.ecore.protobuf.conversion.*;
@@ -21,7 +20,7 @@ public class BookToProtobufConverter extends ToProtoBufMessageConverter<Book, Li
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-  	authorConverter.setObjectPool(pool);
+      authorConverter.setObjectPool(pool);
   }
   
   @Override
@@ -36,43 +35,43 @@ public class BookToProtobufConverter extends ToProtoBufMessageConverter<Book, Li
     final LibraryProtos.Book.Builder result = LibraryProtos.Book.newBuilder();
     result.setId(pool.getId(source));
     
-	if(source.eIsSet(LibraryPackage.Literals.BOOK__NAME))
-	{	
-	  result.setName(source.getName());
-	}
-	if(source.eIsSet(LibraryPackage.Literals.BOOK__AUTHOR))
-	{	
-	  final Author curAuthor = source.getAuthor();
-	  
-	  if(curAuthor.eClass() == LibraryPackage.Literals.AUTHOR)
-	  {
-	  result.getAuthorBuilder().setExtension(LibraryProtos.Author.authorAuthor,
-	    LibraryProtos.Author.newBuilder().setId(pool.getId(curAuthor)).build()
-	  );
-	  }
-	  else
-	  {
-	    throw new UnsupportedOperationException();
-	  }
-	}
-	if(source.eIsSet(LibraryPackage.Literals.BOOK__RATING))
-	{	
-	  switch(source.getRating())
-	  {
-	    case NO_RATING:
-	      result.setRating(LibraryProtos.Rating.NO_RATING);
-	      break;
-	    case GOOD:
-	      result.setRating(LibraryProtos.Rating.GOOD);
-	      break;
-	    case MEDIUM:
-	      result.setRating(LibraryProtos.Rating.MEDIUM);
-	      break;
-	    case BAD:
-	      result.setRating(LibraryProtos.Rating.BAD);
-	      break;
-	  }
-	}
+    if(source.eIsSet(LibraryPackage.Literals.BOOK__NAME))
+    {
+      result.setName(source.getName());
+    }
+    if(source.eIsSet(LibraryPackage.Literals.BOOK__AUTHOR))
+    {
+      final Author curAuthor = source.getAuthor();
+      
+      if(curAuthor.eClass() == LibraryPackage.Literals.AUTHOR)
+      {
+        result.getAuthorBuilder().setExtension(LibraryProtos.Author.authorAuthor,
+          LibraryProtos.Author.newBuilder().setId(pool.getId(curAuthor)).build()
+        );
+      }
+      else
+      {
+        throw new UnsupportedOperationException();
+      }
+    }
+    if(source.eIsSet(LibraryPackage.Literals.BOOK__RATING))
+    {
+      switch(source.getRating())
+      {
+        case NO_RATING:
+          result.setRating(LibraryProtos.Rating.NO_RATING);
+          break;
+        case GOOD:
+          result.setRating(LibraryProtos.Rating.GOOD);
+          break;
+        case MEDIUM:
+          result.setRating(LibraryProtos.Rating.MEDIUM);
+          break;
+        case BAD:
+          result.setRating(LibraryProtos.Rating.BAD);
+          break;
+      }
+    }
     
     return result.build();
   }

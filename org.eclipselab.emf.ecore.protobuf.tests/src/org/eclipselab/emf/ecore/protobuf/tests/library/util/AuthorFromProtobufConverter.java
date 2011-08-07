@@ -30,9 +30,9 @@ public class AuthorFromProtobufConverter extends FromProtoBufMessageConverter<Li
   @Override
   public Author convert(final Descriptor sourceType, final LibraryProtos.Author source, final EClass targetType)
   {
-	final Author result = (Author) pool.getObject(LibraryPackage.Literals.AUTHOR, source.getId());
+    final Author result = (Author) pool.getObject(LibraryPackage.Literals.AUTHOR, source.getId());
     
-	if(source.hasName())
+    if(source.hasName())
     {
       result.setName(source.getName());
     }

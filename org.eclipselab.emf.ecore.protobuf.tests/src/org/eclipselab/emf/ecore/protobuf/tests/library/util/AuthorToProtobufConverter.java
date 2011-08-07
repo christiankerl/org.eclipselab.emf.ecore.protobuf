@@ -1,6 +1,5 @@
 package org.eclipselab.emf.ecore.protobuf.tests.library.util;
 
-import com.google.protobuf.*;
 import com.google.protobuf.Descriptors.*;
 import org.eclipse.emf.ecore.*;
 import org.eclipselab.emf.ecore.protobuf.conversion.*;
@@ -33,10 +32,10 @@ public class AuthorToProtobufConverter extends ToProtoBufMessageConverter<Author
     final LibraryProtos.Author.Builder result = LibraryProtos.Author.newBuilder();
     result.setId(pool.getId(source));
     
-	if(source.eIsSet(LibraryPackage.Literals.AUTHOR__NAME))
-	{	
-	  result.setName(source.getName());
-	}
+    if(source.eIsSet(LibraryPackage.Literals.AUTHOR__NAME))
+    {
+      result.setName(source.getName());
+    }
     
     return result.build();
   }

@@ -23,8 +23,8 @@ public class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<L
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-  	bookConverter.setObjectPool(pool);
-  	authorConverter.setObjectPool(pool);
+      bookConverter.setObjectPool(pool);
+      authorConverter.setObjectPool(pool);
   }
       
   @Override
@@ -36,13 +36,13 @@ public class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<L
   @Override
   public Library convert(final Descriptor sourceType, final LibraryProtos.Library source, final EClass targetType)
   {
-	final Library result = (Library) pool.getObject(LibraryPackage.Literals.LIBRARY, source.getId());
+    final Library result = (Library) pool.getObject(LibraryPackage.Literals.LIBRARY, source.getId());
     
-	if(source.hasName())
+    if(source.hasName())
     {
       result.setName(source.getName());
     }
-	if(source.getAuthorsCount() > 0)
+    if(source.getAuthorsCount() > 0)
     {
       final int numAuthors = source.getAuthorsCount();
       
@@ -64,7 +64,7 @@ public class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<L
         }
       }
     }
-	if(source.getBooksCount() > 0)
+    if(source.getBooksCount() > 0)
     {
       final int numBooks = source.getBooksCount();
       

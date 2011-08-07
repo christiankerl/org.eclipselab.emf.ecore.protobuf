@@ -5,15 +5,18 @@ import org.eclipselab.emf.ecore.protobuf.conversion.ConverterRegistry;
 public class LibraryConverters
 {
   public static final void register(ConverterRegistry converterRegistry)
-  {    
-    converterRegistry.register(new AuthorToProtobufConverter());
-    converterRegistry.register(new AuthorFromProtobufConverter());
-    
-    converterRegistry.register(new BookToProtobufConverter());
-    converterRegistry.register(new BookFromProtobufConverter());
-    
-    converterRegistry.register(new LibraryToProtobufConverter());
-    converterRegistry.register(new LibraryFromProtobufConverter()); 
+  {
+    converterRegistry.register(
+      new LibraryToProtobufConverter()
+,      new BookToProtobufConverter()
+,      new AuthorToProtobufConverter()
+    );
+
+    converterRegistry.register(
+      new LibraryFromProtobufConverter()
+,      new BookFromProtobufConverter()
+,      new AuthorFromProtobufConverter()
+    );
   }
 }
 

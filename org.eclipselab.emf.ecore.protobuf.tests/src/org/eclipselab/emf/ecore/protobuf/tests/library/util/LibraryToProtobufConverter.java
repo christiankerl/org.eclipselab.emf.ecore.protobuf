@@ -1,6 +1,5 @@
 package org.eclipselab.emf.ecore.protobuf.tests.library.util;
 
-import com.google.protobuf.*;
 import com.google.protobuf.Descriptors.*;
 import org.eclipse.emf.ecore.*;
 import org.eclipselab.emf.ecore.protobuf.conversion.*;
@@ -23,8 +22,8 @@ public class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Libra
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-  	bookConverter.setObjectPool(pool);
-  	authorConverter.setObjectPool(pool);
+      bookConverter.setObjectPool(pool);
+      authorConverter.setObjectPool(pool);
   }
   
   @Override
@@ -39,50 +38,50 @@ public class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Libra
     final LibraryProtos.Library.Builder result = LibraryProtos.Library.newBuilder();
     result.setId(pool.getId(source));
     
-	if(source.eIsSet(LibraryPackage.Literals.LIBRARY__NAME))
-	{	
-	  result.setName(source.getName());
-	}
-	if(source.eIsSet(LibraryPackage.Literals.LIBRARY__AUTHORS))
-	{	
-	  final int numAuthors = source.getAuthors().size();
-	  
-	  for(int idxAuthors = 0; idxAuthors < numAuthors; idxAuthors++)
-	  {
-	    final Author curAuthor = source.getAuthors().get(idxAuthors);
-	  
-	    if(curAuthor.eClass() == LibraryPackage.Literals.AUTHOR)
-	    {
-	      result.addAuthorsBuilder().setExtension(LibraryProtos.Author.authorAuthor,
-	        authorConverter.convert(LibraryPackage.Literals.AUTHOR, curAuthor, LibraryProtos.Author.getDescriptor())
-	      );
-	    }
-	    else
-	    {
-	      throw new UnsupportedOperationException();
-	    }
-	  }
-	}
-	if(source.eIsSet(LibraryPackage.Literals.LIBRARY__BOOKS))
-	{	
-	  final int numBooks = source.getBooks().size();
-	  
-	  for(int idxBooks = 0; idxBooks < numBooks; idxBooks++)
-	  {
-	    final Book curBook = source.getBooks().get(idxBooks);
-	  
-	    if(curBook.eClass() == LibraryPackage.Literals.BOOK)
-	    {
-	      result.addBooksBuilder().setExtension(LibraryProtos.Book.bookBook,
-	        bookConverter.convert(LibraryPackage.Literals.BOOK, curBook, LibraryProtos.Book.getDescriptor())
-	      );
-	    }
-	    else
-	    {
-	      throw new UnsupportedOperationException();
-	    }
-	  }
-	}
+    if(source.eIsSet(LibraryPackage.Literals.LIBRARY__NAME))
+    {
+      result.setName(source.getName());
+    }
+    if(source.eIsSet(LibraryPackage.Literals.LIBRARY__AUTHORS))
+    {
+      final int numAuthors = source.getAuthors().size();
+      
+      for(int idxAuthors = 0; idxAuthors < numAuthors; idxAuthors++)
+      {
+        final Author curAuthor = source.getAuthors().get(idxAuthors);
+      
+        if(curAuthor.eClass() == LibraryPackage.Literals.AUTHOR)
+        {
+          result.addAuthorsBuilder().setExtension(LibraryProtos.Author.authorAuthor,
+            authorConverter.convert(LibraryPackage.Literals.AUTHOR, curAuthor, LibraryProtos.Author.getDescriptor())
+          );
+        }
+        else
+        {
+          throw new UnsupportedOperationException();
+        }
+      }
+    }
+    if(source.eIsSet(LibraryPackage.Literals.LIBRARY__BOOKS))
+    {
+      final int numBooks = source.getBooks().size();
+      
+      for(int idxBooks = 0; idxBooks < numBooks; idxBooks++)
+      {
+        final Book curBook = source.getBooks().get(idxBooks);
+      
+        if(curBook.eClass() == LibraryPackage.Literals.BOOK)
+        {
+          result.addBooksBuilder().setExtension(LibraryProtos.Book.bookBook,
+            bookConverter.convert(LibraryPackage.Literals.BOOK, curBook, LibraryProtos.Book.getDescriptor())
+          );
+        }
+        else
+        {
+          throw new UnsupportedOperationException();
+        }
+      }
+    }
     
     return result.build();
   }
