@@ -71,6 +71,7 @@ public class ProtobufPackageGeneratorAdapter extends GenBaseGeneratorAdapter
   @Override
   protected Diagnostic generateModel(Object object, Monitor monitor)
   {
+    boolean addedPluginDependecies = false;
     GenModel genModel = (GenModel) object;
     
     for(GenPackage genPackage : genModel.getGenPackages())
@@ -79,6 +80,14 @@ public class ProtobufPackageGeneratorAdapter extends GenBaseGeneratorAdapter
       
       if(EPackageAnnotation.get(ePackage).generate())
       {
+        if(!addedPluginDependecies)
+        {
+          // TODO: maybe don't hardcode those plugin ids here
+          genModel.getModelPluginVariables().add("org.eclipselab.emf.ecore.protobuf");
+          genModel.getModelPluginVariables().add("com.google.protobuf");
+          addedPluginDependecies = true;
+        }
+        
         DescriptorProtos.FileDescriptorSet.Builder files = DescriptorProtos.FileDescriptorSet.newBuilder();
         MapperRegistry mappers = new MapperRegistry(new DefaultNamingStrategy());
         
