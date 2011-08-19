@@ -10,9 +10,14 @@
 [query public interfacePackage(aGenPackage : GenPackage) : Sequence(String) = toJavaName(Sequence{aGenPackage.basePackage, aGenPackage.ecorePackage.name, aGenPackage.interfacePackageSuffix}) /]
 
 [query public allEClasses(genPackage : GenPackage) : Collection(EClass) = ecorePackage.allEClasses() /]
-[query public allEClasses(ePackage : EPackage) : Collection(EClass) = eClassifiers->select(oclIsTypeOf(EClass)) /]
+[query public allEClasses(ePackage : EPackage) : Collection(EClass) = eClassifiers->select(oclIsTypeOf(EClass) and not oclAsType(EClass).abstract)->union(eSubpackages.allEClasses()->asSet()) /]
 
-[query public allReferencedEClasses(eClass : EClass) : Set(EClass) = eClass.eAllReferences->collect(eType.oclAsType(EClass))->asSet() /]
+[query public allReferencedEClasses(eClass : EClass) : Set(EClass) = eClass.eAllReferences->select(containment)->collect(eType.oclAsType(EClass))->asSet() /]
+
+[query public allSubEClasses(eClass : EClass) : Set(EClass) = eClass.ePackage.allEClasses()->select(eAllSuperTypes->includes(eClass)) /]
+[query public allConcreteEClasses(eClass : EClass) : Set(EClass) = allSubEClasses()->including(eClass)->select(not abstract) /]
+
+[query public allReferencedEClasses2(eClass : EClass) : Set(EClass) = allReferencedEClasses()->collect(allConcreteEClasses())->flatten()->asSet() /]
 
 [query public singleAttribute(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EAttribute) and not many /]
 [query public singleReference(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EReference) and not many /]

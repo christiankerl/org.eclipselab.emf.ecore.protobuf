@@ -14,7 +14,7 @@ import [p.interfacePackage() /].*;
 
 public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[Name() /], [pbName(p) /]> implements Converter.WithRegistry
 {
-  [for (allReferencedEClasses())]
+  [for (allReferencedEClasses2())]
   private ToProtoBufMessageConverter<[Name() /], [pbName(p) /]> [name() /]Converter;
   [/for]
 
@@ -22,7 +22,7 @@ public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[N
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
-    [for (allReferencedEClasses())]
+    [for (allReferencedEClasses2())]
     [if (self = eClass)]
     [name() /]Converter = this;
     [else]
@@ -35,8 +35,8 @@ public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[N
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-    [for (allReferencedEClasses()->excluding(eClass))]
-      [name() /]Converter.setObjectPool(pool);
+    [for (allReferencedEClasses2()->excluding(eClass))]
+    [name() /]Converter.setObjectPool(pool);
     [/for]
   }
   
@@ -125,20 +125,7 @@ result.addAll[Var() /](source.[getter() /]());
 [template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleReference())]
 final [Type() /] [cur() /] = source.[getter() /]();
 
-if([cur() /].eClass() == [eType.literal(p) /])
-{
-  result.get[Var() /]Builder().setExtension([eType.pbName(p) /].[type() /][Type() /],
-  [if (oclAsType(EReference).containment)]
-    [type() /]Converter.convert([eType.literal(p) /], [cur() /], [eType.pbName(p) /].getDescriptor())
-  [else]
-    [eType.pbName(p) /].newBuilder().setId(pool.getId([cur() /])).build()
-  [/if]
-  );
-}
-else
-{
-  throw new UnsupportedOperationException();
-}
+[eFeature.generateTypeSwitch('get', p) /]
 [/template]
 
 [comment 0..n EReference /]
@@ -149,19 +136,26 @@ for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
 {
   final [Type() /] [cur() /] = source.[getter() /]().get([idx() /]);
 
-  if([cur() /].eClass() == [eType.literal(p) /])
-  {
-    result.add[Var() /]Builder().setExtension([eType.pbName(p) /].[type() /][Type() /],
-    [if (oclAsType(EReference).containment)]
-      [type() /]Converter.convert([eType.literal(p) /], [cur() /], [eType.pbName(p) /].getDescriptor())
-    [else]
-      [eType.pbName(p) /].newBuilder().setId(pool.getId([cur() /])).build()
-    [/if]
-    );
-  }
-  else
-  {
-    throw new UnsupportedOperationException();
-  }
+  [eFeature.generateTypeSwitch('add', p) /]
 }
+[/template]
+
+[template public generateTypeSwitch(f : EStructuralFeature, verb : String, p : GenPackage)]
+[for (ePossibleType : EClass | eType.oclAsType(EClass).allConcreteEClasses()) separator('else ')]
+if([f.cur() /].eClass() == [ePossibleType.literal(p) /])
+{
+  result.[verb /][f.Var() /]Builder().setExtension([ePossibleType.pbName(p) /].[f.type() /][ePossibleType.Name() /],
+  [if (f.oclAsType(EReference).containment)]
+    [ePossibleType.name() /]Converter.convert([ePossibleType.literal(p) /], ([ePossibleType.Name() /]) [f.cur() /], [ePossibleType.pbName(p) /].getDescriptor())
+  [else]
+    [ePossibleType.pbName(p) /].newBuilder().setId(pool.getId([f.cur() /])).build()
+  [/if]
+  );
+} 
+[/for]
+else
+{
+  // TODO: lookup in converter registry...
+  throw new UnsupportedOperationException();
+}	
 [/template]
