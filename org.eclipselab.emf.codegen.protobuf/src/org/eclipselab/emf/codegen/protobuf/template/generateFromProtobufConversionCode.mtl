@@ -2,6 +2,7 @@
 [module generateFromProtobufConversionCode('http://www.eclipse.org/emf/2002/Ecore', 'http://www.eclipse.org/emf/2002/GenModel')]
 
 [import org::eclipselab::emf::codegen::protobuf::template::common]
+[import org::eclipselab::emf::codegen::protobuf::template::generateFromProtobufDataTypeConversionCode]
 
 [template public generateFromProtobufConverter(eClass : EClass, p : GenPackage)]
 [file (Name() + 'FromProtobufConverter.java', false, 'UTF-8')]
@@ -15,7 +16,7 @@ import [p.interfacePackage() /].*;
 
 public class [Name() /]FromProtobufConverter extends FromProtoBufMessageConverter<[pbName(p) /], [Name() /]> implements Converter.WithRegistry
 {
-  [for (allReferencedEClasses())]
+  [for (allReferencedEClasses2())]
   private FromProtoBufMessageConverter<[pbName(p) /], [Name() /]> [name() /]Converter;
   [/for]
 
@@ -23,7 +24,7 @@ public class [Name() /]FromProtobufConverter extends FromProtoBufMessageConverte
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
-    [for (allReferencedEClasses())]
+    [for (allReferencedEClasses2())]
     [if (self = eClass)]
     [name() /]Converter = this;
     [else]
@@ -36,9 +37,9 @@ public class [Name() /]FromProtobufConverter extends FromProtoBufMessageConverte
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-    [for (allReferencedEClasses()->excluding(eClass))]
-      [name() /]Converter.setObjectPool(pool);
-      [/for]
+    [for (allReferencedEClasses2()->excluding(eClass))]
+    [name() /]Converter.setObjectPool(pool);
+    [/for]
   }
       
   @Override
@@ -86,75 +87,44 @@ has[Var() /]()
 get[Var() /]Count() > 0
 [/template]
 
-[comment 0..1 EAttribute of type EEnum/]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.oclIsKindOf(EEnum))]
-switch(source.[getter() /]())
-{
-  [let eEnum : EEnum = eFeature.eType.oclAsType(EEnum)]
-  [for (eEnum.eLiterals)]
-  case [name /]:
-    result.[eFeature.setter() /]([eEnum.Name() /].[name /]);
-    break;
-  [/for]
-  [/let]
-}
-[/template]
-
-[comment 0..n EAttribute of type EEnum/]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.oclIsKindOf(EEnum))]
-// TODO: implement [Var() /] conversion
-[/template]
-
-[comment 0..1 EAttribute of type EByteArray/]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.name = 'EByteArray')]
-result.[setter() /](source.[getter() /]().toByteArray());
-[/template]
-
-[comment 0..n EAttribute of type EByteArray/]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.name = 'EByteArray')]
-// TODO: implement [Var() /] conversion
-[/template]
-
-[comment 0..1 EAttribute of type EDate/]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.name = 'EDate')]
-result.[setter() /](new java.util.Date(source.[getter() /]()));
-[/template]
-
-[comment 0..n EAttribute of type EDate/]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.name = 'EDate')]
-// TODO: implement [Var() /] conversion
-[/template]
-
 [comment 0..1 EAttribute /]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute())]
-result.[setter() /](source.[getter() /]());
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and isEcoreScalarType())]
+result.[setter() /](([eType.instanceTypeName /]) source.[getter() /]());
 [/template]
 
 [comment 0..n EAttribute /]
-[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute())]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and isManyCompatibleEcoreScalarType())]
 result.[getter() /]().addAll(source.[getter() /]List());
+[/template]
+
+[comment 0..1 EAttribute/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute())]
+[let sourceValueExpr : String = 'source.' + getter() + '()']
+[let resultValueExpr : String = 'result.' + setter() + '(%result%)']
+[eFeature.oclAsType(EAttribute).generateFromProtobufDataTypeConversion(p, resultValueExpr, '%result%',  sourceValueExpr) /];
+[/let]
+[/let]
+[/template]
+
+[comment 0..n EAttribute/]
+[template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute())]
+final int [num() /] = source.[getter() /]Count();
+
+for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
+{
+[let sourceValueExpr : String = 'source.' + getter() + '(' + idx() + ')']
+[let resultValueExpr : String = 'result.' + getter() + '().add(' + idx() + ', %result%)']
+  [eFeature.oclAsType(EAttribute).generateFromProtobufDataTypeConversion(p, resultValueExpr, '%result%', sourceValueExpr) /];
+[/let]
+[/let]
+}
 [/template]
 
 [comment 0..1 EReference /]
 [template public generateFromProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleReference())]
 final [eType.pbName(p) /].Ref [cur() /]Ref = source.[getter() /]();
 
-if([cur() /]Ref.hasExtension([eType.pbName(p) /].[type() /][Type() /]))
-{
-  final [eType.pbName(p) /] [cur() /] = [cur() /]Ref.getExtension([eType.pbName(p) /].[type() /][Type() /]);
-
-  result.[setter() /](
-[if (oclAsType(EReference).containment)]
-    [type() /]Converter.convert([cur() /], [eType.literal(p) /])
-[else]
-    ([Type() /]) pool.getObject([eType.literal(p) /], [cur() /].getId())
-[/if]
-  );
-}
-else
-{
-  throw new UnsupportedOperationException();
-}
+[eFeature.generateTypeSwitch(eFeature.setter(), p) /]
 [/template]
 
 [comment 0..n EReference /]
@@ -165,21 +135,28 @@ for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
 {
   final [eType.pbName(p) /].Ref [cur() /]Ref = source.[getter() /]([idx() /]);
 
-  if([cur() /]Ref.hasExtension([eType.pbName(p) /].[type() /][Type() /]))
-  {
-    final [eType.pbName(p) /] [cur() /] = [cur() /]Ref.getExtension([eType.pbName(p) /].[type() /][Type() /]);
-
-    result.[getter() /]().add(
-    [if (oclAsType(EReference).containment)]
-      [type() /]Converter.convert([cur() /], [eType.literal(p) /])
-    [else]
-      ([Type() /]) pool.getObject([eType.literal(p) /], [cur() /].getId())
-    [/if]
-    );
-  }
-  else
-  {
-    throw new UnsupportedOperationException();
-  }
+  [eFeature.generateTypeSwitch(eFeature.getter() + '().add', p) /]
 }
+[/template]
+
+[template private generateTypeSwitch(f : EStructuralFeature, verb : String, p : GenPackage)]
+[for (ePossibleType : EClass | eType.oclAsType(EClass).allConcreteEClasses()) separator('else ')]
+if([f.cur() /]Ref.hasExtension([ePossibleType.pbName(p) /].[f.type() /][ePossibleType.Name() /]))
+{
+  final [ePossibleType.pbName(p) /] [f.cur() /] = [f.cur() /]Ref.getExtension([ePossibleType.pbName(p) /].[f.type() /][ePossibleType.Name() /]);
+
+  result.[verb /](
+[if (f.oclAsType(EReference).containment)]
+    [ePossibleType.name() /]Converter.convert([f.cur() /], [ePossibleType.literal(p) /])
+[else]
+    ([ePossibleType.Name() /]) pool.getObject([ePossibleType.literal(p) /], [f.cur() /].getId())
+[/if]
+  );
+}
+[/for]
+else
+{
+  // TODO: lookup in converter registry...
+  throw new UnsupportedOperationException();
+}	
 [/template]

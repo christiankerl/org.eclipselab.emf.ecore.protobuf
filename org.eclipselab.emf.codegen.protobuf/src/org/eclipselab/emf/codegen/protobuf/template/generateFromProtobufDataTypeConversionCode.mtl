@@ -1,0 +1,48 @@
+[comment encoding = UTF-8 /]
+[module generateFromProtobufDataTypeConversionCode('http://www.eclipse.org/emf/2002/Ecore', 'http://www.eclipse.org/emf/2002/GenModel')]
+
+[import org::eclipselab::emf::codegen::protobuf::template::common]
+
+[comment EAttribute of type EChar /]
+[template public generateFromProtobufDataTypeConversion(eAttribute : EAttribute, p : GenPackage, resultValueExpr : String, placeholder : String, sourceValueExpr : String) ? (Sequence{'EChar', 'ECharacterObject'}->includes(eType.name))]
+[resultValueExpr.substitute(placeholder, '(char) ' + sourceValueExpr) /]
+[/template]
+
+[comment EAttribute of type EByte /]
+[template public generateFromProtobufDataTypeConversion(eAttribute : EAttribute, p : GenPackage, resultValueExpr : String, placeholder : String, sourceValueExpr : String) ? (Sequence{'EByte', 'EByteObject'}->includes(eType.name))]
+[resultValueExpr.substitute(placeholder, '(byte) ' + sourceValueExpr) /]
+[/template]
+
+[comment EAttribute of type EShort /]
+[template public generateFromProtobufDataTypeConversion(eAttribute : EAttribute, p : GenPackage, resultValueExpr : String, placeholder : String, sourceValueExpr : String) ? (Sequence{'EShort', 'EShortObject'}->includes(eType.name))]
+[resultValueExpr.substitute(placeholder, '(short) ' + sourceValueExpr) /]
+[/template]
+
+[comment EAttribute of type EByteArray/]
+[template public generateFromProtobufDataTypeConversion(eAttribute : EAttribute, p : GenPackage, resultValueExpr : String, placeholder : String, sourceValueExpr : String) ? (eType.name = 'EByteArray')]
+[resultValueExpr.substitute(placeholder, sourceValueExpr + '.toByteArray()') /]
+[/template]
+
+[comment EAttribute of type EDate/]
+[template public generateFromProtobufDataTypeConversion(eAttribute : EAttribute, p : GenPackage, resultValueExpr : String, placeholder : String, sourceValueExpr : String) ? (eType.name = 'EDate')]
+[resultValueExpr.substitute(placeholder, 'new java.util.Date(' + sourceValueExpr + ')') /]
+[/template]
+
+[comment EAttribute of type EEnum/]
+[template public generateFromProtobufDataTypeConversion(eAttribute : EAttribute, p : GenPackage, resultValueExpr : String, placeholder : String, sourceValueExpr : String) ? (eType.oclIsKindOf(EEnum))]
+switch([sourceValueExpr /])
+{
+  [let eEnum : EEnum = eAttribute.eType.oclAsType(EEnum)]
+  [for (eEnum.eLiterals)]
+  case [name /]:
+    [resultValueExpr.substitute(placeholder, eEnum.Name() + '.' + name )/];
+    break;
+  [/for]
+  [/let]
+}
+[/template]
+
+[comment EAttribute of any type /]
+[template public generateFromProtobufDataTypeConversion(eAttribute : EAttribute, p : GenPackage, resultValueExpr : String, placeholder : String, sourceValueExpr : String)]
+[resultValueExpr.substitute(placeholder, '(' + eType.instanceTypeName + ') org.eclipse.emf.ecore.util.EcoreUtil.createFromString(' + eType.literal(p) + ', ' + sourceValueExpr + ')') /]
+[/template]

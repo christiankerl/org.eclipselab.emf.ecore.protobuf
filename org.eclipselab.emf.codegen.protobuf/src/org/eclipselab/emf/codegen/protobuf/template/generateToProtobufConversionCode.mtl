@@ -2,6 +2,7 @@
 [module generateToProtobufConversionCode('http://www.eclipse.org/emf/2002/Ecore', 'http://www.eclipse.org/emf/2002/GenModel')]
 
 [import org::eclipselab::emf::codegen::protobuf::template::common]
+[import org::eclipselab::emf::codegen::protobuf::template::generateToProtobufDataTypeConversionCode]
 
 [template public generateToProtobufConverter(eClass : EClass, p : GenPackage)]
 [file (Name() + 'ToProtobufConverter.java', false, 'UTF-8')]
@@ -14,6 +15,7 @@ import [p.interfacePackage() /].*;
 
 public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[Name() /], [pbName(p) /]> implements Converter.WithRegistry
 {
+  private ConverterRegistry registry;
   [for (allReferencedEClasses2())]
   private ToProtoBufMessageConverter<[Name() /], [pbName(p) /]> [name() /]Converter;
   [/for]
@@ -22,6 +24,7 @@ public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[N
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
+    this.registry = registry;
     [for (allReferencedEClasses2())]
     [if (self = eClass)]
     [name() /]Converter = this;
@@ -72,53 +75,42 @@ public class [Name() /]ToProtobufConverter extends ToProtoBufMessageConverter<[N
 [/file]
 [/template]
 
-[comment 0..1 EAttribute of type EEnum/]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.oclIsKindOf(EEnum))]
-switch(source.[getter() /]())
-{
-  [let eEnum : EEnum = eFeature.eType.oclAsType(EEnum)]
-  [for (eEnum.eLiterals)]
-  case [name /]:
-    result.[eFeature.setter() /]([eEnum.pbName(p) /].[name /]);
-    break;
-  [/for]
-  [/let]
-}
+[comment 0..1 EAttribute of scalar boolean /]
+[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.name.startsWith('EBoolean'))]
+result.[setter() /](source.is[Var() /]());
 [/template]
 
-[comment 0..n EAttribute of type EEnum/]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.oclIsKindOf(EEnum))]
-// TODO: implement [Var() /] conversion
-[/template]
-
-[comment 0..1 EAttribute of type EByteArray/]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.name = 'EByteArray')]
-result.[setter() /](com.google.protobuf.ByteString.copyFrom(source.[getter() /]()));
-[/template]
-
-[comment 0..n EAttribute of type EByteArray/]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.name = 'EByteArray')]
-// TODO: implement [Var() /] conversion
-[/template]
-
-[comment 0..1 EAttribute of type EDate/]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and eType.name = 'EDate')]
-result.[setter() /](source.[getter() /]().getTime());
-[/template]
-
-[comment 0..n EAttribute of type EDate/]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and eType.name = 'EDate')]
-// TODO: implement [Var() /] conversion
-[/template]
-
-[comment 0..1 EAttribute /]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute())]
+[comment 0..1 EAttribute of scalar type /]
+[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute() and isEcoreScalarType())]
 result.[setter() /](source.[getter() /]());
 [/template]
 
-[comment 0..n EAttribute /]
-[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute())]
+[comment 0..n EAttribute of scalar type /]
+[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute() and isManyCompatibleEcoreScalarType())]
 result.addAll[Var() /](source.[getter() /]());
+[/template]
+
+[comment 0..1 EAttribute/]
+[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (singleAttribute())]
+[let sourceValueExpr : String = 'source.' + getter() + '()']
+[let resultValueExpr : String = 'result.' + setter() + '(%result%)']
+[eFeature.oclAsType(EAttribute).generateToProtobufDataTypeConversion(p, resultValueExpr, '%result%',  sourceValueExpr) /];
+[/let]
+[/let]
+[/template]
+
+[comment 0..n EAttribute/]
+[template public generateToProtobufFeatureConversion(eFeature : EStructuralFeature, p : GenPackage) ? (manyAttribute())]
+final int [num() /] = source.[getter() /]().size();
+
+for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
+{
+[let sourceValueExpr : String = 'source.' + getter() + '().get(' + idx() + ')']
+[let resultValueExpr : String = 'result.' + setter() + '(' + idx() + ', %result%)' ]
+  [eFeature.oclAsType(EAttribute).generateToProtobufDataTypeConversion(p, resultValueExpr, '%result%', sourceValueExpr) /];
+[/let]
+[/let]
+}
 [/template]
 
 [comment 0..1 EReference /]
@@ -140,7 +132,7 @@ for(int [idx() /] = 0; [idx() /] < [num() /]; [idx() /]++)
 }
 [/template]
 
-[template public generateTypeSwitch(f : EStructuralFeature, verb : String, p : GenPackage)]
+[template private generateTypeSwitch(f : EStructuralFeature, verb : String, p : GenPackage)]
 [for (ePossibleType : EClass | eType.oclAsType(EClass).allConcreteEClasses()) separator('else ')]
 if([f.cur() /].eClass() == [ePossibleType.literal(p) /])
 {

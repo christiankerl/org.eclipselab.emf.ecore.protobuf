@@ -25,6 +25,10 @@
 [query public manyAttribute(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EAttribute) and many /]
 [query public manyReference(eFeature : EStructuralFeature) : Boolean = oclIsTypeOf(EReference) and many /]
 
+[query public isEcoreScalarType(eFeature : EStructuralFeature) : Boolean = Set{'EBoolean', 'EBooleanObject', 'EChar', 'ECharacterObject', 'EByte', 'EByteObject', 'EShort', 'EShortObject', 'EInt', 'EIntegerObject', 'ELong', 'ELongObject', 'EFloat', 'EFloatObject', 'EDouble', 'EDoubleObject', 'EString'}->includes(eFeature.eType.name) /]
+[comment only these can be directly transferred from their protobuf list to an ecore list and vice versa /]
+[query public isManyCompatibleEcoreScalarType(eFeature : EStructuralFeature) : Boolean = Set{'EBoolean', 'EBooleanObject', 'EInt', 'EIntegerObject', 'ELong', 'ELongObject', 'EFloat', 'EFloatObject', 'EDouble', 'EDoubleObject', 'EString'}->includes(eFeature.eType.name) /]
+
 [query public var(eFeature : EStructuralFeature) : String = eFeature.name.toLowerFirst() /]
 [query public Var(eFeature : EStructuralFeature) : String = eFeature.name.toUpperFirst() /]
 [query public Type(eFeature : EStructuralFeature) : String = eFeature.eType.name /]
@@ -37,7 +41,6 @@
 
 [query public Name(eClass : EClassifier) : String = eClass.name /]
 [query public name(eClass : EClassifier) : String = eClass.name.toLowerFirst() /]
-
 
 [query public getter(eFeature : EStructuralFeature) : String = 'get'.concat(eFeature.name.toUpperFirst()) /]
 [query public setter(eFeature : EStructuralFeature) : String = 'set'.concat(eFeature.name.toUpperFirst()) /]
