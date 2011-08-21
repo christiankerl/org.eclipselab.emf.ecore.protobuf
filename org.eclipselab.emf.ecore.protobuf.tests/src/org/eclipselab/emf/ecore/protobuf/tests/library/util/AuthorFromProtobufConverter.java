@@ -34,7 +34,7 @@ public class AuthorFromProtobufConverter extends FromProtoBufMessageConverter<Li
     
     if(source.hasName())
     {
-      result.setName(source.getName());
+      result.setName((java.lang.String) source.getName());
     }
     
     return result;

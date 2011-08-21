@@ -8,20 +8,17 @@ import org.eclipselab.emf.ecore.protobuf.tests.library.*;
 
 public class BookFromProtobufConverter extends FromProtoBufMessageConverter<LibraryProtos.Book, Book> implements Converter.WithRegistry
 {
-  private FromProtoBufMessageConverter<LibraryProtos.Author, Author> authorConverter;
 
   @Override
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
-    authorConverter = (FromProtoBufMessageConverter<LibraryProtos.Author, Author>) registry.find(LibraryProtos.Author.getDescriptor(), LibraryPackage.Literals.AUTHOR);
   }
 
   @Override
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-      authorConverter.setObjectPool(pool);
   }
       
   @Override
@@ -37,7 +34,7 @@ public class BookFromProtobufConverter extends FromProtoBufMessageConverter<Libr
     
     if(source.hasName())
     {
-      result.setName(source.getName());
+      result.setName((java.lang.String) source.getName());
     }
     if(source.hasAuthor())
     {
@@ -53,8 +50,9 @@ public class BookFromProtobufConverter extends FromProtoBufMessageConverter<Libr
       }
       else
       {
+        // TODO: lookup in converter registry...
         throw new UnsupportedOperationException();
-      }
+      }	
     }
     if(source.hasRating())
     {
@@ -72,7 +70,8 @@ public class BookFromProtobufConverter extends FromProtoBufMessageConverter<Libr
         case BAD:
           result.setRating(Rating.BAD);
           break;
-      }
+      };
+      
     }
     
     return result;

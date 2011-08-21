@@ -23,8 +23,8 @@ public class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<L
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-      bookConverter.setObjectPool(pool);
-      authorConverter.setObjectPool(pool);
+    bookConverter.setObjectPool(pool);
+    authorConverter.setObjectPool(pool);
   }
       
   @Override
@@ -40,7 +40,7 @@ public class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<L
     
     if(source.hasName())
     {
-      result.setName(source.getName());
+      result.setName((java.lang.String) source.getName());
     }
     if(source.getAuthorsCount() > 0)
     {
@@ -53,15 +53,16 @@ public class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<L
         if(curAuthorRef.hasExtension(LibraryProtos.Author.authorAuthor))
         {
           final LibraryProtos.Author curAuthor = curAuthorRef.getExtension(LibraryProtos.Author.authorAuthor);
-      
+        
           result.getAuthors().add(
             authorConverter.convert(curAuthor, LibraryPackage.Literals.AUTHOR)
           );
         }
         else
         {
+          // TODO: lookup in converter registry...
           throw new UnsupportedOperationException();
-        }
+        }	
       }
     }
     if(source.getBooksCount() > 0)
@@ -75,15 +76,16 @@ public class LibraryFromProtobufConverter extends FromProtoBufMessageConverter<L
         if(curBookRef.hasExtension(LibraryProtos.Book.bookBook))
         {
           final LibraryProtos.Book curBook = curBookRef.getExtension(LibraryProtos.Book.bookBook);
-      
+        
           result.getBooks().add(
             bookConverter.convert(curBook, LibraryPackage.Literals.BOOK)
           );
         }
         else
         {
+          // TODO: lookup in converter registry...
           throw new UnsupportedOperationException();
-        }
+        }	
       }
     }
     

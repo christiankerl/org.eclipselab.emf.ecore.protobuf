@@ -7,6 +7,7 @@ import org.eclipselab.emf.ecore.protobuf.tests.library.*;
 
 public class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Library, LibraryProtos.Library> implements Converter.WithRegistry
 {
+  private ConverterRegistry registry;
   private ToProtoBufMessageConverter<Book, LibraryProtos.Book> bookConverter;
   private ToProtoBufMessageConverter<Author, LibraryProtos.Author> authorConverter;
 
@@ -14,6 +15,7 @@ public class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Libra
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
+    this.registry = registry;
     bookConverter = (ToProtoBufMessageConverter<Book, LibraryProtos.Book>) registry.find(LibraryPackage.Literals.BOOK);
     authorConverter = (ToProtoBufMessageConverter<Author, LibraryProtos.Author>) registry.find(LibraryPackage.Literals.AUTHOR);
   }
@@ -22,8 +24,8 @@ public class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Libra
   public void setObjectPool(EObjectPool pool)
   {
     super.setObjectPool(pool);
-      bookConverter.setObjectPool(pool);
-      authorConverter.setObjectPool(pool);
+    bookConverter.setObjectPool(pool);
+    authorConverter.setObjectPool(pool);
   }
   
   @Override
@@ -53,13 +55,14 @@ public class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Libra
         if(curAuthor.eClass() == LibraryPackage.Literals.AUTHOR)
         {
           result.addAuthorsBuilder().setExtension(LibraryProtos.Author.authorAuthor,
-            authorConverter.convert(LibraryPackage.Literals.AUTHOR, curAuthor, LibraryProtos.Author.getDescriptor())
+            authorConverter.convert(LibraryPackage.Literals.AUTHOR, (Author) curAuthor, LibraryProtos.Author.getDescriptor())
           );
-        }
+        } 
         else
         {
+          // TODO: lookup in converter registry...
           throw new UnsupportedOperationException();
-        }
+        }	
       }
     }
     if(source.eIsSet(LibraryPackage.Literals.LIBRARY__BOOKS))
@@ -73,13 +76,14 @@ public class LibraryToProtobufConverter extends ToProtoBufMessageConverter<Libra
         if(curBook.eClass() == LibraryPackage.Literals.BOOK)
         {
           result.addBooksBuilder().setExtension(LibraryProtos.Book.bookBook,
-            bookConverter.convert(LibraryPackage.Literals.BOOK, curBook, LibraryProtos.Book.getDescriptor())
+            bookConverter.convert(LibraryPackage.Literals.BOOK, (Book) curBook, LibraryProtos.Book.getDescriptor())
           );
-        }
+        } 
         else
         {
+          // TODO: lookup in converter registry...
           throw new UnsupportedOperationException();
-        }
+        }	
       }
     }
     

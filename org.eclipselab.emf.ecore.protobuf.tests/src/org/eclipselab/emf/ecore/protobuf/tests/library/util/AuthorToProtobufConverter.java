@@ -7,11 +7,13 @@ import org.eclipselab.emf.ecore.protobuf.tests.library.*;
 
 public class AuthorToProtobufConverter extends ToProtoBufMessageConverter<Author, LibraryProtos.Author> implements Converter.WithRegistry
 {
+  private ConverterRegistry registry;
 
   @Override
   @SuppressWarnings("unchecked")
   public void setRegistry(ConverterRegistry registry)
   {
+    this.registry = registry;
   }
 
   @Override
