@@ -103,8 +103,8 @@
 					<resolver>p2</resolver>
 					<target>
 						<artifact>
-							<groupId>org.eclipselab.emf.ecore.protobuf</groupId>
-							<artifactId>org.eclipselab.emf.ecore.protobuf.releng.target</artifactId>
+							<groupId>org.eclipselab.emf.protobuf</groupId>
+							<artifactId>org.eclipselab.emf.protobuf.releng.target</artifactId>
 							<version>${project.parent.version}</version>
 							<classifier>e37</classifier>
 						</artifact>
