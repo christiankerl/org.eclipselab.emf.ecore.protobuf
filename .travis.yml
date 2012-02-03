@@ -1,0 +1,6 @@
+language: java
+install: 
+  - sudo apt-get install protobuf-compiler
+  - cd ./org.eclipselab.emf.protobuf.releng/
+  - mvn package -DskipTests=true
+script: mvn test
