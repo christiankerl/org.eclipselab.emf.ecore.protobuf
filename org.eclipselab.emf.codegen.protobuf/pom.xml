@@ -34,6 +34,7 @@
 						<configuration>
 							<!-- Calls the AcceleoCompiler to launch the compilation. -->
 							<mainClass>org.eclipselab.emf.codegen.protobuf.AcceleoCompiler</mainClass>
+							<classpathScope>compile</classpathScope>
 							<arguments>
 								<argument>${basedir}/src/</argument>  <!-- The source folder -->
 								<argument>${basedir}/target/classes</argument>  <!-- The output folder -->

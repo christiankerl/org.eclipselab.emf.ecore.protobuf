@@ -31,7 +31,7 @@
 		<module>../org.eclipselab.emf.protobuf.releng.target/</module>
 	</modules>
 	<properties>
-		<tycho.version>0.12.0</tycho.version>
+		<tycho.version>0.13.0</tycho.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
