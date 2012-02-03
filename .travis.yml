@@ -10,4 +10,4 @@ install:
   - cd ./../
   - cd ./org.eclipselab.emf.protobuf.releng/
   - mvn package -DskipTests=true
-script: mvn test
+script: mvn integration-test
