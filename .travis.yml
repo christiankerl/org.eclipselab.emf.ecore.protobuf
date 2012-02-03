@@ -8,7 +8,6 @@ install:
   - make check
   - sudo make install
   - cd ./../
-  - protoc --version
   - cd ./org.eclipselab.emf.protobuf.releng/
   - mvn package -DskipTests=true
 script: mvn test
