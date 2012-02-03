@@ -1,5 +1,7 @@
 # Eclipse EMF ProtoBuf Integration
 
+[![Build Status](https://secure.travis-ci.org/christiankerl/org.eclipselab.emf.ecore.protobuf.png)](http://travis-ci.org/christiankerl/org.eclipselab.emf.ecore.protobuf)
+
 This project integrates Google Protocol Buffers as serialization layer into Eclipse EMF. The initial implementation was created during Google Summer of Code 2011.
 
 Features:
