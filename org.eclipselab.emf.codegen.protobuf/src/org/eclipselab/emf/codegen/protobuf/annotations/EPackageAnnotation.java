@@ -16,7 +16,6 @@ package org.eclipselab.emf.codegen.protobuf.annotations;
 
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EcoreFactory;
 
 public class EPackageAnnotation
 {
@@ -29,25 +28,12 @@ public class EPackageAnnotation
     return new EPackageAnnotation(ePackage.getEAnnotation(SOURCE_ID));
   }
   
-  public static EPackageAnnotation create(EPackage ePackage, boolean generate)
-  {
-    EAnnotation annotation = EcoreFactory.eINSTANCE.createEAnnotation();
-    annotation.setSource(SOURCE_ID);
-    annotation.getDetails().put(GENERATE_ENTRY_ID, Boolean.toString(generate));
-    
-    ePackage.getEAnnotations().add(annotation);
-    
-    return get(ePackage);
-  }
-  
   private boolean generate = false;
-  private boolean exists = false;
   
   public EPackageAnnotation(EAnnotation eAnnotation)
   {
     if(eAnnotation != null)
     {
-      exists = true;
       generate = Boolean.parseBoolean((eAnnotation.getDetails().get(GENERATE_ENTRY_ID)));
     }
   }
@@ -55,10 +41,5 @@ public class EPackageAnnotation
   public boolean generate()
   {
     return generate;
-  }
-  
-  public boolean exists()
-  {
-    return exists;
   }
 }

@@ -20,7 +20,12 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.expressions.EvaluationContext;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipselab.emf.codegen.protobuf.annotations.EPackageAnnotation;
 
 public class GenerateProtobufAnnotationCommandHandler extends AbstractHandler
@@ -52,8 +57,10 @@ public class GenerateProtobufAnnotationCommandHandler extends AbstractHandler
   public Object execute(ExecutionEvent event) throws ExecutionException
   { 
     EPackage ePackage = getEPackageFromContext(event.getApplicationContext());
+    EditingDomain domain = AdapterFactoryEditingDomain.getEditingDomainFor(ePackage);
     
-    EPackageAnnotation.create(ePackage, true);
+    Command createAnnotationCommand = AddCommand.create(domain, ePackage, EcorePackage.Literals.EMODEL_ELEMENT__EANNOTATIONS, EPackageAnnotation.create(true));
+    domain.getCommandStack().execute(createAnnotationCommand);
     
     return null;
   }
