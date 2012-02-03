@@ -31,23 +31,21 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.6</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>generate-sources</id>
 						<phase>generate-sources</phase>
 						<goals>
-							<goal>run</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<tasks>
-								<exec executable="${protobuf.executable}">
-									<arg value="--proto_path=${protobuf.include_dir}" />
-									<arg value="--java_out=${protobuf.output_dir}" />
-									<arg value="${protobuf.input}" />
-								</exec>
-							</tasks>
+							<executable>${protobuf.executable}</executable>
+							<arguments>
+								<argument>--proto_path=${protobuf.include_dir}</argument>
+								<argument>--java_out=${protobuf.output_dir}</argument>
+								<argument>${protobuf.input}</argument>
+							</arguments>
 						</configuration>
 					</execution>
 				</executions>
