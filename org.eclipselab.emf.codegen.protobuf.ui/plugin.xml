@@ -16,5 +16,32 @@
             class="org.eclipselab.emf.codegen.protobuf.ui.preferences.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:org.eclipse.emf.ecore.presentation.EcoreEditorID?before=additions">
+         <command
+               commandId="org.eclipselab.emf.codegen.protobuf.ui.addGenerateProtobufAnnotation"
+               label="Add Generate ProtoBuf Annotation"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            description="Create an EAnnotation to enable generation of classes for ProtoBuf Integration for the selected EPackage."
+            id="org.eclipselab.emf.codegen.protobuf.ui.addGenerateProtobufAnnotation"
+            name="Add Generate ProtoBuf Annotation">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.eclipselab.emf.codegen.protobuf.ui.commands.GenerateProtobufAnnotationCommandHandler"
+            commandId="org.eclipselab.emf.codegen.protobuf.ui.addGenerateProtobufAnnotation">
+      </handler>
+   </extension>
 
 </plugin>
