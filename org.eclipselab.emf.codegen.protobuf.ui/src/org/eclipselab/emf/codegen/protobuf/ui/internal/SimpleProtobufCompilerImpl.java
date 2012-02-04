@@ -16,7 +16,7 @@ package org.eclipselab.emf.codegen.protobuf.ui.internal;
 
 import org.eclipselab.emf.codegen.protobuf.AbstractProtobufCompiler;
 
-public class ProtobufCompilerImpl extends AbstractProtobufCompiler
+public class SimpleProtobufCompilerImpl extends AbstractProtobufCompiler
 {
   @Override
   public String getExecutable()

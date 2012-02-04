@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.eclipselab.emf.codegen.protobuf.ui.ProtobufCompiler">
-   <implementation class="org.eclipselab.emf.codegen.protobuf.ui.internal.ProtobufCompilerImpl"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="org.eclipselab.emf.codegen.protobuf.ui.ProtobufCompiler">
+   <implementation class="org.eclipselab.emf.codegen.protobuf.ui.internal.DelegatingProtobufCompilerImpl"/>
    <service>
       <provide interface="org.eclipselab.emf.codegen.protobuf.ProtobufCompiler"/>
    </service>
+   <reference bind="setWorkbench" cardinality="1..1" interface="org.eclipse.ui.IWorkbench" name="IWorkbench" policy="static"/>
 </scr:component>

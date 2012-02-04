@@ -3,10 +3,9 @@
 <plugin>
 
    <extension
-         id="org.eclipselab.emf.codegen.protobuf.ui.preferences.ProtobufGeneratorPreferencePageExtension"
          point="org.eclipse.ui.preferencePages">
       <page
-            name="ProtoBuf"
+            name="Protocol Buffer"
             class="org.eclipselab.emf.codegen.protobuf.ui.preferences.ProtobufGeneratorPreferencePage"
             id="org.eclipselab.emf.codegen.protobuf.ui.preferences.ProtobufGeneratorPreferencePage">
       </page>

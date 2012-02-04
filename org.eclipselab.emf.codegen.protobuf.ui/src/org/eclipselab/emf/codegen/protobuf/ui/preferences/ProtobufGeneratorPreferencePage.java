@@ -10,6 +10,8 @@ import org.eclipselab.emf.codegen.protobuf.ui.internal.ProtobufGeneratorUiPlugin
  */
 public class ProtobufGeneratorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
+    public static final String PAGE_ID = "org.eclipselab.emf.codegen.protobuf.ui.preferences.ProtobufGeneratorPreferencePage";
+    
 	public ProtobufGeneratorPreferencePage() {
 		super(GRID);
 		setPreferenceStore(ProtobufGeneratorUiPlugin.getDefault().getPreferenceStore());
